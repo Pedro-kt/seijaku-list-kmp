@@ -1,0 +1,22 @@
+query GetNextSeasonAnime($page: Int, $perPage: Int, $season: MediaSeason, $seasonYear: Int) {
+    Page(page: $page, perPage: $perPage) {
+        media(type: ANIME, season: $season, seasonYear: $seasonYear, sort: POPULARITY_DESC) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            format
+            episodes
+            genres
+        }
+    }
+}

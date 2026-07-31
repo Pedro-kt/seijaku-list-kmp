@@ -1,0 +1,22 @@
+query GetAiringNowAnime($page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+        media(type: ANIME, status: RELEASING, sort: POPULARITY_DESC) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            format
+            episodes
+            genres
+        }
+    }
+}
