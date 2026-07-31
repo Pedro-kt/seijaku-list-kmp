@@ -21,12 +21,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import com.yumedev.seijakulistkmp.features.home.presentation.components.FeaturedCarousel
+import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Bell
 import dev.seyfarth.tablericons.outlined.Book
 import dev.seyfarth.tablericons.outlined.DeviceTv
 import dev.seyfarth.tablericons.outlined.Search
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 import seijakulistkmp.shared.generated.resources.*
 
 class HomeScreen : Screen {
@@ -38,6 +41,9 @@ class HomeScreen : Screen {
 
 @Composable
 fun HomeScreenContent() {
+    val viewModel = koinViewModel<HomeViewModel>()
+    val state by viewModel.state.collectAsState()
+
     var selectedTabIndex by remember { mutableStateOf(0) }
     val pagerState = rememberPagerState(pageCount = { 2 })
     val animeScrollState = rememberLazyListState()
@@ -123,14 +129,19 @@ fun HomeScreenContent() {
                 )
             }
 
-            // Horizontal Pager (scroll disabled)
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize(),
                 userScrollEnabled = false
             ) { page ->
                 when (page) {
-                    0 -> AnimeTabContent(scrollState = animeScrollState)
+                    0 -> AnimeTabContent(
+                        scrollState = animeScrollState,
+                        featuredAnime = state.featuredAnime,
+                        isLoading = state.isLoadingAnime,
+                        error = state.animeError,
+                        onRetry = { viewModel.retryLoadFeaturedAnime() }
+                    )
                     1 -> MangaTabContent(scrollState = mangaScrollState)
                 }
             }
@@ -138,44 +149,96 @@ fun HomeScreenContent() {
     }
 }
 
-/**
- * Anime tab content
- */
 @Composable
-private fun AnimeTabContent(scrollState: LazyListState) {
+private fun AnimeTabContent(
+    scrollState: LazyListState,
+    featuredAnime: List<FeaturedMediaItem>,
+    isLoading: Boolean,
+    error: String?,
+    onRetry: () -> Unit
+) {
     LazyColumn(
         state = scrollState,
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(30) { index ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Anime ${index + 1}",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    Text(
-                        text = "Description for anime item",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+        // Featured carousel
+        item {
+            when {
+                isLoading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(220.dp)
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+                error != null -> {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = error,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                            Button(onClick = onRetry) {
+                                Text("Retry")
+                            }
+                        }
+                    }
+                }
+                featuredAnime.isNotEmpty() -> {
+                    FeaturedCarousel(
+                        items = featuredAnime,
+                        modifier = Modifier.padding(top = 16.dp)
                     )
                 }
             }
         }
+
+        // Placeholder content
+        items(20) { index ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Anime Section ${index + 1}",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = "More content here...",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
+
+        item { Spacer(modifier = Modifier.height(16.dp)) }
     }
 }
 
-/**
- * Manga tab content
- */
 @Composable
 private fun MangaTabContent(scrollState: LazyListState) {
     LazyColumn(
