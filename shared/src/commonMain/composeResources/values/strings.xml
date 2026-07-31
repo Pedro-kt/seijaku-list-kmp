@@ -15,8 +15,10 @@
     <string name="error">Error</string>
     <string name="retry">Retry</string>
     <string name="search">Search</string>
+    <string name="search_placeholder">Anime, manga, characters...</string>
     <string name="empty_list">No items found</string>
     <string name="notifications">Notifications</string>
+    <string name="user_profile">User profile</string>
 
     <!-- Anime List -->
     <string name="trending_anime">Trending Anime</string>
