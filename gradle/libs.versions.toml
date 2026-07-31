@@ -1,44 +1,186 @@
 [versions]
+# Kotlin & Build Tools
+kotlin = "2.4.10"
 agp = "9.0.1"
+ksp = "2.3.10"
+
+# Android SDK Versions
 android-compileSdk = "36"
-android-minSdk = "24"
+android-minSdk = "26"
 android-targetSdk = "36"
+
+# Compose Multiplatform
+composeMultiplatform = "1.11.1"
+material3 = "1.11.0-alpha07"
+
+# AndroidX Libraries
 androidx-activity = "1.13.0"
 androidx-appcompat = "1.7.1"
 androidx-core = "1.19.0"
-androidx-espresso = "3.7.0"
 androidx-lifecycle = "2.11.0-beta01"
-androidx-testExt = "1.3.0"
-composeMultiplatform = "1.11.1"
-junit = "4.13.2"
-kotlin = "2.4.10"
+
+# Networking
+apollo = "5.0.1"
+ktor = "3.0.3"
+
+# oom 3 KMP
+room3 = "3.0.1"
+sqlite = "2.7.0"
+
+# Koin
+koin = "4.0.1"
+koin-compose = "4.0.1"
+
+# Coil 3 KMP
+coil = "3.0.4"
+
+# Voyager
+voyager = "1.1.0-beta03"
+
+# Storage - Multiplatform Settings
+multiplatform-settings = "1.3.0"
+
+# Firebase KMP
+# firebase-kotlin-sdk = "2.2.0"
+# firebase-bom = "33.9.0"
+
+# OAuth 2.0
+oidc = "0.15.1"
+
+# Kotlinx Libraries
 kotlinx-coroutines = "1.11.0"
-material3 = "1.11.0-alpha07"
+kotlinx-serialization = "1.8.0"
+kotlinx-datetime = "0.6.1"
+
+# Utilities
+uuid = "0.9.0"
+
+# Android-only Libraries
+lottie = "6.4.0"
+# TODO: Buscar versión correcta de Material Icons Extended para KMP
+# material-icons-extended = "1.8.0"
+
+# Testing
+junit = "4.13.2"
+androidx-testExt = "1.3.0"
+androidx-espresso = "3.7.0"
 
 [libraries]
+# Testing
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }
-androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-testExt-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-testExt" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-espresso" }
+
+# AndroidX Core
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
-compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
+
+# Lifecycle
 androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+
+# Compose Multiplatform
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
+compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
+compose-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "composeMultiplatform" }
+
+# Material Icons Extended - TODO: Buscar versión compatible con KMP
+# material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "material-icons-extended" }
+
+# Kotlinx Libraries
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+
+# Room 3 KMP
+room3-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room3" }
+room3-compiler = { module = "androidx.room3:room3-compiler", version.ref = "room3" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
+# Koin - Dependency Injection
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin-compose" }
+
+# Apollo GraphQL
+apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
+apollo-normalized-cache = { module = "com.apollographql.apollo:apollo-normalized-cache", version.ref = "apollo" }
+apollo-normalized-cache-sqlite = { module = "com.apollographql.apollo:apollo-normalized-cache-sqlite", version.ref = "apollo" }
+apollo-adapters = { module = "com.apollographql.apollo:apollo-adapters", version.ref = "apollo" }
+
+# Ktor Client (for Apollo and general networking)
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+
+# Coil 3 - Image Loading KMP
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil" }
+
+# Voyager - Navigation
+voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
+voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
+voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
+voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
+
+# Multiplatform Settings
+multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
+multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatform-settings" }
+multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatform-settings" }
+
+# Firebase KMP (GitLive) - TODO: Descomentar cuando implementemos autenticación
+# Requiere configuración adicional de google-services.json
+# firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebase-kotlin-sdk" }
+# firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "firebase-kotlin-sdk" }
+# firebase-storage = { module = "dev.gitlive:firebase-storage", version.ref = "firebase-kotlin-sdk" }
+# firebase-common = { module = "dev.gitlive:firebase-common", version.ref = "firebase-kotlin-sdk" }
+
+# Firebase Android (BOM) - TODO: Descomentar con Firebase
+# firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
+
+# OAuth 2.0
+oidc-core = { module = "io.github.kalinjul.kotlin.multiplatform:oidc-core", version.ref = "oidc" }
+oidc-appsupport = { module = "io.github.kalinjul.kotlin.multiplatform:oidc-appsupport", version.ref = "oidc" }
+
+# Utilities
+uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
+
+# Android-only Libraries
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
 
 [plugins]
+# Kotlin & Android
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
-composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
-composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+# Compose
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+# Serialization
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+# Room 3
+room3 = { id = "androidx.room3", version.ref = "room3" }
+
+# Apollo
+apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
+
+# Google Services (for Firebase)
+google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
