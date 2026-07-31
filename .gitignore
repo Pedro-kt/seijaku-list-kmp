@@ -1,19 +1,96 @@
-*.iml
-.kotlin
-.gradle
+# Gradle
+.gradle/
 **/build/
-xcuserdata
 !src/**/build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# Kotlin
+.kotlin/
+*.kotlin_module
+*.kotlin_builtins
+
+# Android
+*.iml
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+bin/
+gen/
+out/
+.navigation/
+captures/
+.externalNativeBuild/
+.cxx/
 local.properties
-.idea
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.ipr
+*.iml
+.idea_modules/
+
+.claude/
+
+# macOS
 .DS_Store
-captures
-.externalNativeBuild
-.cxx
+.AppleDouble
+.LSOverride
+._*
+
+# Xcode
+xcuserdata/
 *.xcodeproj/*
 !*.xcodeproj/project.pbxproj
 !*.xcodeproj/xcshareddata/
 !*.xcodeproj/project.xcworkspace/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+DerivedData/
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Sensitive & Config Files
+google-services.json
+GoogleService-Info.plist
+firebase.json
+serviceAccountKey.json
+*.jks
+*.keystore
+keystore.properties
+secrets.properties
+apikeys.properties
+
+# Room Generated
+**/schemas/*.db
+**/schemas/*.db-shm
+**/schemas/*.db-wal
+
+# Apollo Generated (keep schema.json, ignore generated code)
+**/build/generated/source/apollo/
+
+# Logs
+*.log
+logs/
+
+# Node
 node_modules/
+npm-debug.log
+yarn-error.log
+
+# Miscellaneous
+*.swp
+*~
+.*.swp
+.*.swo
+.cache/
+tmp/
+temp/
