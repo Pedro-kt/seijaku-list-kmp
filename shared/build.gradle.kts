@@ -91,6 +91,9 @@ kotlin {
             implementation(libs.voyager.transitions)
             implementation(libs.voyager.koin)
 
+            // Tabler Icons
+            implementation("dev.seyfarth:tabler-icons-kmp:1.0.0")
+
             // Multiplatform Settings
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.coroutines)
