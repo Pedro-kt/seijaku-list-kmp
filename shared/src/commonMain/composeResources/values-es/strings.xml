@@ -24,6 +24,16 @@
     <string name="trending_anime">Anime en tendencia</string>
     <string name="popular_anime">Anime popular</string>
     <string name="upcoming_anime">Próximos anime</string>
+    <string name="airing_now">En emisión</string>
+    <string name="seasonal">Temporada</string>
+
+    <!-- Media Status -->
+    <string name="status_airing">En emisión</string>
+    <string name="status_finished">Finalizado</string>
+    <string name="status_not_yet_aired">Próximamente</string>
+    <string name="status_cancelled">Cancelado</string>
+    <string name="status_publishing">Publicándose</string>
+    <string name="status_completed">Completado</string>
 
     <!-- Manga List -->
     <string name="trending_manga">Manga en tendencia</string>
