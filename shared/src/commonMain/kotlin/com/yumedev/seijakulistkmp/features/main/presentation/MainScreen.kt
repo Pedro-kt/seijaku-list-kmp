@@ -45,7 +45,7 @@ fun MainScreenContent() {
             }
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
+        Box() {
             when (selectedItem) {
                 BottomNavItem.Home -> HomeScreenContent()
                 BottomNavItem.Anime -> AnimeListScreenContent()
