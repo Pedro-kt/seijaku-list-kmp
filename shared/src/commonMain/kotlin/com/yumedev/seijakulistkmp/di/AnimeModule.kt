@@ -12,16 +12,18 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
- * Dependency injection module for Anime feature
+ * Módulo de dependencias para Anime feature
+ * (Temporalmente vacío hasta implementar otras secciones)
  */
 val animeModule = module {
+    // TODO: Implementar cuando se agreguen otras secciones del Home
     // Repository
-    singleOf(::AnimeRepositoryImpl) bind AnimeRepository::class
+    // singleOf(::AnimeRepositoryImpl) bind AnimeRepository::class
 
     // Domain Layer - Use Cases
-    factoryOf(::GetTrendingAnimeUseCase)
-    factoryOf(::SearchAnimeUseCase)
+    // factoryOf(::GetTrendingAnimeUseCase)
+    // factoryOf(::SearchAnimeUseCase)
 
     // Presentation Layer - ViewModels
-    viewModelOf(::AnimeListViewModel)
+    // viewModelOf(::AnimeListViewModel)
 }
