@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.datetime.Clock
 
 class SearchViewModel : ViewModel() {
 
@@ -19,12 +20,14 @@ class SearchViewModel : ViewModel() {
     }
 
     private fun loadMockData() {
+        val now = Clock.System.now().toEpochMilliseconds()
+
         // Mock recent searches
         val mockRecentSearches = listOf(
-            RecentSearch(1, "frieren", System.currentTimeMillis() - 3600000),
-            RecentSearch(2, "berserk", System.currentTimeMillis() - 7200000),
-            RecentSearch(3, "maomao", System.currentTimeMillis() - 10800000),
-            RecentSearch(4, "one piece", System.currentTimeMillis() - 14400000)
+            RecentSearch(1, "frieren", now - 3600000),
+            RecentSearch(2, "berserk", now - 7200000),
+            RecentSearch(3, "maomao", now - 10800000),
+            RecentSearch(4, "one piece", now - 14400000)
         )
 
         // Mock trending animes
@@ -109,10 +112,11 @@ class SearchViewModel : ViewModel() {
     fun addRecentSearch(query: String) {
         if (query.isBlank()) return
 
+        val now = Clock.System.now().toEpochMilliseconds()
         val newSearch = RecentSearch(
-            id = System.currentTimeMillis(),
+            id = now,
             query = query,
-            timestamp = System.currentTimeMillis()
+            timestamp = now
         )
 
         _state.update {
