@@ -116,8 +116,8 @@ fun SearchScreenContent(
             onGenreClick = { genre ->
                 // TODO: Navigate to genre list
             },
-            onTrendingAnimeClick = { anime ->
-                // TODO: Navigate to anime detail
+            onMoodClick = { genres, moodName ->
+                viewModel.searchByMood(genres, moodName)
             }
         )
         }

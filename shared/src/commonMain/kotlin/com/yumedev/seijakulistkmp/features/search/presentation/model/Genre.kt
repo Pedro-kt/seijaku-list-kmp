@@ -1,22 +1,25 @@
 package com.yumedev.seijakulistkmp.features.search.presentation.model
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
+import dev.seyfarth.tablericons.TablerIcons
+import dev.seyfarth.tablericons.outlined.*
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
 
-enum class Genre {
-    ACTION,
-    ADVENTURE,
-    COMEDY,
-    DRAMA,
-    FANTASY,
-    ROMANCE,
-    SCI_FI,
-    SLICE_OF_LIFE,
-    SUSPENSE,
-    SPORTS,
-    HORROR,
-    PSYCHOLOGICAL;
+enum class Genre(val icon: ImageVector) {
+    ACTION(TablerIcons.Outlined.Sword),
+    ADVENTURE(TablerIcons.Outlined.Map),
+    COMEDY(TablerIcons.Outlined.MoodSmile),
+    DRAMA(TablerIcons.Outlined.Mask),
+    FANTASY(TablerIcons.Outlined.Wand),
+    ROMANCE(TablerIcons.Outlined.Heart),
+    SCI_FI(TablerIcons.Outlined.Rocket),
+    SLICE_OF_LIFE(TablerIcons.Outlined.Coffee),
+    SUSPENSE(TablerIcons.Outlined.Eye),
+    SPORTS(TablerIcons.Outlined.BallFootball),
+    HORROR(TablerIcons.Outlined.Ghost),
+    PSYCHOLOGICAL(TablerIcons.Outlined.Brain);
 
     companion object {
         fun all(): List<Genre> = entries

@@ -7,6 +7,8 @@ import com.apollographql.apollo.api.Optional
 import com.yumedev.seijakulistkmp.core.error.ErrorMapper
 import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeQuery
+import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeByGenreQuery
+import com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaSort
 import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toSearchResultItems
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
@@ -201,6 +203,65 @@ class SearchViewModel(
                 searchError = null,
                 hasSearched = false
             )
+        }
+    }
+
+    fun searchByMood(genres: List<String>, moodName: String) {
+        searchByGenres(genres, moodName)
+    }
+
+    private fun searchByGenres(genres: List<String>, moodName: String) {
+        if (genres.isEmpty()) {
+            _state.update {
+                it.copy(
+                    searchResults = emptyList(),
+                    isSearching = false,
+                    searchError = null,
+                    hasSearched = true,
+                    searchQuery = moodName
+                )
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            _state.update { it.copy(isSearching = true, searchError = null, hasSearched = true, searchQuery = moodName) }
+
+            try {
+                val response = apolloClient
+                    .query(
+                        SearchAnimeByGenreQuery(
+                            genres = Optional.present(genres),
+                            page = Optional.present(1),
+                            perPage = Optional.present(20),
+                            sort = Optional.present(listOf(MediaSort.TRENDING_DESC, MediaSort.POPULARITY_DESC))
+                        )
+                    )
+                    .execute()
+
+                response.exception?.let { throw it }
+                response.errors?.firstOrNull()?.let { error ->
+                    throw Exception(error.message ?: "GraphQL error")
+                }
+
+                val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+
+                _state.update {
+                    it.copy(
+                        searchResults = results,
+                        isSearching = false,
+                        searchError = null
+                    )
+                }
+            } catch (e: Exception) {
+                val errorType = ErrorMapper.mapToErrorType(e)
+                _state.update {
+                    it.copy(
+                        isSearching = false,
+                        searchError = errorType
+                    )
+                }
+            }
         }
     }
 }
