@@ -1,0 +1,31 @@
+query SearchAnimeByEpisodes($minEpisodes: Int, $page: Int, $perPage: Int, $sort: [MediaSort]) {
+    Page(page: $page, perPage: $perPage) {
+        pageInfo {
+            total
+            currentPage
+            lastPage
+            hasNextPage
+            perPage
+        }
+        media(type: ANIME, episodes_greater: $minEpisodes, sort: $sort) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            status
+            format
+            episodes
+            seasonYear
+            genres
+        }
+    }
+}

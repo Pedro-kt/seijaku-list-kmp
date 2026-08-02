@@ -46,6 +46,6 @@ enum class MoodFilter(
         titleRes = Res.string.mood_marathon_title,
         descriptionRes = Res.string.mood_marathon_description,
         icon = TablerIcons.Outlined.Infinity,
-        genres = listOf() // TODO: This should filter by episode count (100+) instead of genres
+        genres = listOf()
     )
 }

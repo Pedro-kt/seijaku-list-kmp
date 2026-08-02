@@ -8,6 +8,7 @@ import com.yumedev.seijakulistkmp.core.error.ErrorMapper
 import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeByGenreQuery
+import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeByEpisodesQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaSort
 import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toSearchResultItems
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
@@ -211,16 +212,9 @@ class SearchViewModel(
     }
 
     private fun searchByGenres(genres: List<String>, moodName: String) {
+        // Handle Marathon mood (filter by episodes >= 75)
         if (genres.isEmpty()) {
-            _state.update {
-                it.copy(
-                    searchResults = emptyList(),
-                    isSearching = false,
-                    searchError = null,
-                    hasSearched = true,
-                    searchQuery = moodName
-                )
-            }
+            searchByEpisodeCount(minEpisodes = 75, moodName = moodName)
             return
         }
 
@@ -235,6 +229,48 @@ class SearchViewModel(
                             page = Optional.present(1),
                             perPage = Optional.present(20),
                             sort = Optional.present(listOf(MediaSort.TRENDING_DESC, MediaSort.POPULARITY_DESC))
+                        )
+                    )
+                    .execute()
+
+                response.exception?.let { throw it }
+                response.errors?.firstOrNull()?.let { error ->
+                    throw Exception(error.message ?: "GraphQL error")
+                }
+
+                val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+
+                _state.update {
+                    it.copy(
+                        searchResults = results,
+                        isSearching = false,
+                        searchError = null
+                    )
+                }
+            } catch (e: Exception) {
+                val errorType = ErrorMapper.mapToErrorType(e)
+                _state.update {
+                    it.copy(
+                        isSearching = false,
+                        searchError = errorType
+                    )
+                }
+            }
+        }
+    }
+
+    private fun searchByEpisodeCount(minEpisodes: Int, moodName: String) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSearching = true, searchError = null, hasSearched = true, searchQuery = moodName) }
+
+            try {
+                val response = apolloClient
+                    .query(
+                        SearchAnimeByEpisodesQuery(
+                            minEpisodes = Optional.present(minEpisodes),
+                            page = Optional.present(1),
+                            perPage = Optional.present(20),
+                            sort = Optional.present(listOf(MediaSort.POPULARITY_DESC, MediaSort.SCORE_DESC))
                         )
                     )
                     .execute()
