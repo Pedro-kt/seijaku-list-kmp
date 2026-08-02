@@ -76,7 +76,8 @@ fun SearchScreenContent(
             },
             onRemoveRecentSearch = { search ->
                 viewModel.removeRecentSearch(search)
-            }
+            },
+            autoFocus = true
         )
     } else {
         CollapsedSearchContent(

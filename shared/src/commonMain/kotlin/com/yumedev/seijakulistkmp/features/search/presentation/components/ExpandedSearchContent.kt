@@ -22,7 +22,8 @@ fun ExpandedSearchContent(
     onFiltersClick: () -> Unit,
     onRecentSearchClick: (RecentSearch) -> Unit,
     onRemoveRecentSearch: (RecentSearch) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    autoFocus: Boolean = false
 ) {
     Column(
         modifier = modifier.fillMaxSize()
@@ -31,7 +32,8 @@ fun ExpandedSearchContent(
             query = state.searchQuery,
             onQueryChange = onQueryChange,
             onBackClick = onBackClick,
-            onSearch = onSearch
+            onSearch = onSearch,
+            autoFocus = autoFocus
         )
 
         SearchFilterChips(
