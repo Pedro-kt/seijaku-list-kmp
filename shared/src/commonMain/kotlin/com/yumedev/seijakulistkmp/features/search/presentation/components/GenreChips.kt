@@ -14,7 +14,7 @@ import com.yumedev.seijakulistkmp.features.search.presentation.model.toLabel
 @Composable
 fun GenreChips(
     genres: List<Genre>,
-    onGenreClick: (Genre) -> Unit,
+    onGenreClick: (Genre, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     FlowRow(
@@ -24,9 +24,10 @@ fun GenreChips(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         genres.forEach { genre ->
+            val genreLabel = genre.toLabel()
             GenreChip(
                 genre = genre,
-                onClick = { onGenreClick(genre) }
+                onClick = { onGenreClick(genre, genreLabel) }
             )
         }
     }

@@ -23,7 +23,7 @@ fun CollapsedSearchContent(
     onQuickFilterClick: (QuickFilter) -> Unit,
     onRecentSearchClick: (RecentSearch) -> Unit,
     onRemoveRecentSearch: (RecentSearch) -> Unit,
-    onGenreClick: (Genre) -> Unit,
+    onGenreClick: (Genre, String) -> Unit,
     onMoodClick: (genres: List<String>, moodName: String) -> Unit,
     modifier: Modifier = Modifier
 ) {

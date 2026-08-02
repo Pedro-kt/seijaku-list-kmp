@@ -12,6 +12,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.yumedev.seijakulistkmp.features.search.presentation.components.CollapsedSearchContent
 import com.yumedev.seijakulistkmp.features.search.presentation.components.ExpandedSearchContent
 import com.yumedev.seijakulistkmp.features.search.presentation.components.SearchResultsContent
+import com.yumedev.seijakulistkmp.features.search.presentation.model.toApiValue
 import org.koin.compose.viewmodel.koinViewModel
 
 class SearchScreen : Screen {
@@ -128,8 +129,8 @@ fun SearchScreenContent(
             onRemoveRecentSearch = { search ->
                 viewModel.removeRecentSearch(search)
             },
-            onGenreClick = { genre ->
-                // TODO: Navigate to genre list
+            onGenreClick = { genre, genreLabel ->
+                viewModel.searchByMood(listOf(genre.toApiValue()), genreLabel)
             },
             onMoodClick = { genres, moodName ->
                 viewModel.searchByMood(genres, moodName)

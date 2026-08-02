@@ -41,3 +41,18 @@ fun Genre.toLabel(): String = when (this) {
     Genre.HORROR -> stringResource(Res.string.genre_horror)
     Genre.PSYCHOLOGICAL -> stringResource(Res.string.genre_psychological)
 }
+
+fun Genre.toApiValue(): String = when (this) {
+    Genre.ACTION -> "Action"
+    Genre.ADVENTURE -> "Adventure"
+    Genre.COMEDY -> "Comedy"
+    Genre.DRAMA -> "Drama"
+    Genre.FANTASY -> "Fantasy"
+    Genre.ROMANCE -> "Romance"
+    Genre.SCI_FI -> "Sci-Fi"
+    Genre.SLICE_OF_LIFE -> "Slice of Life"
+    Genre.SUSPENSE -> "Thriller"
+    Genre.SPORTS -> "Sports"
+    Genre.HORROR -> "Horror"
+    Genre.PSYCHOLOGICAL -> "Psychological"
+}
