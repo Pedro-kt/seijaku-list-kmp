@@ -95,6 +95,10 @@ class SearchViewModel : ViewModel() {
         _state.update { it.copy(isExpanded = false, searchQuery = "") }
     }
 
+    fun setExpandedState(expanded: Boolean) {
+        _state.update { it.copy(isExpanded = expanded) }
+    }
+
     fun updateSearchQuery(query: String) {
         _state.update { it.copy(searchQuery = query) }
     }

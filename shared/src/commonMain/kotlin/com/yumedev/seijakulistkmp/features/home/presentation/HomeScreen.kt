@@ -46,7 +46,9 @@ class HomeScreen : Screen {
 }
 
 @Composable
-fun HomeScreenContent() {
+fun HomeScreenContent(
+    onNavigateToSearch: () -> Unit = {}
+) {
     val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.state.collectAsState()
 
@@ -72,9 +74,7 @@ fun HomeScreenContent() {
         topBar = {
             HomeTopAppBar(
                 isScrolled = isScrolled,
-                onSearchClick = {
-                    // TODO: Navigate to search or open search dialog
-                },
+                onSearchClick = onNavigateToSearch,
                 onNotificationsClick = {
                     // TODO: Navigate to notifications screen
                 },

@@ -22,73 +22,83 @@ class SearchScreen : Screen {
 
 @Composable
 fun SearchScreenContent(
-    onExpandedChange: (Boolean) -> Unit = {}
+    shouldExpandOnStart: Boolean = false,
+    onExpandedChange: (Boolean) -> Unit = {},
+    onExpandHandled: () -> Unit = {}
 ) {
     val viewModel = koinViewModel<SearchViewModel>()
     val state by viewModel.state.collectAsState()
+
+    var hasHandledNavigation by remember { mutableStateOf(false) }
+
+    val isExpanded = if (shouldExpandOnStart && !hasHandledNavigation) {
+        true
+    } else {
+        state.isExpanded
+    }
+
+    LaunchedEffect(shouldExpandOnStart) {
+        if (shouldExpandOnStart && !hasHandledNavigation) {
+            viewModel.setExpandedState(true)
+            onExpandHandled()
+            hasHandledNavigation = true
+        }
+    }
 
     LaunchedEffect(state.isExpanded) {
         onExpandedChange(state.isExpanded)
     }
 
-    AnimatedContent(
-        targetState = state.isExpanded,
-        transitionSpec = {
-            fadeIn(animationSpec = tween(200)) togetherWith
-            fadeOut(animationSpec = tween(200))
-        },
-        label = "SearchContentTransition"
-    ) { isExpanded ->
-        if (isExpanded) {
-            ExpandedSearchContent(
-                state = state,
-                onQueryChange = { query ->
-                    viewModel.updateSearchQuery(query)
-                },
-                onBackClick = {
-                    viewModel.collapseSearch()
-                },
-                onSearch = {
-                    if (state.searchQuery.isNotBlank()) {
-                        viewModel.performSearch(state.searchQuery)
-                    }
-                },
-                onFilterSelect = { filter ->
-                    viewModel.selectFilter(filter)
-                },
-                onFiltersClick = {
-                    // TODO: Open advanced filters dialog
-                },
-                onRecentSearchClick = { search ->
-                    viewModel.updateSearchQuery(search.query)
-                    viewModel.performSearch(search.query)
-                },
-                onRemoveRecentSearch = { search ->
-                    viewModel.removeRecentSearch(search)
+    // No animation, just show the right content
+    if (isExpanded) {
+        ExpandedSearchContent(
+            state = state,
+            onQueryChange = { query ->
+                viewModel.updateSearchQuery(query)
+            },
+            onBackClick = {
+                viewModel.collapseSearch()
+            },
+            onSearch = {
+                if (state.searchQuery.isNotBlank()) {
+                    viewModel.performSearch(state.searchQuery)
                 }
-            )
-        } else {
-            CollapsedSearchContent(
-                state = state,
-                onSearchClick = {
-                    viewModel.expandSearch()
-                },
-                onQuickFilterClick = { filter ->
-                    // TODO: Navigate to filtered list
-                },
-                onRecentSearchClick = { search ->
-                    viewModel.performSearch(search.query)
-                },
-                onRemoveRecentSearch = { search ->
-                    viewModel.removeRecentSearch(search)
-                },
-                onGenreClick = { genre ->
-                    // TODO: Navigate to genre list
-                },
-                onTrendingAnimeClick = { anime ->
-                    // TODO: Navigate to anime detail
-                }
-            )
-        }
+            },
+            onFilterSelect = { filter ->
+                viewModel.selectFilter(filter)
+            },
+            onFiltersClick = {
+                // TODO: Open advanced filters dialog
+            },
+            onRecentSearchClick = { search ->
+                viewModel.updateSearchQuery(search.query)
+                viewModel.performSearch(search.query)
+            },
+            onRemoveRecentSearch = { search ->
+                viewModel.removeRecentSearch(search)
+            }
+        )
+    } else {
+        CollapsedSearchContent(
+            state = state,
+            onSearchClick = {
+                viewModel.expandSearch()
+            },
+            onQuickFilterClick = { filter ->
+                // TODO: Navigate to filtered list
+            },
+            onRecentSearchClick = { search ->
+                viewModel.performSearch(search.query)
+            },
+            onRemoveRecentSearch = { search ->
+                viewModel.removeRecentSearch(search)
+            },
+            onGenreClick = { genre ->
+                // TODO: Navigate to genre list
+            },
+            onTrendingAnimeClick = { anime ->
+                // TODO: Navigate to anime detail
+            }
+        )
     }
 }

@@ -36,10 +36,12 @@ class MainScreen : Screen {
 fun MainScreenContent() {
     var selectedItem by remember { mutableStateOf<BottomNavItem>(BottomNavItem.Home) }
     var isSearchExpanded by remember { mutableStateOf(false) }
+    var shouldExpandSearch by remember { mutableStateOf(false) }
 
     LaunchedEffect(selectedItem) {
         if (selectedItem != BottomNavItem.Search) {
             isSearchExpanded = false
+            shouldExpandSearch = false
         }
     }
 
@@ -60,12 +62,21 @@ fun MainScreenContent() {
             modifier = Modifier.fillMaxSize()
         ) {
             when (selectedItem) {
-                BottomNavItem.Home -> HomeScreenContent()
+                BottomNavItem.Home -> HomeScreenContent(
+                    onNavigateToSearch = {
+                        shouldExpandSearch = true
+                        selectedItem = BottomNavItem.Search
+                    }
+                )
                 BottomNavItem.Anime -> AnimeListScreenContent()
                 BottomNavItem.Manga -> MangaListScreenContent()
                 BottomNavItem.Search -> SearchScreenContent(
+                    shouldExpandOnStart = shouldExpandSearch,
                     onExpandedChange = { isExpanded ->
                         isSearchExpanded = isExpanded
+                    },
+                    onExpandHandled = {
+                        shouldExpandSearch = false
                     }
                 )
                 BottomNavItem.Profile -> ProfileScreenContent()

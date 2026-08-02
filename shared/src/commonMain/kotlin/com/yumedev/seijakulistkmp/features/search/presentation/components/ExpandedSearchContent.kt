@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.features.search.presentation.SearchState
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
+import kotlinx.datetime.Clock
 
 @Composable
 fun ExpandedSearchContent(
@@ -61,6 +62,8 @@ fun ExpandedSearchContent(
             }
 
             item {
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider()
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
