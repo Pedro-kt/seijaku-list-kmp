@@ -29,7 +29,7 @@
     <string name="search_searching">Searching...</string>
     <string name="search_no_results">No results found</string>
     <string name="search_no_results_hint">Try different keywords or check spelling</string>
-    <string name="search_results_count">%d results</string>
+    <string name="search_results_count">%1$d results</string>
     <string name="search_results_for">Results for</string>
     <string name="error_search_failed">Search failed</string>
 
