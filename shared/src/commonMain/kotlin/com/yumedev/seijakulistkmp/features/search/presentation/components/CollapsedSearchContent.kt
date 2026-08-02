@@ -20,7 +20,7 @@ import seijakulistkmp.shared.generated.resources.*
 fun CollapsedSearchContent(
     state: SearchState,
     onSearchClick: () -> Unit,
-    onQuickFilterClick: (QuickFilter) -> Unit,
+    onQuickFilterClick: (QuickFilter, String) -> Unit,
     onRecentSearchClick: (RecentSearch) -> Unit,
     onRemoveRecentSearch: (RecentSearch) -> Unit,
     onGenreClick: (Genre, String) -> Unit,

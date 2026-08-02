@@ -8,6 +8,7 @@ data class SearchResultItem(
     val rating: Double? = null,
     val year: Int? = null,
     val type: String,
+    val status: String? = null,
     val episodes: Int? = null,
     val chapters: Int? = null, // For manga
     val volumes: Int? = null, // For manga

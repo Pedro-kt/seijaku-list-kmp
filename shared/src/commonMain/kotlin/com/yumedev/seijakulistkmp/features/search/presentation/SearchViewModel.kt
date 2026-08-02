@@ -9,10 +9,18 @@ import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeByGenreQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeByEpisodesQuery
+import com.yumedev.seijakulistkmp.data.remote.graphql.GetCurrentSeasonAnimeQuery
+import com.yumedev.seijakulistkmp.data.remote.graphql.GetAiringTodayAnimeQuery
+import com.yumedev.seijakulistkmp.data.remote.graphql.GetTopRatedAnimeQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaSort
+import com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaSeason
 import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toSearchResultItems
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaFormat
 import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaStatus
+import com.yumedev.seijakulistkmp.features.search.presentation.model.QuickFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.TrendingAnime
@@ -22,6 +30,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.toInstant
 
 class SearchViewModel(
     private val apolloClient: ApolloClient,
@@ -332,5 +341,188 @@ class SearchViewModel(
                 filterMinScore = null
             )
         }
+    }
+
+    fun searchByQuickFilter(filter: QuickFilter, filterName: String) {
+        when (filter) {
+            QuickFilter.CurrentSeason -> searchCurrentSeason(filterName)
+            QuickFilter.AiringToday -> searchAiringToday(filterName)
+            QuickFilter.Top100 -> searchTop100(filterName)
+            QuickFilter.Random -> {
+                // TODO: Implement random search
+            }
+        }
+    }
+
+    private fun searchCurrentSeason(filterName: String) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSearching = true, searchError = null, hasSearched = true, searchQuery = filterName) }
+
+            try {
+                val (season, year) = getCurrentSeason()
+
+                val response = apolloClient
+                    .query(
+                        GetCurrentSeasonAnimeQuery(
+                            season = Optional.present(season),
+                            seasonYear = Optional.present(year),
+                            page = Optional.present(1),
+                            perPage = Optional.present(20)
+                        )
+                    )
+                    .execute()
+
+                response.exception?.let { throw it }
+                response.errors?.firstOrNull()?.let { error ->
+                    throw Exception(error.message ?: "GraphQL error")
+                }
+
+                val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+
+                _state.update {
+                    it.copy(
+                        searchResults = results,
+                        isSearching = false,
+                        searchError = null
+                    )
+                }
+            } catch (e: Exception) {
+                val errorType = ErrorMapper.mapToErrorType(e)
+                _state.update {
+                    it.copy(
+                        isSearching = false,
+                        searchError = errorType
+                    )
+                }
+            }
+        }
+    }
+
+    private fun searchAiringToday(filterName: String) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSearching = true, searchError = null, hasSearched = true, searchQuery = filterName) }
+
+            try {
+                val (startOfDay, endOfDay) = getTodayTimestamps()
+
+                val response = apolloClient
+                    .query(
+                        GetAiringTodayAnimeQuery(
+                            airingAtGreater = Optional.present(startOfDay),
+                            airingAtLesser = Optional.present(endOfDay),
+                            page = Optional.present(1),
+                            perPage = Optional.present(20)
+                        )
+                    )
+                    .execute()
+
+                response.exception?.let { throw it }
+                response.errors?.firstOrNull()?.let { error ->
+                    throw Exception(error.message ?: "GraphQL error")
+                }
+
+                val results = response.data?.Page?.airingSchedules?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+
+                _state.update {
+                    it.copy(
+                        searchResults = results,
+                        isSearching = false,
+                        searchError = null
+                    )
+                }
+            } catch (e: Exception) {
+                val errorType = ErrorMapper.mapToErrorType(e)
+                _state.update {
+                    it.copy(
+                        isSearching = false,
+                        searchError = errorType
+                    )
+                }
+            }
+        }
+    }
+
+    private fun searchTop100(filterName: String) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSearching = true, searchError = null, hasSearched = true, searchQuery = filterName) }
+
+            try {
+                val response = apolloClient
+                    .query(
+                        GetTopRatedAnimeQuery(
+                            page = Optional.present(1),
+                            perPage = Optional.present(100)
+                        )
+                    )
+                    .execute()
+
+                response.exception?.let { throw it }
+                response.errors?.firstOrNull()?.let { error ->
+                    throw Exception(error.message ?: "GraphQL error")
+                }
+
+                val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+
+                _state.update {
+                    it.copy(
+                        searchResults = results,
+                        isSearching = false,
+                        searchError = null
+                    )
+                }
+            } catch (e: Exception) {
+                val errorType = ErrorMapper.mapToErrorType(e)
+                _state.update {
+                    it.copy(
+                        isSearching = false,
+                        searchError = errorType
+                    )
+                }
+            }
+        }
+    }
+
+    private fun getCurrentSeason(): Pair<MediaSeason, Int> {
+        val now = Clock.System.now()
+        val localDateTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
+
+        val year = localDateTime.year
+        val month = localDateTime.monthNumber
+
+        val season = when (month) {
+            in 1..3 -> MediaSeason.WINTER
+            in 4..6 -> MediaSeason.SPRING
+            in 7..9 -> MediaSeason.SUMMER
+            in 10..12 -> MediaSeason.FALL
+            else -> MediaSeason.WINTER
+        }
+
+        return Pair(season, year)
+    }
+
+    private fun getTodayTimestamps(): Pair<Int, Int> {
+        val now = Clock.System.now()
+        val timeZone = TimeZone.currentSystemDefault()
+        val localDateTime = now.toLocalDateTime(timeZone)
+
+        val startOfDay = kotlinx.datetime.LocalDateTime(
+            year = localDateTime.year,
+            monthNumber = localDateTime.monthNumber,
+            dayOfMonth = localDateTime.dayOfMonth,
+            hour = 0,
+            minute = 0,
+            second = 0
+        ).toInstant(timeZone).epochSeconds.toInt()
+
+        val endOfDay = kotlinx.datetime.LocalDateTime(
+            year = localDateTime.year,
+            monthNumber = localDateTime.monthNumber,
+            dayOfMonth = localDateTime.dayOfMonth,
+            hour = 23,
+            minute = 59,
+            second = 59
+        ).toInstant(timeZone).epochSeconds.toInt()
+
+        return Pair(startOfDay, endOfDay)
     }
 }

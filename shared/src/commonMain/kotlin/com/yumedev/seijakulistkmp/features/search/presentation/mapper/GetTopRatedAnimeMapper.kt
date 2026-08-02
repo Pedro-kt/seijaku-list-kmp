@@ -1,11 +1,11 @@
 package com.yumedev.seijakulistkmp.features.search.presentation.mapper
 
 import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
-import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeQuery
+import com.yumedev.seijakulistkmp.data.remote.graphql.GetTopRatedAnimeQuery
 import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaType
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchResultItem
 
-suspend fun SearchAnimeQuery.Medium.toSearchResultItem(
+suspend fun GetTopRatedAnimeQuery.Medium.toSearchResultItem(
     formatter: MediaStringFormatter
 ): SearchResultItem {
     val displayTitle = title?.english ?: title?.romaji ?: title?.native ?: "Unknown"
@@ -19,7 +19,7 @@ suspend fun SearchAnimeQuery.Medium.toSearchResultItem(
         alternativeTitle = title?.native,
         coverImage = coverUrl,
         rating = averageScore?.div(10.0),
-        year = seasonYear,
+        year = null,
         type = formattedType,
         status = status?.rawValue,
         episodes = episodes,
@@ -30,7 +30,7 @@ suspend fun SearchAnimeQuery.Medium.toSearchResultItem(
     )
 }
 
-suspend fun List<SearchAnimeQuery.Medium?>.toSearchResultItems(
+suspend fun List<GetTopRatedAnimeQuery.Medium?>.toSearchResultItems(
     formatter: MediaStringFormatter
 ): List<SearchResultItem> {
     return this.filterNotNull().map { it.toSearchResultItem(formatter) }

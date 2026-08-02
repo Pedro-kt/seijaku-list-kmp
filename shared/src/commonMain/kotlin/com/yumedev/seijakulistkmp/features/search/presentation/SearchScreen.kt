@@ -47,8 +47,8 @@ fun SearchScreenContent(
         }
     }
 
-    LaunchedEffect(state.isExpanded) {
-        onExpandedChange(state.isExpanded)
+    LaunchedEffect(state.isExpanded, state.hasSearched) {
+        onExpandedChange(state.isExpanded || state.hasSearched)
     }
 
     when {
@@ -120,8 +120,8 @@ fun SearchScreenContent(
             onSearchClick = {
                 viewModel.expandSearch()
             },
-            onQuickFilterClick = { filter ->
-                // TODO: Navigate to filtered list
+            onQuickFilterClick = { filter, filterLabel ->
+                viewModel.searchByQuickFilter(filter, filterLabel)
             },
             onRecentSearchClick = { search ->
                 viewModel.performSearch(search.query)

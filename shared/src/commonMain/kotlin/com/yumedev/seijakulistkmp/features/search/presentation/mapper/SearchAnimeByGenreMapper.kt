@@ -21,6 +21,7 @@ suspend fun SearchAnimeByGenreQuery.Medium.toSearchResultItem(
         rating = averageScore?.div(10.0),
         year = seasonYear,
         type = formattedType,
+        status = status?.rawValue,
         episodes = episodes,
         chapters = null,
         volumes = null,

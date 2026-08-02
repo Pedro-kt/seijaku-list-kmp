@@ -162,7 +162,11 @@ fun SearchResultsContent(
                     ) { result ->
                         SearchResultItem(
                             item = result,
-                            onClick = { onResultClick(result) }
+                            onClick = { onResultClick(result) },
+                            onSaveClick = { item ->
+                                // TODO: Implement save for later functionality
+                            },
+                            isSaved = false // TODO: Check if item is saved
                         )
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp)
@@ -170,7 +174,7 @@ fun SearchResultsContent(
                     }
 
                     item {
-                        Spacer(modifier = Modifier.height(80.dp))
+                        Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
             }

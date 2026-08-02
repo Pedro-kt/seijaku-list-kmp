@@ -15,13 +15,17 @@ import coil3.compose.AsyncImage
 import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaType
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchResultItem
 import dev.seyfarth.tablericons.TablerIcons
+import dev.seyfarth.tablericons.filled.Bookmark
 import dev.seyfarth.tablericons.filled.Star
+import dev.seyfarth.tablericons.outlined.Bookmark
 
 @Composable
 fun SearchResultItem(
     item: SearchResultItem,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSaveClick: ((SearchResultItem) -> Unit)? = null,
+    isSaved: Boolean = false
 ) {
     Surface(
         onClick = onClick,
@@ -30,21 +34,22 @@ fun SearchResultItem(
             .height(140.dp),
         color = MaterialTheme.colorScheme.surface
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            AsyncImage(
-                model = item.coverImage,
-                contentDescription = item.title,
+        Box(modifier = Modifier.fillMaxSize()) {
+            Row(
                 modifier = Modifier
-                    .width(85.dp)
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                AsyncImage(
+                    model = item.coverImage,
+                    contentDescription = item.title,
+                    modifier = Modifier
+                        .width(85.dp)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
 
             Column(
                 modifier = Modifier
@@ -55,14 +60,26 @@ fun SearchResultItem(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Text(
-                        text = item.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text(
+                            text = item.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        if (item.status != null) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            StatusBadge(status = item.status)
+                        }
+                    }
 
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -177,5 +194,73 @@ fun SearchResultItem(
                 }
             }
         }
+
+        if (onSaveClick != null) {
+            FilledIconButton(
+                onClick = { onSaveClick(item) },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 16.dp, bottom = 8.dp)
+                    .size(32.dp),
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = if (isSaved) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            ) {
+                Icon(
+                    imageVector = if (isSaved) TablerIcons.Filled.Bookmark else TablerIcons.Outlined.Bookmark,
+                    contentDescription = if (isSaved) "Remove from saved" else "Save for later",
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+    }
+    }
+}
+
+@Composable
+private fun StatusBadge(
+    status: String,
+    modifier: Modifier = Modifier
+) {
+    val (backgroundColor, textColor, label) = when (status) {
+        "RELEASING" -> Triple(
+            MaterialTheme.colorScheme.primaryContainer,
+            MaterialTheme.colorScheme.onPrimaryContainer,
+            "Airing"
+        )
+        "FINISHED" -> Triple(
+            MaterialTheme.colorScheme.surfaceVariant,
+            MaterialTheme.colorScheme.onSurfaceVariant,
+            "Finished"
+        )
+        "NOT_YET_RELEASED" -> Triple(
+            MaterialTheme.colorScheme.tertiaryContainer,
+            MaterialTheme.colorScheme.onTertiaryContainer,
+            "Upcoming"
+        )
+        "CANCELLED" -> Triple(
+            MaterialTheme.colorScheme.errorContainer,
+            MaterialTheme.colorScheme.onErrorContainer,
+            "Cancelled"
+        )
+        else -> Triple(
+            MaterialTheme.colorScheme.surfaceVariant,
+            MaterialTheme.colorScheme.onSurfaceVariant,
+            status
+        )
+    }
+
+    Surface(
+        shape = RoundedCornerShape(4.dp),
+        color = backgroundColor,
+        modifier = modifier
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = textColor,
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+        )
     }
 }

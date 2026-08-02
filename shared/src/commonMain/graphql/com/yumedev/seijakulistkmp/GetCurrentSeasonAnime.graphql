@@ -1,6 +1,6 @@
-query GetTopRatedAnime($page: Int, $perPage: Int) {
+query GetCurrentSeasonAnime($season: MediaSeason, $seasonYear: Int, $page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
-        media(type: ANIME, sort: SCORE_DESC) {
+        media(type: ANIME, season: $season, seasonYear: $seasonYear, sort: POPULARITY_DESC) {
             id
             title {
                 romaji

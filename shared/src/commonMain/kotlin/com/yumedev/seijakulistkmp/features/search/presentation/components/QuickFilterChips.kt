@@ -17,7 +17,7 @@ import dev.seyfarth.tablericons.outlined.Trophy
 
 @Composable
 fun QuickFilterChips(
-    onFilterClick: (QuickFilter) -> Unit,
+    onFilterClick: (QuickFilter, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -30,16 +30,18 @@ fun QuickFilterChips(
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            val currentSeasonLabel = QuickFilter.CurrentSeason.toLabel()
             QuickFilterChip(
                 filter = QuickFilter.CurrentSeason,
                 icon = TablerIcons.Outlined.Calendar,
-                onClick = { onFilterClick(QuickFilter.CurrentSeason) },
+                onClick = { onFilterClick(QuickFilter.CurrentSeason, currentSeasonLabel) },
                 modifier = Modifier.weight(1f)
             )
+            val airingTodayLabel = QuickFilter.AiringToday.toLabel()
             QuickFilterChip(
                 filter = QuickFilter.AiringToday,
                 icon = TablerIcons.Outlined.Clock,
-                onClick = { onFilterClick(QuickFilter.AiringToday) },
+                onClick = { onFilterClick(QuickFilter.AiringToday, airingTodayLabel) },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -49,16 +51,18 @@ fun QuickFilterChips(
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            val top100Label = QuickFilter.Top100.toLabel()
             QuickFilterChip(
                 filter = QuickFilter.Top100,
                 icon = TablerIcons.Outlined.Trophy,
-                onClick = { onFilterClick(QuickFilter.Top100) },
+                onClick = { onFilterClick(QuickFilter.Top100, top100Label) },
                 modifier = Modifier.weight(1f)
             )
+            val randomLabel = QuickFilter.Random.toLabel()
             QuickFilterChip(
                 filter = QuickFilter.Random,
                 icon = TablerIcons.Outlined.Dice,
-                onClick = { onFilterClick(QuickFilter.Random) },
+                onClick = { onFilterClick(QuickFilter.Random, randomLabel) },
                 modifier = Modifier.weight(1f)
             )
         }
