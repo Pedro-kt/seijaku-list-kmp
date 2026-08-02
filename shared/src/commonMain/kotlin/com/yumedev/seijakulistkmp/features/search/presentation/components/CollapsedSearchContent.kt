@@ -27,90 +27,96 @@ fun CollapsedSearchContent(
     onTrendingAnimeClick: (TrendingAnime) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    Column(
+        modifier = modifier.fillMaxSize()
     ) {
-        item {
-            Spacer(modifier = Modifier.height(8.dp))
-            CollapsedSearchBar(
-                onSearchClick = onSearchClick
-            )
-        }
+        Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
 
-        item {
-            QuickFilterChips(
-                onFilterClick = onQuickFilterClick
-            )
-        }
+        CollapsedSearchBar(
+            onSearchClick = onSearchClick,
+            modifier = Modifier.padding(top = 8.dp)
+        )
 
-        if (state.recentSearches.isNotEmpty()) {
+        Spacer(modifier = Modifier.height(12.dp))
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                QuickFilterChips(
+                    onFilterClick = onQuickFilterClick
+                )
+            }
+
+            if (state.recentSearches.isNotEmpty()) {
+                item {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.search_recent_searches),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    }
+                }
+
+                items(
+                    items = state.recentSearches,
+                    key = { it.id }
+                ) { search ->
+                    RecentSearchItem(
+                        search = search,
+                        onSearchClick = { onRecentSearchClick(search) },
+                        onRemoveClick = { onRemoveRecentSearch(search) },
+                        showClockIcon = true
+                    )
+                }
+            }
+
             item {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = stringResource(Res.string.search_recent_searches),
+                        text = stringResource(Res.string.search_explore_by_genre),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    GenreChips(
+                        genres = Genre.all(),
+                        onGenreClick = onGenreClick
+                    )
+                }
+            }
+
+            if (state.trendingAnimes.isNotEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(Res.string.search_trending_today),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
+
+                items(
+                    items = state.trendingAnimes,
+                    key = { it.id }
+                ) { anime ->
+                    TrendingAnimeItem(
+                        anime = anime,
+                        onClick = { onTrendingAnimeClick(anime) }
+                    )
+                }
             }
 
-            items(
-                items = state.recentSearches,
-                key = { it.id }
-            ) { search ->
-                RecentSearchItem(
-                    search = search,
-                    onSearchClick = { onRecentSearchClick(search) },
-                    onRemoveClick = { onRemoveRecentSearch(search) },
-                    showClockIcon = true
-                )
-            }
-        }
-
-        item {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = stringResource(Res.string.search_explore_by_genre),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                GenreChips(
-                    genres = Genre.all(),
-                    onGenreClick = onGenreClick
-                )
-            }
-        }
-
-        if (state.trendingAnimes.isNotEmpty()) {
             item {
-                Text(
-                    text = stringResource(Res.string.search_trending_today),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+                Spacer(modifier = Modifier.height(100.dp))
             }
-
-            items(
-                items = state.trendingAnimes,
-                key = { it.id }
-            ) { anime ->
-                TrendingAnimeItem(
-                    anime = anime,
-                    onClick = { onTrendingAnimeClick(anime) }
-                )
-            }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(80.dp))
         }
     }
 }

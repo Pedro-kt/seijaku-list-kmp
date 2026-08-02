@@ -21,7 +21,6 @@ fun GenreChips(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         genres.forEach { genre ->
             GenreChip(

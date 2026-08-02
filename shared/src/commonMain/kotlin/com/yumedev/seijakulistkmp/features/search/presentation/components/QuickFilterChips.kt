@@ -20,44 +20,48 @@ fun QuickFilterChips(
     onFilterClick: (QuickFilter) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        QuickFilterChip(
-            filter = QuickFilter.CurrentSeason,
-            icon = TablerIcons.Outlined.Calendar,
-            onClick = { onFilterClick(QuickFilter.CurrentSeason) },
-            modifier = Modifier.weight(1f)
-        )
-        QuickFilterChip(
-            filter = QuickFilter.AiringToday,
-            icon = TablerIcons.Outlined.Clock,
-            onClick = { onFilterClick(QuickFilter.AiringToday) },
-            modifier = Modifier.weight(1f)
-        )
-    }
-    Spacer(modifier = Modifier.height(8.dp))
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        QuickFilterChip(
-            filter = QuickFilter.Top100,
-            icon = TablerIcons.Outlined.Trophy,
-            onClick = { onFilterClick(QuickFilter.Top100) },
-            modifier = Modifier.weight(1f)
-        )
-        QuickFilterChip(
-            filter = QuickFilter.Random,
-            icon = TablerIcons.Outlined.Dice,
-            onClick = { onFilterClick(QuickFilter.Random) },
-            modifier = Modifier.weight(1f)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            QuickFilterChip(
+                filter = QuickFilter.CurrentSeason,
+                icon = TablerIcons.Outlined.Calendar,
+                onClick = { onFilterClick(QuickFilter.CurrentSeason) },
+                modifier = Modifier.weight(1f)
+            )
+            QuickFilterChip(
+                filter = QuickFilter.AiringToday,
+                icon = TablerIcons.Outlined.Clock,
+                onClick = { onFilterClick(QuickFilter.AiringToday) },
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            QuickFilterChip(
+                filter = QuickFilter.Top100,
+                icon = TablerIcons.Outlined.Trophy,
+                onClick = { onFilterClick(QuickFilter.Top100) },
+                modifier = Modifier.weight(1f)
+            )
+            QuickFilterChip(
+                filter = QuickFilter.Random,
+                icon = TablerIcons.Outlined.Dice,
+                onClick = { onFilterClick(QuickFilter.Random) },
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
 
@@ -75,14 +79,14 @@ private fun QuickFilterChip(
         modifier = modifier
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(20.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(

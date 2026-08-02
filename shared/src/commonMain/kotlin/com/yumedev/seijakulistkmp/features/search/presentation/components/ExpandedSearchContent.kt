@@ -64,11 +64,12 @@ fun ExpandedSearchContent(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
+            val now = Clock.System.now().toEpochMilliseconds()
             val trendingSearches = listOf(
-                RecentSearch(100, "solo leveling", System.currentTimeMillis()),
-                RecentSearch(101, "dandadan", System.currentTimeMillis()),
-                RecentSearch(102, "chainsaw man", System.currentTimeMillis()),
-                RecentSearch(103, "monster", System.currentTimeMillis())
+                RecentSearch(100, "solo leveling", now),
+                RecentSearch(101, "dandadan", now),
+                RecentSearch(102, "chainsaw man", now),
+                RecentSearch(103, "monster", now)
             )
 
             items(

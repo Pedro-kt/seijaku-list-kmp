@@ -26,7 +26,7 @@ fun RecentSearchItem(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onSearchClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
