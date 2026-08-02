@@ -1,6 +1,13 @@
 package com.yumedev.seijakulistkmp.features.search.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional
+import com.yumedev.seijakulistkmp.core.error.ErrorMapper
+import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
+import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeQuery
+import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toSearchResultItems
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.TrendingAnime
@@ -8,9 +15,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel(
+    private val apolloClient: ApolloClient,
+    private val mediaStringFormatter: MediaStringFormatter
+) : ViewModel() {
 
     private val _state = MutableStateFlow(SearchState())
     val state: StateFlow<SearchState> = _state.asStateFlow()
@@ -132,7 +143,64 @@ class SearchViewModel : ViewModel() {
     }
 
     fun performSearch(query: String) {
+        if (query.isBlank()) return
+
         addRecentSearch(query)
-        // TODO: Navigate to search results screen or show results
+
+        viewModelScope.launch {
+            _state.update { it.copy(isSearching = true, searchError = null, hasSearched = true) }
+
+            try {
+                val response = apolloClient
+                    .query(
+                        SearchAnimeQuery(
+                            search = query,
+                            page = Optional.present(1),
+                            perPage = Optional.present(20)
+                        )
+                    )
+                    .execute()
+
+                response.exception?.let { throw it }
+                response.errors?.firstOrNull()?.let { error ->
+                    throw Exception(error.message ?: "GraphQL error")
+                }
+
+                val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+
+                _state.update {
+                    it.copy(
+                        searchResults = results,
+                        isSearching = false,
+                        searchError = null
+                    )
+                }
+            } catch (e: Exception) {
+                val errorType = ErrorMapper.mapToErrorType(e)
+                _state.update {
+                    it.copy(
+                        isSearching = false,
+                        searchError = errorType
+                    )
+                }
+            }
+        }
+    }
+
+    fun retrySearch() {
+        val currentQuery = _state.value.searchQuery
+        if (currentQuery.isNotBlank()) {
+            performSearch(currentQuery)
+        }
+    }
+
+    fun clearSearchResults() {
+        _state.update {
+            it.copy(
+                searchResults = emptyList(),
+                searchError = null,
+                hasSearched = false
+            )
+        }
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.core.error.ErrorType
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchResultItem
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowLeft
@@ -23,7 +24,7 @@ fun SearchResultsContent(
     query: String,
     results: List<SearchResultItem>,
     isLoading: Boolean,
-    error: String?,
+    error: ErrorType?,
     onResultClick: (SearchResultItem) -> Unit,
     onBackClick: () -> Unit,
     onRetry: () -> Unit,
@@ -32,7 +33,6 @@ fun SearchResultsContent(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
 
         SearchResultsTopBar(
             query = query,
@@ -59,6 +59,25 @@ fun SearchResultsContent(
                 }
             }
             error != null -> {
+                val (title, hint) = when (error) {
+                    ErrorType.ServerUnavailable -> {
+                        stringResource(Res.string.error_server_unavailable) to
+                        stringResource(Res.string.error_server_unavailable_hint)
+                    }
+                    ErrorType.NetworkError -> {
+                        stringResource(Res.string.error_search_failed) to
+                        stringResource(Res.string.error_network)
+                    }
+                    ErrorType.ServerError -> {
+                        stringResource(Res.string.error_search_failed) to
+                        stringResource(Res.string.error_server)
+                    }
+                    ErrorType.UnknownError -> {
+                        stringResource(Res.string.error_search_failed) to
+                        stringResource(Res.string.error_unknown)
+                    }
+                }
+
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -75,13 +94,13 @@ fun SearchResultsContent(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = stringResource(Res.string.error_search_failed),
+                            text = title,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             textAlign = TextAlign.Center
                         )
                         Text(
-                            text = error,
+                            text = hint,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center

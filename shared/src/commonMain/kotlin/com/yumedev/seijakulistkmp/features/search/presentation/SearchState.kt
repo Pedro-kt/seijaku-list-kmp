@@ -17,6 +17,6 @@ data class SearchState(
     // Search results
     val searchResults: List<SearchResultItem> = emptyList(),
     val isSearching: Boolean = false,
-    val searchError: String? = null,
+    val searchError: ErrorType? = null,
     val hasSearched: Boolean = false
 )

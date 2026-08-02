@@ -80,7 +80,7 @@ fun SearchResultItem(
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
-                                    text = String.format("%.2f", item.rating),
+                                    text = "%.2f".format(item.rating),
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Medium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant

@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
 import com.yumedev.seijakulistkmp.features.search.presentation.components.CollapsedSearchContent
 import com.yumedev.seijakulistkmp.features.search.presentation.components.ExpandedSearchContent
+import com.yumedev.seijakulistkmp.features.search.presentation.components.SearchResultsContent
 import org.koin.compose.viewmodel.koinViewModel
 
 class SearchScreen : Screen {
@@ -49,9 +50,26 @@ fun SearchScreenContent(
         onExpandedChange(state.isExpanded)
     }
 
-    // No animation, just show the right content
-    if (isExpanded) {
-        ExpandedSearchContent(
+    when {
+        state.hasSearched -> {
+            SearchResultsContent(
+                query = state.searchQuery,
+                results = state.searchResults,
+                isLoading = state.isSearching,
+                error = state.searchError,
+                onResultClick = { result ->
+                    // TODO: Navigate to anime detail
+                },
+                onBackClick = {
+                    viewModel.clearSearchResults()
+                },
+                onRetry = {
+                    viewModel.retrySearch()
+                }
+            )
+        }
+        isExpanded -> {
+            ExpandedSearchContent(
             state = state,
             onQueryChange = { query ->
                 viewModel.updateSearchQuery(query)
@@ -79,8 +97,9 @@ fun SearchScreenContent(
             },
             autoFocus = true
         )
-    } else {
-        CollapsedSearchContent(
+        }
+        else -> {
+            CollapsedSearchContent(
             state = state,
             onSearchClick = {
                 viewModel.expandSearch()
@@ -101,5 +120,6 @@ fun SearchScreenContent(
                 // TODO: Navigate to anime detail
             }
         )
+        }
     }
 }
