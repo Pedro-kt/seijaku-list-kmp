@@ -3,6 +3,8 @@ package com.yumedev.seijakulistkmp.features.home.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yumedev.seijakulistkmp.core.common.resource.Resource
+import com.yumedev.seijakulistkmp.core.error.ErrorMapper
+import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
 import com.yumedev.seijakulistkmp.features.home.domain.usecase.*
 import com.yumedev.seijakulistkmp.features.home.presentation.mapper.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +17,8 @@ class HomeViewModel(
     private val getFeaturedAnimeUseCase: GetFeaturedAnimeUseCase,
     private val getAiringNowAnimeUseCase: GetAiringNowAnimeUseCase,
     private val getNextSeasonAnimeUseCase: GetNextSeasonAnimeUseCase,
-    private val getTopRatedAnimeUseCase: GetTopRatedAnimeUseCase
+    private val getTopRatedAnimeUseCase: GetTopRatedAnimeUseCase,
+    private val mediaStringFormatter: MediaStringFormatter
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -53,10 +56,11 @@ class HomeViewModel(
                     }
 
                     is Resource.Error -> {
+                        val errorType = resource.exception?.let { ErrorMapper.mapToErrorType(it) }
                         _state.update {
                             it.copy(
                                 isLoadingFeatured = false,
-                                featuredError = resource.message
+                                featuredError = errorType
                             )
                         }
                     }
@@ -80,7 +84,9 @@ class HomeViewModel(
             val result = getAiringNowAnimeUseCase(page = 1, perPage = 10)
 
             result.onSuccess { animeList ->
-                val cardItems = animeList.map { it.toAnimeCardItem() }
+                val cardItems = animeList.map { anime ->
+                    anime.toAnimeCardItem(mediaStringFormatter)
+                }
                 _state.update {
                     it.copy(
                         airingNowAnime = cardItems,
@@ -106,7 +112,7 @@ class HomeViewModel(
             val result = getNextSeasonAnimeUseCase(page = 1, perPage = 10)
 
             result.onSuccess { animeList ->
-                val cardItems = animeList.map { it.toAnimeCardItem() }
+                val cardItems = animeList.map { it.toAnimeCardItem(mediaStringFormatter) }
                 _state.update {
                     it.copy(
                         nextSeasonAnime = cardItems,
@@ -132,7 +138,7 @@ class HomeViewModel(
             val result = getTopRatedAnimeUseCase(page = 1, perPage = 10)
 
             result.onSuccess { animeList ->
-                val cardItems = animeList.map { it.toAnimeCardItem() }
+                val cardItems = animeList.map { it.toAnimeCardItem(mediaStringFormatter) }
                 _state.update {
                     it.copy(
                         topRatedAnime = cardItems,

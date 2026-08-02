@@ -1,6 +1,8 @@
 package com.yumedev.seijakulistkmp.features.home.presentation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -21,9 +23,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import com.yumedev.seijakulistkmp.core.error.ErrorType
+import com.yumedev.seijakulistkmp.features.home.presentation.components.AnimeSection
 import com.yumedev.seijakulistkmp.features.home.presentation.components.FeaturedCarousel
+import com.yumedev.seijakulistkmp.features.home.presentation.model.AnimeCardItem
 import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
 import dev.seyfarth.tablericons.TablerIcons
+import dev.seyfarth.tablericons.outlined.AlertCircle
 import dev.seyfarth.tablericons.outlined.Bell
 import dev.seyfarth.tablericons.outlined.Book
 import dev.seyfarth.tablericons.outlined.DeviceTv
@@ -137,10 +143,11 @@ fun HomeScreenContent() {
                 when (page) {
                     0 -> AnimeTabContent(
                         scrollState = animeScrollState,
-                        featuredAnime = state.featuredAnime,
-                        isLoading = state.isLoadingAnime,
-                        error = state.animeError,
-                        onRetry = { viewModel.retryLoadFeaturedAnime() }
+                        state = state,
+                        onFeaturedRetry = { viewModel.retryLoadFeaturedAnime() },
+                        onAiringNowRetry = { viewModel.retryLoadAiringNow() },
+                        onNextSeasonRetry = { viewModel.retryLoadNextSeason() },
+                        onTopRatedRetry = { viewModel.retryLoadTopRated() }
                     )
                     1 -> MangaTabContent(scrollState = mangaScrollState)
                 }
@@ -152,20 +159,20 @@ fun HomeScreenContent() {
 @Composable
 private fun AnimeTabContent(
     scrollState: LazyListState,
-    featuredAnime: List<FeaturedMediaItem>,
-    isLoading: Boolean,
-    error: String?,
-    onRetry: () -> Unit
+    state: HomeState,
+    onFeaturedRetry: () -> Unit,
+    onAiringNowRetry: () -> Unit,
+    onNextSeasonRetry: () -> Unit,
+    onTopRatedRetry: () -> Unit
 ) {
     LazyColumn(
         state = scrollState,
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        // Featured carousel
         item {
             when {
-                isLoading -> {
+                state.isLoadingFeatured -> {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -176,66 +183,111 @@ private fun AnimeTabContent(
                         CircularProgressIndicator()
                     }
                 }
-                error != null -> {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer
-                        )
+                state.featuredError != null -> {
+                    val (title, hint) = when (state.featuredError) {
+                        ErrorType.ServerUnavailable -> {
+                            stringResource(Res.string.error_server_unavailable) to
+                            stringResource(Res.string.error_server_unavailable_hint)
+                        }
+                        else -> {
+                            stringResource(Res.string.error_loading_featured) to
+                            stringResource(Res.string.error_loading_featured_hint)
+                        }
+                    }
+
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn(animationSpec = tween(400))
                     ) {
-                        Column(
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                .padding(horizontal = 16.dp, vertical = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = error,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onErrorContainer
-                            )
-                            Button(onClick = onRetry) {
-                                Text("Retry")
+                            Surface(
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(12.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = TablerIcons.Outlined.AlertCircle,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                                    ) {
+                                        Text(
+                                            text = title,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Medium,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = hint,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            }
+                            FilledTonalButton(
+                                onClick = onFeaturedRetry,
+                                modifier = Modifier.height(40.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(Res.string.retry),
+                                    style = MaterialTheme.typography.labelMedium
+                                )
                             }
                         }
                     }
                 }
-                featuredAnime.isNotEmpty() -> {
+                state.featuredAnime.isNotEmpty() -> {
                     FeaturedCarousel(
-                        items = featuredAnime,
+                        items = state.featuredAnime,
                         modifier = Modifier.padding(top = 16.dp)
                     )
                 }
             }
         }
 
-        // Placeholder content
-        items(20) { index ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Anime Section ${index + 1}",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = "More content here...",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
+        item {
+            AnimeSection(
+                title = stringResource(Res.string.airing_now),
+                items = state.airingNowAnime,
+                onSeeMoreClick = { /* TODO: Navigate to Airing Now list */ },
+                onItemClick = { item -> /* TODO: Navigate to anime detail */ }
+            )
         }
 
-        item { Spacer(modifier = Modifier.height(16.dp)) }
+        item {
+            AnimeSection(
+                title = stringResource(Res.string.seasonal),
+                items = state.nextSeasonAnime,
+                onSeeMoreClick = { /* TODO: Navigate to Next Season list */ },
+                onItemClick = { item -> /* TODO: Navigate to anime detail */ }
+            )
+        }
+
+        item {
+            AnimeSection(
+                title = stringResource(Res.string.top_rated),
+                items = state.topRatedAnime,
+                onSeeMoreClick = { /* TODO: Navigate to Top Rated list */ },
+                onItemClick = { item -> /* TODO: Navigate to anime detail */ }
+            )
+        }
+
+        item { Spacer(modifier = Modifier.height(80.dp)) }
     }
 }
 
@@ -292,13 +344,11 @@ private fun HomeTopAppBar(
             label = "TopAppBarTransition"
         ) { scrolled ->
             if (scrolled) {
-                // Search bar mode when scrolled
                 SearchBarMode(
                     onSearchClick = onSearchClick,
                     onProfileClick = onProfileClick
                 )
             } else {
-                // Normal app bar mode
                 NormalAppBarMode(
                     onSearchClick = onSearchClick,
                     onNotificationsClick = onNotificationsClick

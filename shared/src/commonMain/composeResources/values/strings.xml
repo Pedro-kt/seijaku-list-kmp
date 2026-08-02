@@ -26,6 +26,7 @@
     <string name="upcoming_anime">Upcoming Anime</string>
     <string name="airing_now">Airing now</string>
     <string name="seasonal">Seasonal</string>
+    <string name="top_rated">Top Rated</string>
 
     <!-- Media Status -->
     <string name="status_airing">Airing</string>
@@ -34,6 +35,18 @@
     <string name="status_cancelled">Cancelled</string>
     <string name="status_publishing">Publishing</string>
     <string name="status_completed">Completed</string>
+
+    <!-- Media Formats -->
+    <string name="format_tv">TV</string>
+    <string name="format_tv_short">TV Short</string>
+    <string name="format_movie">Movie</string>
+    <string name="format_special">Special</string>
+    <string name="format_ova">OVA</string>
+    <string name="format_ona">ONA</string>
+    <string name="format_music">Music</string>
+
+    <!-- Media Info -->
+    <string name="episodes_suffix">ep</string>
 
     <!-- Manga List -->
     <string name="trending_manga">Trending Manga</string>
@@ -48,4 +61,8 @@
     <string name="error_network">Network error. Please check your connection.</string>
     <string name="error_unknown">An unknown error occurred.</string>
     <string name="error_server">Server error. Please try again later.</string>
+    <string name="error_loading_featured">Unable to load featured anime</string>
+    <string name="error_loading_featured_hint">Check your connection and try again</string>
+    <string name="error_server_unavailable">Service temporarily unavailable</string>
+    <string name="error_server_unavailable_hint">The server is experiencing issues. Please try again later</string>
 </resources>
