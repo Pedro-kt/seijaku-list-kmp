@@ -2,19 +2,13 @@ package com.yumedev.seijakulistkmp.features.home.data.datasource
 
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.yumedev.seijakulistkmp.core.error.GraphQLErrorException
 import com.yumedev.seijakulistkmp.data.remote.graphql.GetFeaturedAnimeQuery
 
-/**
- * Data source específico para Featured Carousel
- * Solo maneja la query de trending anime para el carousel principal
- */
 interface FeaturedDataSource {
     suspend fun getFeaturedAnime(page: Int, perPage: Int): GetFeaturedAnimeQuery.Data
 }
 
-/**
- * Implementación del data source usando Apollo GraphQL
- */
 class FeaturedDataSourceImpl(
     private val apolloClient: ApolloClient
 ) : FeaturedDataSource {
@@ -29,8 +23,24 @@ class FeaturedDataSourceImpl(
             )
             .execute()
 
-        return response.data ?: throw Exception(
-            response.errors?.firstOrNull()?.message ?: "Unknown GraphQL error"
-        )
+        // Check for exception first
+        response.exception?.let { exc ->
+            throw exc
+        }
+
+        response.errors?.firstOrNull()?.let { error ->
+            val statusCode = try {
+                error.extensions?.get("status") as? Int
+            } catch (e: Exception) {
+                null
+            }
+
+            throw GraphQLErrorException(
+                message = error.message ?: "Unknown GraphQL error",
+                statusCode = statusCode ?: 0
+            )
+        }
+
+        return response.data ?: throw Exception("No data returned from GraphQL query")
     }
 }
