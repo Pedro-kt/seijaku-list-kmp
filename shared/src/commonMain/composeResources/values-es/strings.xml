@@ -15,12 +15,38 @@
     <string name="error">Error</string>
     <string name="retry">Reintentar</string>
     <string name="search">Buscar</string>
+    <string name="search_placeholder">Anime, manga, personajes...</string>
     <string name="empty_list">No se encontraron elementos</string>
+    <string name="notifications">Notificaciones</string>
+    <string name="user_profile">Perfil de usuario</string>
 
     <!-- Anime List -->
     <string name="trending_anime">Anime en tendencia</string>
     <string name="popular_anime">Anime popular</string>
     <string name="upcoming_anime">Próximos anime</string>
+    <string name="airing_now">En emisión</string>
+    <string name="seasonal">Temporada</string>
+    <string name="top_rated">Mejor valorados</string>
+
+    <!-- Media Status -->
+    <string name="status_airing">En emisión</string>
+    <string name="status_finished">Finalizado</string>
+    <string name="status_not_yet_aired">Próximamente</string>
+    <string name="status_cancelled">Cancelado</string>
+    <string name="status_publishing">Publicándose</string>
+    <string name="status_completed">Completado</string>
+
+    <!-- Media Formats -->
+    <string name="format_tv">TV</string>
+    <string name="format_tv_short">TV Corto</string>
+    <string name="format_movie">Película</string>
+    <string name="format_special">Especial</string>
+    <string name="format_ova">OVA</string>
+    <string name="format_ona">ONA</string>
+    <string name="format_music">Música</string>
+
+    <!-- Media Info -->
+    <string name="episodes_suffix">ep</string>
 
     <!-- Manga List -->
     <string name="trending_manga">Manga en tendencia</string>
@@ -35,4 +61,8 @@
     <string name="error_network">Error de red. Por favor, verifica tu conexión.</string>
     <string name="error_unknown">Ocurrió un error desconocido.</string>
     <string name="error_server">Error del servidor. Por favor, intenta más tarde.</string>
+    <string name="error_loading_featured">No se pudo cargar el anime destacado</string>
+    <string name="error_loading_featured_hint">Verifica tu conexión e intenta nuevamente</string>
+    <string name="error_server_unavailable">Servicio temporalmente no disponible</string>
+    <string name="error_server_unavailable_hint">El servidor está experimentando problemas. Intenta más tarde</string>
 </resources>

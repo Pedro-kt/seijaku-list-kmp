@@ -84,6 +84,7 @@ kotlin {
 
             // Coil 3
             implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
 
             // Voyager
             implementation(libs.voyager.navigator)

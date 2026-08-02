@@ -1,19 +1,11 @@
 package com.yumedev.seijakulistkmp.di
 
-import org.koin.core.module.Module
+import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
+import com.yumedev.seijakulistkmp.core.util.MediaStringFormatterImpl
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
-/**
- * Main application module that combines all feature modules
- */
-val appModule = module {
-    includes(
-        coreModule,
-        animeModule
-    )
+val coreModule = module {
+    singleOf(::MediaStringFormatterImpl) bind MediaStringFormatter::class
 }
-
-/**
- * Core module for shared dependencies
- */
-val coreModule = module {}
