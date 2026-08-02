@@ -202,7 +202,8 @@ class SearchViewModel(
             it.copy(
                 searchResults = emptyList(),
                 searchError = null,
-                hasSearched = false
+                hasSearched = false,
+                searchQuery = "" // Clear the query when going back
             )
         }
     }
