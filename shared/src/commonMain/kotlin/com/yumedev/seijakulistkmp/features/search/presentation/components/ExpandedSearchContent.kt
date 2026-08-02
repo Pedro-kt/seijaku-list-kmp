@@ -53,13 +53,15 @@ fun ExpandedSearchContent(
             modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
         )
 
-        HorizontalDivider()
-
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             if (state.recentSearches.isNotEmpty()) {
+                item {
+                    HorizontalDivider()
+                }
+
                 items(
                     items = state.recentSearches.take(4),
                     key = { it.id }
@@ -71,12 +73,17 @@ fun ExpandedSearchContent(
                         showClockIcon = true
                     )
                 }
-            }
 
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(8.dp))
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    HorizontalDivider()
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            } else {
+                item {
+                    HorizontalDivider()
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
 
             val now = Clock.System.now().toEpochMilliseconds()
