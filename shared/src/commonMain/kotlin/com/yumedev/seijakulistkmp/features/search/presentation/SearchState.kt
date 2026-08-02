@@ -3,6 +3,7 @@ package com.yumedev.seijakulistkmp.features.search.presentation
 import com.yumedev.seijakulistkmp.core.error.ErrorType
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
+import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchResultItem
 import com.yumedev.seijakulistkmp.features.search.presentation.model.TrendingAnime
 
 data class SearchState(
@@ -12,5 +13,10 @@ data class SearchState(
     val recentSearches: List<RecentSearch> = emptyList(),
     val trendingAnimes: List<TrendingAnime> = emptyList(),
     val isLoadingTrending: Boolean = false,
-    val trendingError: ErrorType? = null
+    val trendingError: ErrorType? = null,
+    // Search results
+    val searchResults: List<SearchResultItem> = emptyList(),
+    val isSearching: Boolean = false,
+    val searchError: String? = null,
+    val hasSearched: Boolean = false
 )

@@ -26,6 +26,12 @@
     <string name="search_explore_by_genre">Explorar por género</string>
     <string name="search_filters">Filtros</string>
     <string name="search_filter_characters">Personajes</string>
+    <string name="search_searching">Buscando...</string>
+    <string name="search_no_results">No se encontraron resultados</string>
+    <string name="search_no_results_hint">Intenta con diferentes palabras clave o verifica la ortografía</string>
+    <string name="search_results_count">%d resultados</string>
+    <string name="search_results_for">Resultados para</string>
+    <string name="error_search_failed">Error en la búsqueda</string>
 
     <!-- Quick Filters -->
     <string name="quick_filter_current_season">Temporada actual</string>

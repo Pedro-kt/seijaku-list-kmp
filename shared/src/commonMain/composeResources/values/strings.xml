@@ -26,6 +26,12 @@
     <string name="search_explore_by_genre">Explore by genre</string>
     <string name="search_filters">Filters</string>
     <string name="search_filter_characters">Characters</string>
+    <string name="search_searching">Searching...</string>
+    <string name="search_no_results">No results found</string>
+    <string name="search_no_results_hint">Try different keywords or check spelling</string>
+    <string name="search_results_count">%d results</string>
+    <string name="search_results_for">Results for</string>
+    <string name="error_search_failed">Search failed</string>
 
     <!-- Quick Filters -->
     <string name="quick_filter_current_season">Current season</string>
