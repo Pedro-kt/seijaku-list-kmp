@@ -368,8 +368,7 @@ private fun NormalAppBarMode(
         title = {
             Text(
                 text = stringResource(Res.string.app_name),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold
+                style = MaterialTheme.typography.titleLarge
             )
         },
         actions = {

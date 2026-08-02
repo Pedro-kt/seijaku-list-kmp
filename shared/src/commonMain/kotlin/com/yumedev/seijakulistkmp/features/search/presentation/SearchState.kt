@@ -1,6 +1,8 @@
 package com.yumedev.seijakulistkmp.features.search.presentation
 
 import com.yumedev.seijakulistkmp.core.error.ErrorType
+import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaFormat
+import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaStatus
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchResultItem
@@ -18,5 +20,9 @@ data class SearchState(
     val searchResults: List<SearchResultItem> = emptyList(),
     val isSearching: Boolean = false,
     val searchError: ErrorType? = null,
-    val hasSearched: Boolean = false
+    val hasSearched: Boolean = false,
+    // Filters
+    val filterStatus: MediaStatus = MediaStatus.ALL,
+    val filterFormat: MediaFormat = MediaFormat.ALL,
+    val filterMinScore: Int? = null
 )

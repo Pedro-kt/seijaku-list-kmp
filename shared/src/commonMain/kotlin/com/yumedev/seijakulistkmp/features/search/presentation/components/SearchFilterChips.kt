@@ -1,6 +1,9 @@
 package com.yumedev.seijakulistkmp.features.search.presentation.components
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -21,52 +24,69 @@ fun SearchFilterChips(
     onFiltersClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        // Filters button
-        Surface(
-            onClick = onFiltersClick,
-            shape = RoundedCornerShape(20.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            border = ButtonDefaults.outlinedButtonBorder
-        ) {
+        items(SearchFilter.entries) { filter ->
+            val isSelected = selectedFilter == filter
+
             Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(0.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = TablerIcons.Outlined.AdjustmentsHorizontal,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                FilterChip(
+                    selected = isSelected,
+                    onClick = { onFilterSelect(filter) },
+                    label = {
+                        Text(
+                            text = filter.toLabel(),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    },
+                    shape = if (isSelected && filter != SearchFilter.CHARACTERS) {
+                        RoundedCornerShape(
+                            topStart = 20.dp,
+                            bottomStart = 20.dp,
+                            topEnd = 0.dp,
+                            bottomEnd = 0.dp
+                        )
+                    } else {
+                        RoundedCornerShape(20.dp)
+                    }
                 )
-                Text(
-                    text = stringResource(Res.string.search_filters),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
 
-        // Filter type chips
-        SearchFilter.entries.forEach { filter ->
-            FilterChip(
-                selected = selectedFilter == filter,
-                onClick = { onFilterSelect(filter) },
-                label = {
-                    Text(
-                        text = filter.toLabel(),
-                        style = MaterialTheme.typography.bodyMedium
+                if (isSelected && filter != SearchFilter.CHARACTERS) {
+                    FilterChip(
+                        selected = false,
+                        onClick = onFiltersClick,
+                        label = {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = TablerIcons.Outlined.AdjustmentsHorizontal,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = stringResource(Res.string.search_filters),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        },
+                        shape = RoundedCornerShape(
+                            topStart = 0.dp,
+                            bottomStart = 0.dp,
+                            topEnd = 20.dp,
+                            bottomEnd = 20.dp
+                        )
                     )
-                },
-                shape = RoundedCornerShape(20.dp)
-            )
+                }
+            }
         }
     }
 }

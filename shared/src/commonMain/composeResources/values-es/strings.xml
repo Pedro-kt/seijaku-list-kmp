@@ -55,6 +55,28 @@
     <string name="mood_what_are_you_looking_for">¿Qué se te antoja?</string>
     <string name="mood_subtitle">Busca por cómo quieres sentirte.</string>
 
+    <!-- Filters -->
+    <string name="filters_title">Filtros</string>
+    <string name="filter_status">Estado</string>
+    <string name="filter_status_all">Todos</string>
+    <string name="filter_status_airing">En emisión</string>
+    <string name="filter_status_publishing">Publicándose</string>
+    <string name="filter_status_finished">Finalizado</string>
+    <string name="filter_status_upcoming">Próximo</string>
+    <string name="filter_min_score">Score mínimo</string>
+    <string name="filter_score_any">Cualquiera</string>
+    <string name="filter_format">Tipo</string>
+    <string name="filter_format_all">Todos</string>
+    <string name="filter_format_tv">TV</string>
+    <string name="filter_format_movie">Película</string>
+    <string name="filter_format_ova">OVA</string>
+    <string name="filter_format_special">Especial</string>
+    <string name="filter_format_manga">Manga</string>
+    <string name="filter_format_novel">Novela</string>
+    <string name="filter_format_one_shot">One-shot</string>
+    <string name="filter_reset">Resetear</string>
+    <string name="filter_apply">Aplicar</string>
+
     <!-- Genres -->
     <string name="genre_action">Acción</string>
     <string name="genre_adventure">Aventura</string>

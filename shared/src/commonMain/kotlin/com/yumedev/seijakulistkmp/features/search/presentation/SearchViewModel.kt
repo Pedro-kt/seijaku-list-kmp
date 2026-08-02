@@ -11,6 +11,8 @@ import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeByGenreQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeByEpisodesQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaSort
 import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toSearchResultItems
+import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaFormat
+import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaStatus
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.TrendingAnime
@@ -118,7 +120,15 @@ class SearchViewModel(
     }
 
     fun selectFilter(filter: SearchFilter) {
-        _state.update { it.copy(selectedFilter = filter) }
+        _state.update {
+            val shouldResetFormat = it.selectedFilter != filter &&
+                    (filter == SearchFilter.ANIME || filter == SearchFilter.MANGA)
+
+            it.copy(
+                selectedFilter = filter,
+                filterFormat = if (shouldResetFormat) MediaFormat.ALL else it.filterFormat
+            )
+        }
     }
 
     fun removeRecentSearch(search: RecentSearch) {
@@ -299,6 +309,28 @@ class SearchViewModel(
                     )
                 }
             }
+        }
+    }
+
+    fun updateFilterStatus(status: MediaStatus) {
+        _state.update { it.copy(filterStatus = status) }
+    }
+
+    fun updateFilterFormat(format: MediaFormat) {
+        _state.update { it.copy(filterFormat = format) }
+    }
+
+    fun updateFilterMinScore(score: Int?) {
+        _state.update { it.copy(filterMinScore = score) }
+    }
+
+    fun resetFilters() {
+        _state.update {
+            it.copy(
+                filterStatus = MediaStatus.ALL,
+                filterFormat = MediaFormat.ALL,
+                filterMinScore = null
+            )
         }
     }
 }

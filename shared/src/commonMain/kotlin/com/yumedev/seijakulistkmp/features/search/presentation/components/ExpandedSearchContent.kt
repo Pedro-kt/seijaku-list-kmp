@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.features.search.presentation.SearchState
+import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaFormat
+import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaStatus
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
 import kotlinx.datetime.Clock
@@ -22,12 +24,20 @@ fun ExpandedSearchContent(
     onFiltersClick: () -> Unit,
     onRecentSearchClick: (RecentSearch) -> Unit,
     onRemoveRecentSearch: (RecentSearch) -> Unit,
+    onFilterStatusChange: (MediaStatus) -> Unit,
+    onFilterFormatChange: (MediaFormat) -> Unit,
+    onFilterMinScoreChange: (Int?) -> Unit,
+    onResetFilters: () -> Unit,
+    onApplyFilters: () -> Unit,
     modifier: Modifier = Modifier,
     autoFocus: Boolean = false
 ) {
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
+    var showFilterSheet by remember { mutableStateOf(false) }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
         ExpandedSearchBar(
             query = state.searchQuery,
             onQueryChange = onQueryChange,
@@ -39,7 +49,7 @@ fun ExpandedSearchContent(
         SearchFilterChips(
             selectedFilter = state.selectedFilter,
             onFilterSelect = onFilterSelect,
-            onFiltersClick = onFiltersClick,
+            onFiltersClick = { showFilterSheet = true },
             modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
         )
 
@@ -93,5 +103,21 @@ fun ExpandedSearchContent(
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
+    }
+
+    if (showFilterSheet) {
+        SearchFilterBottomSheet(
+            mediaType = state.selectedFilter,
+            selectedStatus = state.filterStatus,
+            selectedFormat = state.filterFormat,
+            minScore = state.filterMinScore,
+            onStatusChange = onFilterStatusChange,
+            onFormatChange = onFilterFormatChange,
+            onMinScoreChange = onFilterMinScoreChange,
+            onReset = onResetFilters,
+            onApply = onApplyFilters,
+            onDismiss = { showFilterSheet = false }
+        )
+    }
     }
 }

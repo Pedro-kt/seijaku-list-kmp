@@ -86,7 +86,7 @@ fun SearchScreenContent(
                 viewModel.selectFilter(filter)
             },
             onFiltersClick = {
-                // TODO: Open advanced filters dialog
+                // Handled internally by ExpandedSearchContent
             },
             onRecentSearchClick = { search ->
                 viewModel.updateSearchQuery(search.query)
@@ -94,6 +94,21 @@ fun SearchScreenContent(
             },
             onRemoveRecentSearch = { search ->
                 viewModel.removeRecentSearch(search)
+            },
+            onFilterStatusChange = { status ->
+                viewModel.updateFilterStatus(status)
+            },
+            onFilterFormatChange = { format ->
+                viewModel.updateFilterFormat(format)
+            },
+            onFilterMinScoreChange = { score ->
+                viewModel.updateFilterMinScore(score)
+            },
+            onResetFilters = {
+                viewModel.resetFilters()
+            },
+            onApplyFilters = {
+                // Filters are already updated, could trigger search here if needed
             },
             autoFocus = true
         )
