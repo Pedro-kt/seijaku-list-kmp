@@ -70,16 +70,18 @@ fun CharacterResultItem(
                                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    if (appearance.role != null) {
-                                        RoleBadge(role = appearance.role)
-                                    }
                                     Text(
                                         text = appearance.mediaTitle,
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f, fill = false)
                                     )
+
+                                    if (appearance.role != null) {
+                                        RoleBadge(role = appearance.role)
+                                    }
                                 }
                             }
                         }
@@ -113,7 +115,7 @@ private fun RoleBadge(
         "SUPPORTING" -> Triple(
             MaterialTheme.colorScheme.secondaryContainer,
             MaterialTheme.colorScheme.onSecondaryContainer,
-            "Support"
+            "Supporting"
         )
         "BACKGROUND" -> Triple(
             MaterialTheme.colorScheme.surfaceVariant,
@@ -128,7 +130,7 @@ private fun RoleBadge(
     }
 
     Surface(
-        shape = RoundedCornerShape(4.dp),
+        shape = RoundedCornerShape(50),
         color = backgroundColor,
         modifier = modifier
     ) {
@@ -136,7 +138,7 @@ private fun RoleBadge(
             text = label,
             style = MaterialTheme.typography.labelSmall,
             color = textColor,
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
         )
     }
 }
