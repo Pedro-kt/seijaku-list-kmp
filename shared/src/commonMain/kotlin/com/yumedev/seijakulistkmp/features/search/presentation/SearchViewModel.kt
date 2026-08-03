@@ -8,6 +8,7 @@ import com.yumedev.seijakulistkmp.core.error.ErrorMapper
 import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchMangaQuery
+import com.yumedev.seijakulistkmp.data.remote.graphql.SearchCharacterQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeByGenreQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeByEpisodesQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.GetCurrentSeasonAnimeQuery
@@ -17,6 +18,7 @@ import com.yumedev.seijakulistkmp.data.remote.graphql.GetRandomAnimeQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaSort
 import com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaSeason
 import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toSearchResultItems
+import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toCharacterResultItems
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -177,7 +179,34 @@ class SearchViewModel(
             _state.update { it.copy(isSearching = true, searchError = null, hasSearched = true) }
 
             try {
-                val results = when (currentFilter) {
+                when (currentFilter) {
+                    SearchFilter.CHARACTERS -> {
+                        val response = apolloClient
+                            .query(
+                                SearchCharacterQuery(
+                                    search = query,
+                                    page = Optional.present(1),
+                                    perPage = Optional.present(20)
+                                )
+                            )
+                            .execute()
+
+                        response.exception?.let { throw it }
+                        response.errors?.firstOrNull()?.let { error ->
+                            throw Exception(error.message ?: "GraphQL error")
+                        }
+
+                        val characterResults = response.data?.Page?.characters?.toCharacterResultItems() ?: emptyList()
+
+                        _state.update {
+                            it.copy(
+                                characterResults = characterResults,
+                                searchResults = emptyList(),
+                                isSearching = false,
+                                searchError = null
+                            )
+                        }
+                    }
                     SearchFilter.MANGA -> {
                         val response = apolloClient
                             .query(
@@ -194,9 +223,18 @@ class SearchViewModel(
                             throw Exception(error.message ?: "GraphQL error")
                         }
 
-                        response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+                        val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+
+                        _state.update {
+                            it.copy(
+                                searchResults = results,
+                                characterResults = emptyList(),
+                                isSearching = false,
+                                searchError = null
+                            )
+                        }
                     }
-                    else -> {
+                    SearchFilter.ANIME -> {
                         val response = apolloClient
                             .query(
                                 SearchAnimeQuery(
@@ -212,16 +250,17 @@ class SearchViewModel(
                             throw Exception(error.message ?: "GraphQL error")
                         }
 
-                        response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
-                    }
-                }
+                        val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
 
-                _state.update {
-                    it.copy(
-                        searchResults = results,
-                        isSearching = false,
-                        searchError = null
-                    )
+                        _state.update {
+                            it.copy(
+                                searchResults = results,
+                                characterResults = emptyList(),
+                                isSearching = false,
+                                searchError = null
+                            )
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 val errorType = ErrorMapper.mapToErrorType(e)
@@ -246,6 +285,7 @@ class SearchViewModel(
         _state.update {
             it.copy(
                 searchResults = emptyList(),
+                characterResults = emptyList(),
                 searchError = null,
                 hasSearched = false,
                 searchQuery = "" // Clear the query when going back

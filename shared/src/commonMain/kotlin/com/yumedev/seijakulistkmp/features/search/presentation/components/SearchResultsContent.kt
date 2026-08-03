@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.core.error.ErrorType
+import com.yumedev.seijakulistkmp.features.search.presentation.model.CharacterResultItem
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchResultItem
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowLeft
@@ -23,9 +24,11 @@ import seijakulistkmp.shared.generated.resources.*
 fun SearchResultsContent(
     query: String,
     results: List<SearchResultItem>,
+    characterResults: List<CharacterResultItem> = emptyList(),
     isLoading: Boolean,
     error: ErrorType?,
     onResultClick: (SearchResultItem) -> Unit,
+    onCharacterClick: (CharacterResultItem) -> Unit = {},
     onBackClick: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
@@ -111,7 +114,7 @@ fun SearchResultsContent(
                     }
                 }
             }
-            results.isEmpty() -> {
+            results.isEmpty() && characterResults.isEmpty() -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -139,6 +142,38 @@ fun SearchResultsContent(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
                         )
+                    }
+                }
+            }
+            characterResults.isNotEmpty() -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(0.dp)
+                ) {
+                    item {
+                        Text(
+                            text = stringResource(Res.string.search_results_count, characterResults.size),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                        )
+                    }
+
+                    items(
+                        items = characterResults,
+                        key = { it.id }
+                    ) { character ->
+                        CharacterResultItem(
+                            item = character,
+                            onClick = { onCharacterClick(character) }
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
             }

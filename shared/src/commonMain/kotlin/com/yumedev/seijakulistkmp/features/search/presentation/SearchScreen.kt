@@ -56,10 +56,14 @@ fun SearchScreenContent(
             SearchResultsContent(
                 query = state.searchQuery,
                 results = state.searchResults,
+                characterResults = state.characterResults,
                 isLoading = state.isSearching,
                 error = state.searchError,
                 onResultClick = { result ->
-                    // TODO: Navigate to anime detail
+                    // TODO: Navigate to anime/manga detail
+                },
+                onCharacterClick = { character ->
+                    // TODO: Navigate to character detail
                 },
                 onBackClick = {
                     viewModel.clearSearchResults()

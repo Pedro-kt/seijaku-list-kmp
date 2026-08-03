@@ -1,0 +1,35 @@
+query SearchCharacter($search: String!, $page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+        pageInfo {
+            total
+            currentPage
+            lastPage
+            hasNextPage
+            perPage
+        }
+        characters(search: $search) {
+            id
+            name {
+                full
+                native
+            }
+            image {
+                large
+                medium
+            }
+            media(page: 1, perPage: 3) {
+                nodes {
+                    id
+                    title {
+                        romaji
+                        english
+                    }
+                    type
+                }
+                edges {
+                    characterRole
+                }
+            }
+        }
+    }
+}

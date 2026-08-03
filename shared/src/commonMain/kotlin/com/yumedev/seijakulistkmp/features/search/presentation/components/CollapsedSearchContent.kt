@@ -64,7 +64,7 @@ fun CollapsedSearchContent(
                 }
 
                 items(
-                    items = state.recentSearches,
+                    items = state.recentSearches.take(4),
                     key = { it.id }
                 ) { search ->
                     RecentSearchItem(
