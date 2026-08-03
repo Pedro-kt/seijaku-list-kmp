@@ -18,6 +18,12 @@ class HomeViewModel(
     private val getAiringNowAnimeUseCase: GetAiringNowAnimeUseCase,
     private val getNextSeasonAnimeUseCase: GetNextSeasonAnimeUseCase,
     private val getTopRatedAnimeUseCase: GetTopRatedAnimeUseCase,
+    private val getFeaturedMangaUseCase: GetFeaturedMangaUseCase,
+    private val getPublishingMangaUseCase: GetPublishingMangaUseCase,
+    private val getPopularMangaUseCase: GetPopularMangaUseCase,
+    private val getTopRatedMangaUseCase: GetTopRatedMangaUseCase,
+    private val getRecentlyAddedMangaUseCase: GetRecentlyAddedMangaUseCase,
+    private val getManhwaMangaUseCase: GetManhwaMangaUseCase,
     private val mediaStringFormatter: MediaStringFormatter
 ) : ViewModel() {
 
@@ -33,6 +39,12 @@ class HomeViewModel(
         loadAiringNow()
         loadNextSeason()
         loadTopRated()
+        loadFeaturedManga()
+        loadPublishingManga()
+        loadPopularManga()
+        loadTopRatedManga()
+        loadRecentlyAddedManga()
+        loadManhwaManga()
     }
 
     private fun loadFeaturedAnime() {
@@ -157,8 +169,171 @@ class HomeViewModel(
         }
     }
 
+    private fun loadFeaturedManga() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingFeatured = true, featuredError = null) }
+
+            val result = getFeaturedMangaUseCase(page = 1, perPage = 5)
+
+            result.onSuccess { mangaList ->
+                val featuredItems = mangaList.map { it.toFeaturedMediaItem() }
+                _state.update {
+                    it.copy(
+                        featuredManga = featuredItems,
+                        isLoadingFeatured = false,
+                        featuredError = null
+                    )
+                }
+            }.onFailure { error ->
+                val errorType = ErrorMapper.mapToErrorType(error)
+                _state.update {
+                    it.copy(
+                        isLoadingFeatured = false,
+                        featuredError = errorType
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadPublishingManga() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingPublishingManga = true, publishingMangaError = null) }
+
+            val result = getPublishingMangaUseCase(page = 1, perPage = 10)
+
+            result.onSuccess { mangaList ->
+                val cardItems = mangaList.map { it.toMangaCardItem(mediaStringFormatter) }
+                _state.update {
+                    it.copy(
+                        publishingManga = cardItems,
+                        isLoadingPublishingManga = false,
+                        publishingMangaError = null
+                    )
+                }
+            }.onFailure { error ->
+                _state.update {
+                    it.copy(
+                        isLoadingPublishingManga = false,
+                        publishingMangaError = error.message
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadPopularManga() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingPopularManga = true, popularMangaError = null) }
+
+            val result = getPopularMangaUseCase(page = 1, perPage = 10)
+
+            result.onSuccess { mangaList ->
+                val cardItems = mangaList.map { it.toMangaCardItem(mediaStringFormatter) }
+                _state.update {
+                    it.copy(
+                        popularManga = cardItems,
+                        isLoadingPopularManga = false,
+                        popularMangaError = null
+                    )
+                }
+            }.onFailure { error ->
+                _state.update {
+                    it.copy(
+                        isLoadingPopularManga = false,
+                        popularMangaError = error.message
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadTopRatedManga() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingTopRatedManga = true, topRatedMangaError = null) }
+
+            val result = getTopRatedMangaUseCase(page = 1, perPage = 10)
+
+            result.onSuccess { mangaList ->
+                val cardItems = mangaList.map { it.toMangaCardItem(mediaStringFormatter) }
+                _state.update {
+                    it.copy(
+                        topRatedManga = cardItems,
+                        isLoadingTopRatedManga = false,
+                        topRatedMangaError = null
+                    )
+                }
+            }.onFailure { error ->
+                _state.update {
+                    it.copy(
+                        isLoadingTopRatedManga = false,
+                        topRatedMangaError = error.message
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadRecentlyAddedManga() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingRecentlyAddedManga = true, recentlyAddedMangaError = null) }
+
+            val result = getRecentlyAddedMangaUseCase(page = 1, perPage = 10)
+
+            result.onSuccess { mangaList ->
+                val cardItems = mangaList.map { it.toMangaCardItem(mediaStringFormatter) }
+                _state.update {
+                    it.copy(
+                        recentlyAddedManga = cardItems,
+                        isLoadingRecentlyAddedManga = false,
+                        recentlyAddedMangaError = null
+                    )
+                }
+            }.onFailure { error ->
+                _state.update {
+                    it.copy(
+                        isLoadingRecentlyAddedManga = false,
+                        recentlyAddedMangaError = error.message
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadManhwaManga() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingManhwaManga = true, manhwaMangaError = null) }
+
+            val result = getManhwaMangaUseCase(page = 1, perPage = 10, countryOfOrigin = "KR")
+
+            result.onSuccess { mangaList ->
+                val cardItems = mangaList.map { it.toMangaCardItem(mediaStringFormatter) }
+                _state.update {
+                    it.copy(
+                        manhwaManga = cardItems,
+                        isLoadingManhwaManga = false,
+                        manhwaMangaError = null
+                    )
+                }
+            }.onFailure { error ->
+                _state.update {
+                    it.copy(
+                        isLoadingManhwaManga = false,
+                        manhwaMangaError = error.message
+                    )
+                }
+            }
+        }
+    }
+
     fun retryLoadFeaturedAnime() = loadFeaturedAnime()
     fun retryLoadAiringNow() = loadAiringNow()
     fun retryLoadNextSeason() = loadNextSeason()
     fun retryLoadTopRated() = loadTopRated()
+    fun retryLoadFeaturedManga() = loadFeaturedManga()
+    fun retryLoadPublishingManga() = loadPublishingManga()
+    fun retryLoadPopularManga() = loadPopularManga()
+    fun retryLoadTopRatedManga() = loadTopRatedManga()
+    fun retryLoadRecentlyAddedManga() = loadRecentlyAddedManga()
+    fun retryLoadManhwaManga() = loadManhwaManga()
 }

@@ -26,6 +26,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.yumedev.seijakulistkmp.core.error.ErrorType
 import com.yumedev.seijakulistkmp.features.home.presentation.components.AnimeSection
 import com.yumedev.seijakulistkmp.features.home.presentation.components.FeaturedCarousel
+import com.yumedev.seijakulistkmp.features.home.presentation.components.MangaSection
 import com.yumedev.seijakulistkmp.features.home.presentation.model.AnimeCardItem
 import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
 import dev.seyfarth.tablericons.TablerIcons
@@ -149,7 +150,16 @@ fun HomeScreenContent(
                         onNextSeasonRetry = { viewModel.retryLoadNextSeason() },
                         onTopRatedRetry = { viewModel.retryLoadTopRated() }
                     )
-                    1 -> MangaTabContent(scrollState = mangaScrollState)
+                    1 -> MangaTabContent(
+                        scrollState = mangaScrollState,
+                        state = state,
+                        onFeaturedRetry = { viewModel.retryLoadFeaturedManga() },
+                        onPublishingRetry = { viewModel.retryLoadPublishingManga() },
+                        onPopularRetry = { viewModel.retryLoadPopularManga() },
+                        onTopRatedRetry = { viewModel.retryLoadTopRatedManga() },
+                        onRecentlyAddedRetry = { viewModel.retryLoadRecentlyAddedManga() },
+                        onManhwaRetry = { viewModel.retryLoadManhwaManga() }
+                    )
                 }
             }
         }
@@ -292,34 +302,163 @@ private fun AnimeTabContent(
 }
 
 @Composable
-private fun MangaTabContent(scrollState: LazyListState) {
+private fun MangaTabContent(
+    scrollState: LazyListState,
+    state: HomeState,
+    onFeaturedRetry: () -> Unit,
+    onPublishingRetry: () -> Unit,
+    onPopularRetry: () -> Unit,
+    onTopRatedRetry: () -> Unit,
+    onRecentlyAddedRetry: () -> Unit,
+    onManhwaRetry: () -> Unit
+) {
     LazyColumn(
         state = scrollState,
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        items(30) { index ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Manga ${index + 1}",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                    Text(
-                        text = "Description for manga item",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
+        // Featured Manga Carousel
+        item {
+            when {
+                state.isLoadingFeatured -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(220.dp)
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+                state.featuredError != null -> {
+                    val (title, hint) = when (state.featuredError) {
+                        ErrorType.ServerUnavailable -> {
+                            stringResource(Res.string.error_server_unavailable) to
+                            stringResource(Res.string.error_server_unavailable_hint)
+                        }
+                        else -> {
+                            stringResource(Res.string.error_loading_featured) to
+                            stringResource(Res.string.error_loading_featured_hint)
+                        }
+                    }
+
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn(animationSpec = tween(400))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Surface(
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(12.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = TablerIcons.Outlined.AlertCircle,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                                    ) {
+                                        Text(
+                                            text = title,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Medium,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = hint,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            }
+                            FilledTonalButton(
+                                onClick = onFeaturedRetry,
+                                modifier = Modifier.height(40.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(Res.string.retry),
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
+                        }
+                    }
+                }
+                state.featuredManga.isNotEmpty() -> {
+                    FeaturedCarousel(
+                        items = state.featuredManga,
+                        modifier = Modifier.padding(top = 16.dp)
                     )
                 }
             }
         }
+
+        // Publishing Now Section
+        item {
+            MangaSection(
+                title = stringResource(Res.string.publishing_now),
+                items = state.publishingManga,
+                onSeeMoreClick = { /* TODO: Navigate to Publishing list */ },
+                onItemClick = { item -> /* TODO: Navigate to manga detail */ }
+            )
+        }
+
+        // Popular Manga Section
+        item {
+            MangaSection(
+                title = stringResource(Res.string.popular_manga),
+                items = state.popularManga,
+                onSeeMoreClick = { /* TODO: Navigate to Popular list */ },
+                onItemClick = { item -> /* TODO: Navigate to manga detail */ }
+            )
+        }
+
+        // Top Rated Section
+        item {
+            MangaSection(
+                title = stringResource(Res.string.top_rated_manga),
+                items = state.topRatedManga,
+                onSeeMoreClick = { /* TODO: Navigate to Top Rated list */ },
+                onItemClick = { item -> /* TODO: Navigate to manga detail */ }
+            )
+        }
+
+        // Recently Added Section
+        item {
+            MangaSection(
+                title = stringResource(Res.string.recently_added),
+                items = state.recentlyAddedManga,
+                onSeeMoreClick = { /* TODO: Navigate to Recently Added list */ },
+                onItemClick = { item -> /* TODO: Navigate to manga detail */ }
+            )
+        }
+
+        // Manhwa & Manhua Section
+        item {
+            MangaSection(
+                title = stringResource(Res.string.manhwa),
+                items = state.manhwaManga,
+                onSeeMoreClick = { /* TODO: Navigate to Manhwa list */ },
+                onItemClick = { item -> /* TODO: Navigate to manga detail */ }
+            )
+        }
+
+        item { Spacer(modifier = Modifier.height(80.dp)) }
     }
 }
 
