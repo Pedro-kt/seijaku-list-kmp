@@ -140,4 +140,46 @@
     <string name="error_loading_featured_hint">Check your connection and try again</string>
     <string name="error_server_unavailable">Service temporarily unavailable</string>
     <string name="error_server_unavailable_hint">The server is experiencing issues. Please try again later</string>
+
+    <!-- Detail Screen -->
+    <string name="detail_add_to_list">Add to my list</string>
+    <string name="detail_read_more">Read more</string>
+    <string name="detail_read_less">Read less</string>
+    <string name="detail_see_all_chapters">See chapters (%1$d)</string>
+    <string name="detail_see_all_episodes">See episodes (%1$d)</string>
+
+    <!-- Detail Sections -->
+    <string name="detail_synopsis">Synopsis</string>
+    <string name="detail_information">Information</string>
+    <string name="detail_genres">Genres</string>
+    <string name="detail_main_characters">Main characters</string>
+    <string name="detail_chapters">Chapters</string>
+    <string name="detail_episodes">Episodes</string>
+    <string name="detail_images">Images</string>
+
+    <!-- Detail Info Labels -->
+    <string name="detail_info_type">Type</string>
+    <string name="detail_info_volumes">Volumes</string>
+    <string name="detail_info_status">Status</string>
+    <string name="detail_info_chapters">Chapters</string>
+    <string name="detail_info_episodes">Episodes</string>
+    <string name="detail_info_publication">Publication</string>
+    <string name="detail_info_serialization">Serialization</string>
+    <string name="detail_info_author">Author</string>
+    <string name="detail_info_art">Art</string>
+    <string name="detail_info_demographic">Demographic</string>
+    <string name="detail_info_license">License</string>
+    <string name="detail_info_studio">Studio</string>
+    <string name="detail_info_broadcast">Broadcast</string>
+
+    <!-- Detail Stats -->
+    <string name="detail_ranking">Ranking</string>
+    <string name="detail_popularity">Popularity</string>
+    <string name="detail_votes">%1$s votes</string>
+    <string name="detail_chapters_count">%1$d chapters</string>
+    <string name="detail_episodes_count">%1$d episodes</string>
+
+    <!-- Character Roles -->
+    <string name="character_role_main">Main</string>
+    <string name="character_role_supporting">Supporting</string>
 </resources>

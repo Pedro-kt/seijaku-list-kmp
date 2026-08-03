@@ -140,4 +140,46 @@
     <string name="error_loading_featured_hint">Verifica tu conexión e intenta nuevamente</string>
     <string name="error_server_unavailable">Servicio temporalmente no disponible</string>
     <string name="error_server_unavailable_hint">El servidor está experimentando problemas. Intenta más tarde</string>
+
+    <!-- Detail Screen -->
+    <string name="detail_add_to_list">Añadir a mi lista</string>
+    <string name="detail_read_more">Leer más</string>
+    <string name="detail_read_less">Leer menos</string>
+    <string name="detail_see_all_chapters">Ver capítulos (%1$d)</string>
+    <string name="detail_see_all_episodes">Ver episodios (%1$d)</string>
+
+    <!-- Detail Sections -->
+    <string name="detail_synopsis">Sinopsis</string>
+    <string name="detail_information">Información</string>
+    <string name="detail_genres">Géneros</string>
+    <string name="detail_main_characters">Personajes principales</string>
+    <string name="detail_chapters">Capítulos</string>
+    <string name="detail_episodes">Episodios</string>
+    <string name="detail_images">Imágenes</string>
+
+    <!-- Detail Info Labels -->
+    <string name="detail_info_type">Tipo</string>
+    <string name="detail_info_volumes">Volúmenes</string>
+    <string name="detail_info_status">Estado</string>
+    <string name="detail_info_chapters">Capítulos</string>
+    <string name="detail_info_episodes">Episodios</string>
+    <string name="detail_info_publication">Publicación</string>
+    <string name="detail_info_serialization">Serialización</string>
+    <string name="detail_info_author">Autor</string>
+    <string name="detail_info_art">Arte</string>
+    <string name="detail_info_demographic">Demografía</string>
+    <string name="detail_info_license">Licencia</string>
+    <string name="detail_info_studio">Estudio</string>
+    <string name="detail_info_broadcast">Emisión</string>
+
+    <!-- Detail Stats -->
+    <string name="detail_ranking">Ranking</string>
+    <string name="detail_popularity">Popularidad</string>
+    <string name="detail_votes">%1$s votos</string>
+    <string name="detail_chapters_count">%1$d capítulos</string>
+    <string name="detail_episodes_count">%1$d episodios</string>
+
+    <!-- Character Roles -->
+    <string name="character_role_main">Principal</string>
+    <string name="character_role_supporting">Secundario</string>
 </resources>
