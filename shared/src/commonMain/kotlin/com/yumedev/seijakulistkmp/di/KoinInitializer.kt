@@ -11,7 +11,8 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
             networkModule,
             animeModule,
             homeModule,
-            searchModule
+            searchModule,
+            detailModule
         )
     }
 }
