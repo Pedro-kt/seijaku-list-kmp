@@ -1,0 +1,116 @@
+query GetAnimeDetail($id: Int!) {
+    Media(id: $id, type: ANIME) {
+        id
+        title {
+            romaji
+            english
+            native
+        }
+        coverImage {
+            extraLarge
+            large
+            medium
+            color
+        }
+        bannerImage
+        format
+        status
+        description
+        startDate {
+            year
+            month
+            day
+        }
+        endDate {
+            year
+            month
+            day
+        }
+        season
+        seasonYear
+        episodes
+        duration
+        source
+        averageScore
+        meanScore
+        popularity
+        favourites
+        rankings {
+            rank
+            type
+            allTime
+        }
+        genres
+        tags {
+            id
+            name
+            rank
+        }
+        studios {
+            edges {
+                node {
+                    id
+                    name
+                }
+                isMain
+            }
+        }
+        characters(page: 1, perPage: 10, sort: ROLE) {
+            edges {
+                node {
+                    id
+                    name {
+                        full
+                        native
+                    }
+                    image {
+                        large
+                        medium
+                    }
+                }
+                role
+            }
+        }
+        relations {
+            edges {
+                node {
+                    id
+                    title {
+                        romaji
+                    }
+                    coverImage {
+                        medium
+                    }
+                    type
+                    format
+                }
+                relationType
+            }
+        }
+        streamingEpisodes {
+            title
+            thumbnail
+            url
+        }
+        trailer {
+            id
+            site
+            thumbnail
+        }
+        recommendations(page: 1, perPage: 5) {
+            edges {
+                node {
+                    mediaRecommendation {
+                        id
+                        title {
+                            romaji
+                        }
+                        coverImage {
+                            medium
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
