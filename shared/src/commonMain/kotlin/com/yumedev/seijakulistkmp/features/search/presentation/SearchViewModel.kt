@@ -15,10 +15,13 @@ import com.yumedev.seijakulistkmp.data.remote.graphql.GetCurrentSeasonAnimeQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.GetAiringTodayAnimeQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.GetTopRatedAnimeQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.GetRandomAnimeQuery
+import com.yumedev.seijakulistkmp.data.remote.graphql.GetTrendingAnimeQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaSort
 import com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaSeason
+import com.yumedev.seijakulistkmp.features.search.data.RecentSearchRepository
 import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toSearchResultItems
 import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toCharacterResultItems
+import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toTrendingAnimes
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -38,81 +41,63 @@ import kotlinx.datetime.toInstant
 
 class SearchViewModel(
     private val apolloClient: ApolloClient,
-    private val mediaStringFormatter: MediaStringFormatter
+    private val mediaStringFormatter: MediaStringFormatter,
+    private val recentSearchRepository: RecentSearchRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SearchState())
     val state: StateFlow<SearchState> = _state.asStateFlow()
 
     init {
-        loadMockData()
+        observeRecentSearches()
+        loadTrendingAnimes()
     }
 
-    private fun loadMockData() {
-        val now = Clock.System.now().toEpochMilliseconds()
+    private fun observeRecentSearches() {
+        viewModelScope.launch {
+            recentSearchRepository.recentSearches.collect { searches ->
+                _state.update { it.copy(recentSearches = searches) }
+            }
+        }
+    }
 
-        // Mock recent searches
-        val mockRecentSearches = listOf(
-            RecentSearch(1, "frieren", now - 3600000),
-            RecentSearch(2, "berserk", now - 7200000),
-            RecentSearch(3, "maomao", now - 10800000),
-            RecentSearch(4, "one piece", now - 14400000)
-        )
+    private fun loadTrendingAnimes() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingTrending = true) }
 
-        // Mock trending animes
-        val mockTrendingAnimes = listOf(
-            TrendingAnime(
-                id = 1,
-                rank = 1,
-                title = "Frieren: Beyond Journey's End",
-                coverImage = "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx154587-n5xn4UGhKjhz.jpg",
-                rating = 9.31,
-                type = "TV",
-                episodes = 28
-            ),
-            TrendingAnime(
-                id = 2,
-                rank = 2,
-                title = "Fullmetal Alchemist: Brotherhood",
-                coverImage = "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx6702-VI6KCbmFLAW6.jpg",
-                rating = 9.09,
-                type = "TV",
-                episodes = 64
-            ),
-            TrendingAnime(
-                id = 3,
-                rank = 3,
-                title = "Steins;Gate",
-                coverImage = "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx9253-7pdcVzQSkKxT.jpg",
-                rating = 9.07,
-                type = "TV",
-                episodes = 24
-            ),
-            TrendingAnime(
-                id = 4,
-                rank = 4,
-                title = "Gintama°",
-                coverImage = "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx20614-KK5sTdkIgJSo.jpg",
-                rating = 9.06,
-                type = "TV",
-                episodes = 51
-            ),
-            TrendingAnime(
-                id = 5,
-                rank = 5,
-                title = "Hunter x Hunter (2011)",
-                coverImage = "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx11061-0l5gpHD4TA2d.png",
-                rating = 9.04,
-                type = "TV",
-                episodes = 148
-            )
-        )
+            try {
+                val response = apolloClient
+                    .query(
+                        GetTrendingAnimeQuery(
+                            page = Optional.present(1),
+                            perPage = Optional.present(4)
+                        )
+                    )
+                    .execute()
 
-        _state.update {
-            it.copy(
-                recentSearches = mockRecentSearches,
-                trendingAnimes = mockTrendingAnimes
-            )
+                response.exception?.let { throw it }
+                response.errors?.firstOrNull()?.let { error ->
+                    throw Exception(error.message ?: "GraphQL error")
+                }
+
+                val trendingAnimes = response.data?.Page?.media?.toTrendingAnimes() ?: emptyList()
+
+                _state.update {
+                    it.copy(
+                        trendingAnimes = trendingAnimes,
+                        isLoadingTrending = false,
+                        trendingError = null
+                    )
+                }
+            } catch (e: Exception) {
+                val errorType = ErrorMapper.mapToErrorType(e)
+                _state.update {
+                    it.copy(
+                        isLoadingTrending = false,
+                        trendingError = errorType
+                    )
+                }
+            }
         }
     }
 
@@ -145,27 +130,16 @@ class SearchViewModel(
     }
 
     fun removeRecentSearch(search: RecentSearch) {
-        _state.update {
-            it.copy(recentSearches = it.recentSearches.filter { recent -> recent.id != search.id })
-        }
+        recentSearchRepository.removeRecentSearch(search.id)
     }
 
-    fun addRecentSearch(query: String) {
+    private fun addRecentSearch(query: String) {
         if (query.isBlank()) return
 
-        val now = Clock.System.now().toEpochMilliseconds()
-        val newSearch = RecentSearch(
-            id = now,
-            query = query,
-            timestamp = now
-        )
+        val searchType = _state.value.selectedFilter
+        val timestamp = Clock.System.now().toEpochMilliseconds()
 
-        _state.update {
-            val updatedSearches = listOf(newSearch) + it.recentSearches.filter { recent ->
-                recent.query.lowercase() != query.lowercase()
-            }
-            it.copy(recentSearches = updatedSearches.take(10))
-        }
+        recentSearchRepository.addRecentSearch(query, searchType, timestamp)
     }
 
     fun performSearch(query: String) {

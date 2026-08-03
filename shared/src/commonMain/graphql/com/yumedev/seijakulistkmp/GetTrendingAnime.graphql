@@ -1,0 +1,12 @@
+query GetTrendingAnime($page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+        media(type: ANIME, sort: TRENDING_DESC) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+        }
+    }
+}

@@ -12,7 +12,6 @@ import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaFormat
 import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaStatus
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
-import kotlinx.datetime.Clock
 
 @Composable
 fun ExpandedSearchContent(
@@ -86,22 +85,22 @@ fun ExpandedSearchContent(
                 }
             }
 
-            val now = Clock.System.now().toEpochMilliseconds()
-            val trendingSearches = listOf(
-                RecentSearch(100, "solo leveling", now),
-                RecentSearch(101, "dandadan", now),
-                RecentSearch(102, "chainsaw man", now),
-                RecentSearch(103, "monster", now)
-            )
-
             items(
-                items = trendingSearches,
+                items = state.trendingAnimes,
                 key = { it.id }
-            ) { search ->
+            ) { anime ->
+                val trendingSearch = RecentSearch(
+                    id = anime.id.toLong(),
+                    query = anime.title,
+                    searchType = SearchFilter.ANIME,
+                    timestamp = 0L
+                )
                 RecentSearchItem(
-                    search = search,
-                    onSearchClick = { onRecentSearchClick(search) },
-                    onRemoveClick = { /* Navigate to detail */ },
+                    search = trendingSearch,
+                    onSearchClick = { onRecentSearchClick(trendingSearch) },
+                    onRemoveClick = {
+                        // Trending items don't have remove action, arrow navigates
+                    },
                     showClockIcon = false
                 )
             }
