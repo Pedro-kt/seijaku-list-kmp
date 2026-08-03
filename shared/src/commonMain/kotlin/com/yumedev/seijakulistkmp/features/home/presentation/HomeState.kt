@@ -3,6 +3,7 @@ package com.yumedev.seijakulistkmp.features.home.presentation
 import com.yumedev.seijakulistkmp.core.error.ErrorType
 import com.yumedev.seijakulistkmp.features.home.presentation.model.AnimeCardItem
 import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
+import com.yumedev.seijakulistkmp.features.home.presentation.model.MangaCardItem
 
 data class HomeState(
     val featuredAnime: List<FeaturedMediaItem> = emptyList(),
@@ -20,5 +21,25 @@ data class HomeState(
 
     val topRatedAnime: List<AnimeCardItem> = emptyList(),
     val isLoadingTopRated: Boolean = false,
-    val topRatedError: String? = null
+    val topRatedError: String? = null,
+
+    val publishingManga: List<MangaCardItem> = emptyList(),
+    val isLoadingPublishingManga: Boolean = false,
+    val publishingMangaError: String? = null,
+
+    val popularManga: List<MangaCardItem> = emptyList(),
+    val isLoadingPopularManga: Boolean = false,
+    val popularMangaError: String? = null,
+
+    val topRatedManga: List<MangaCardItem> = emptyList(),
+    val isLoadingTopRatedManga: Boolean = false,
+    val topRatedMangaError: String? = null,
+
+    val recentlyAddedManga: List<MangaCardItem> = emptyList(),
+    val isLoadingRecentlyAddedManga: Boolean = false,
+    val recentlyAddedMangaError: String? = null,
+
+    val manhwaManga: List<MangaCardItem> = emptyList(),
+    val isLoadingManhwaManga: Boolean = false,
+    val manhwaMangaError: String? = null
 )

@@ -122,6 +122,10 @@
     <!-- Manga List -->
     <string name="trending_manga">Manga en tendencia</string>
     <string name="popular_manga">Manga popular</string>
+    <string name="publishing_now">Publicándose ahora</string>
+    <string name="top_rated_manga">Manga mejor valorado</string>
+    <string name="recently_added">Añadidos recientemente</string>
+    <string name="manhwa">Manhwa</string>
 
     <!-- Profile -->
     <string name="profile_title">Perfil</string>
