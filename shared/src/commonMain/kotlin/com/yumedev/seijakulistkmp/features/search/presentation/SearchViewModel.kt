@@ -7,6 +7,7 @@ import com.apollographql.apollo.api.Optional
 import com.yumedev.seijakulistkmp.core.error.ErrorMapper
 import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeQuery
+import com.yumedev.seijakulistkmp.data.remote.graphql.SearchMangaQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeByGenreQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeByEpisodesQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.GetCurrentSeasonAnimeQuery
@@ -170,26 +171,50 @@ class SearchViewModel(
 
         addRecentSearch(query)
 
+        val currentFilter = _state.value.selectedFilter
+
         viewModelScope.launch {
             _state.update { it.copy(isSearching = true, searchError = null, hasSearched = true) }
 
             try {
-                val response = apolloClient
-                    .query(
-                        SearchAnimeQuery(
-                            search = query,
-                            page = Optional.present(1),
-                            perPage = Optional.present(20)
-                        )
-                    )
-                    .execute()
+                val results = when (currentFilter) {
+                    SearchFilter.MANGA -> {
+                        val response = apolloClient
+                            .query(
+                                SearchMangaQuery(
+                                    search = query,
+                                    page = Optional.present(1),
+                                    perPage = Optional.present(20)
+                                )
+                            )
+                            .execute()
 
-                response.exception?.let { throw it }
-                response.errors?.firstOrNull()?.let { error ->
-                    throw Exception(error.message ?: "GraphQL error")
+                        response.exception?.let { throw it }
+                        response.errors?.firstOrNull()?.let { error ->
+                            throw Exception(error.message ?: "GraphQL error")
+                        }
+
+                        response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+                    }
+                    else -> {
+                        val response = apolloClient
+                            .query(
+                                SearchAnimeQuery(
+                                    search = query,
+                                    page = Optional.present(1),
+                                    perPage = Optional.present(20)
+                                )
+                            )
+                            .execute()
+
+                        response.exception?.let { throw it }
+                        response.errors?.firstOrNull()?.let { error ->
+                            throw Exception(error.message ?: "GraphQL error")
+                        }
+
+                        response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+                    }
                 }
-
-                val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
 
                 _state.update {
                     it.copy(

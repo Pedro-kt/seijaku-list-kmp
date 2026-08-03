@@ -1,0 +1,34 @@
+query SearchManga($search: String!, $page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+        pageInfo {
+            total
+            currentPage
+            lastPage
+            hasNextPage
+            perPage
+        }
+        media(type: MANGA, search: $search) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            status
+            format
+            chapters
+            volumes
+            startDate {
+                year
+            }
+            genres
+        }
+    }
+}
