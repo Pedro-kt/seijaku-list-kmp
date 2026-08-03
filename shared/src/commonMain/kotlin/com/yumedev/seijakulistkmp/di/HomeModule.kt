@@ -13,23 +13,31 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val homeModule = module {
-    // ========== FEATURED CAROUSEL ==========
     singleOf(::FeaturedDataSourceImpl) bind FeaturedDataSource::class
     singleOf(::FeaturedRepositoryImpl) bind FeaturedRepository::class
     factoryOf(::GetFeaturedAnimeUseCase)
 
-    // ========== AIRING NOW ==========
     singleOf(::AiringNowRepositoryImpl) bind AiringNowRepository::class
     factoryOf(::GetAiringNowAnimeUseCase)
 
-    // ========== NEXT SEASON ==========
     singleOf(::NextSeasonRepositoryImpl) bind NextSeasonRepository::class
     factoryOf(::GetNextSeasonAnimeUseCase)
 
-    // ========== TOP RATED ==========
     singleOf(::TopRatedRepositoryImpl) bind TopRatedRepository::class
     factoryOf(::GetTopRatedAnimeUseCase)
 
-    // ========== PRESENTATION ==========
+    singleOf(::FeaturedMangaRepositoryImpl) bind FeaturedMangaRepository::class
+    factoryOf(::GetFeaturedMangaUseCase)
+    singleOf(::PublishingMangaRepositoryImpl) bind PublishingMangaRepository::class
+    factoryOf(::GetPublishingMangaUseCase)
+    singleOf(::PopularMangaRepositoryImpl) bind PopularMangaRepository::class
+    factoryOf(::GetPopularMangaUseCase)
+    singleOf(::TopRatedMangaRepositoryImpl) bind TopRatedMangaRepository::class
+    factoryOf(::GetTopRatedMangaUseCase)
+    singleOf(::RecentlyAddedMangaRepositoryImpl) bind RecentlyAddedMangaRepository::class
+    factoryOf(::GetRecentlyAddedMangaUseCase)
+    singleOf(::ManhwaMangaRepositoryImpl) bind ManhwaMangaRepository::class
+    factoryOf(::GetManhwaMangaUseCase)
+
     viewModelOf(::HomeViewModel)
 }
