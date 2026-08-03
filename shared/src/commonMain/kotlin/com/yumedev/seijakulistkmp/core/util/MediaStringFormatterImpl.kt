@@ -22,4 +22,16 @@ class MediaStringFormatterImpl : MediaStringFormatter {
             "$it ${getString(Res.string.episodes_suffix)}"
         }
     }
+
+    override suspend fun formatChapters(chapters: Int?): String? {
+        return chapters?.let {
+            "$it Ch"
+        }
+    }
+
+    override suspend fun formatVolumes(volumes: Int?): String? {
+        return volumes?.let {
+            "$it Vol"
+        }
+    }
 }
