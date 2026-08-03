@@ -31,6 +31,7 @@ import com.yumedev.seijakulistkmp.features.search.presentation.model.QuickFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.TrendingAnime
+import com.yumedev.seijakulistkmp.features.search.presentation.model.toApiValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -182,12 +183,19 @@ class SearchViewModel(
                         }
                     }
                     SearchFilter.MANGA -> {
+                        val status = _state.value.filterStatus.toApiValue()
+                        val format = _state.value.filterFormat.toApiValue()
+                        val minScore = _state.value.filterMinScore
+
                         val response = apolloClient
                             .query(
                                 SearchMangaQuery(
                                     search = query,
                                     page = Optional.present(1),
-                                    perPage = Optional.present(20)
+                                    perPage = Optional.present(20),
+                                    status = Optional.presentIfNotNull(status?.let { com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaStatus.valueOf(it) }),
+                                    format = Optional.presentIfNotNull(format?.let { com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaFormat.valueOf(it) }),
+                                    averageScore_greater = Optional.presentIfNotNull(minScore)
                                 )
                             )
                             .execute()
@@ -209,12 +217,19 @@ class SearchViewModel(
                         }
                     }
                     SearchFilter.ANIME -> {
+                        val status = _state.value.filterStatus.toApiValue()
+                        val format = _state.value.filterFormat.toApiValue()
+                        val minScore = _state.value.filterMinScore
+
                         val response = apolloClient
                             .query(
                                 SearchAnimeQuery(
                                     search = query,
                                     page = Optional.present(1),
-                                    perPage = Optional.present(20)
+                                    perPage = Optional.present(20),
+                                    status = Optional.presentIfNotNull(status?.let { com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaStatus.valueOf(it) }),
+                                    format = Optional.presentIfNotNull(format?.let { com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaFormat.valueOf(it) }),
+                                    averageScore_greater = Optional.presentIfNotNull(minScore)
                                 )
                             )
                             .execute()

@@ -1,4 +1,4 @@
-query SearchManga($search: String!, $page: Int, $perPage: Int) {
+query SearchManga($search: String!, $page: Int, $perPage: Int, $status: MediaStatus, $format: MediaFormat, $averageScore_greater: Int) {
     Page(page: $page, perPage: $perPage) {
         pageInfo {
             total
@@ -7,7 +7,7 @@ query SearchManga($search: String!, $page: Int, $perPage: Int) {
             hasNextPage
             perPage
         }
-        media(type: MANGA, search: $search) {
+        media(type: MANGA, search: $search, status: $status, format: $format, averageScore_greater: $averageScore_greater) {
             id
             title {
                 romaji
