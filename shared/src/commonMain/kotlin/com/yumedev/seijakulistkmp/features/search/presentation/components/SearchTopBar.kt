@@ -19,6 +19,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowLeft
@@ -58,7 +59,9 @@ fun CollapsedSearchBar(
                 text = stringResource(Res.string.search_placeholder),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Icon(
                 imageVector = TablerIcons.Outlined.Microphone,

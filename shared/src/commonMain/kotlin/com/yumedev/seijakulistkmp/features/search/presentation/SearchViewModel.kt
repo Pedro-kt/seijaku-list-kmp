@@ -12,6 +12,7 @@ import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeByEpisodesQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.GetCurrentSeasonAnimeQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.GetAiringTodayAnimeQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.GetTopRatedAnimeQuery
+import com.yumedev.seijakulistkmp.data.remote.graphql.GetRandomAnimeQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaSort
 import com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaSeason
 import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toSearchResultItems
@@ -348,9 +349,7 @@ class SearchViewModel(
             QuickFilter.CurrentSeason -> searchCurrentSeason(filterName)
             QuickFilter.AiringToday -> searchAiringToday(filterName)
             QuickFilter.Top100 -> searchTop100(filterName)
-            QuickFilter.Random -> {
-                // TODO: Implement random search
-            }
+            QuickFilter.Random -> searchRandom(filterName)
         }
     }
 
@@ -452,6 +451,48 @@ class SearchViewModel(
                         GetTopRatedAnimeQuery(
                             page = Optional.present(1),
                             perPage = Optional.present(100)
+                        )
+                    )
+                    .execute()
+
+                response.exception?.let { throw it }
+                response.errors?.firstOrNull()?.let { error ->
+                    throw Exception(error.message ?: "GraphQL error")
+                }
+
+                val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+
+                _state.update {
+                    it.copy(
+                        searchResults = results,
+                        isSearching = false,
+                        searchError = null
+                    )
+                }
+            } catch (e: Exception) {
+                val errorType = ErrorMapper.mapToErrorType(e)
+                _state.update {
+                    it.copy(
+                        isSearching = false,
+                        searchError = errorType
+                    )
+                }
+            }
+        }
+    }
+
+    private fun searchRandom(filterName: String) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSearching = true, searchError = null, hasSearched = true, searchQuery = filterName) }
+
+            try {
+                val randomPage = (1..10).random()
+
+                val response = apolloClient
+                    .query(
+                        GetRandomAnimeQuery(
+                            page = Optional.present(randomPage),
+                            perPage = Optional.present(20)
                         )
                     )
                     .execute()
