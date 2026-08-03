@@ -1,0 +1,24 @@
+query GetTopRatedManga($page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+        media(type: MANGA, sort: SCORE_DESC) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            format
+            status
+            chapters
+            volumes
+            genres
+        }
+    }
+}

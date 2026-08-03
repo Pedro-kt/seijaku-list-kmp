@@ -1,0 +1,23 @@
+query GetRecentlyAddedManga($page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+        media(type: MANGA, sort: ID_DESC) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            format
+            chapters
+            volumes
+            genres
+        }
+    }
+}

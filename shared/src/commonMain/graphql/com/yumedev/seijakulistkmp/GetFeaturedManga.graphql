@@ -1,0 +1,25 @@
+query GetFeaturedManga($page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+        media(type: MANGA, sort: TRENDING_DESC) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            bannerImage
+            averageScore
+            status
+            format
+            chapters
+            volumes
+            genres
+        }
+    }
+}
