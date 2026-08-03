@@ -10,7 +10,8 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
             coreModule,
             networkModule,
             animeModule,
-            homeModule
+            homeModule,
+            searchModule
         )
     }
 }

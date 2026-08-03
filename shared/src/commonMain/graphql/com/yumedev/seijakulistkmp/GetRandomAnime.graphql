@@ -1,6 +1,6 @@
-query GetTopRatedAnime($page: Int, $perPage: Int) {
+query GetRandomAnime($page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
-        media(type: ANIME, sort: SCORE_DESC) {
+        media(type: ANIME, sort: [POPULARITY_DESC], isAdult: false) {
             id
             title {
                 romaji

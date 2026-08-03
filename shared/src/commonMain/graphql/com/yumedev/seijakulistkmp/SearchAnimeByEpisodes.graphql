@@ -1,6 +1,13 @@
-query GetTopRatedAnime($page: Int, $perPage: Int) {
+query SearchAnimeByEpisodes($minEpisodes: Int, $page: Int, $perPage: Int, $sort: [MediaSort]) {
     Page(page: $page, perPage: $perPage) {
-        media(type: ANIME, sort: SCORE_DESC) {
+        pageInfo {
+            total
+            currentPage
+            lastPage
+            hasNextPage
+            perPage
+        }
+        media(type: ANIME, episodes_greater: $minEpisodes, sort: $sort) {
             id
             title {
                 romaji
@@ -14,9 +21,10 @@ query GetTopRatedAnime($page: Int, $perPage: Int) {
                 color
             }
             averageScore
-            format
             status
+            format
             episodes
+            seasonYear
             genres
         }
     }

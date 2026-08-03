@@ -20,6 +20,77 @@
     <string name="notifications">Notificaciones</string>
     <string name="user_profile">Perfil de usuario</string>
 
+    <!-- Search Screen -->
+    <string name="search_recent_searches">Búsquedas recientes</string>
+    <string name="search_trending_today">Tendencias de hoy</string>
+    <string name="search_explore_by_genre">Explorar por género</string>
+    <string name="search_filters">Filtros</string>
+    <string name="search_filter_characters">Personajes</string>
+    <string name="search_searching">Buscando...</string>
+    <string name="search_no_results">No se encontraron resultados</string>
+    <string name="search_no_results_hint">Intenta con diferentes palabras clave o verifica la ortografía</string>
+    <string name="search_results_count">%1$d resultados</string>
+    <string name="search_results_for">Resultados para</string>
+    <string name="error_search_failed">Error en la búsqueda</string>
+
+    <!-- Quick Filters -->
+    <string name="quick_filter_current_season">Temporada actual</string>
+    <string name="quick_filter_airing_today">En emisión hoy</string>
+    <string name="quick_filter_top_100">Top 100</string>
+    <string name="quick_filter_random">Al azar</string>
+
+    <!-- Mood Filters -->
+    <string name="mood_cry_title">Para llorar</string>
+    <string name="mood_cry_description">Drama que deja huella</string>
+    <string name="mood_adrenaline_title">Adrenalina</string>
+    <string name="mood_adrenaline_description">Peleas y ritmo alto</string>
+    <string name="mood_calm_title">Calma</string>
+    <string name="mood_calm_description">Lento, sin conflicto</string>
+    <string name="mood_laugh_title">Para reír</string>
+    <string name="mood_laugh_description">Comedia sin pensar</string>
+    <string name="mood_mind_breaking_title">Romper la cabeza</string>
+    <string name="mood_mind_breaking_description">Misterio y tensión</string>
+    <string name="mood_marathon_title">Maratón largo</string>
+    <string name="mood_marathon_description">+75 episodios</string>
+    <string name="mood_what_are_you_looking_for">¿Qué se te antoja?</string>
+    <string name="mood_subtitle">Busca por cómo quieres sentirte.</string>
+
+    <!-- Filters -->
+    <string name="filters_title">Filtros</string>
+    <string name="filter_status">Estado</string>
+    <string name="filter_status_all">Todos</string>
+    <string name="filter_status_airing">En emisión</string>
+    <string name="filter_status_publishing">Publicándose</string>
+    <string name="filter_status_finished">Finalizado</string>
+    <string name="filter_status_upcoming">Próximo</string>
+    <string name="filter_min_score">Score mínimo</string>
+    <string name="filter_score_any">Cualquiera</string>
+    <string name="filter_format">Tipo</string>
+    <string name="filter_format_all">Todos</string>
+    <string name="filter_format_tv">TV</string>
+    <string name="filter_format_movie">Película</string>
+    <string name="filter_format_ova">OVA</string>
+    <string name="filter_format_special">Especial</string>
+    <string name="filter_format_manga">Manga</string>
+    <string name="filter_format_novel">Novela</string>
+    <string name="filter_format_one_shot">One-shot</string>
+    <string name="filter_reset">Resetear</string>
+    <string name="filter_apply">Aplicar</string>
+
+    <!-- Genres -->
+    <string name="genre_action">Acción</string>
+    <string name="genre_adventure">Aventura</string>
+    <string name="genre_comedy">Comedia</string>
+    <string name="genre_drama">Drama</string>
+    <string name="genre_fantasy">Fantasía</string>
+    <string name="genre_romance">Romance</string>
+    <string name="genre_sci_fi">Sci-Fi</string>
+    <string name="genre_slice_of_life">Slice of life</string>
+    <string name="genre_suspense">Suspenso</string>
+    <string name="genre_sports">Deporte</string>
+    <string name="genre_horror">Terror</string>
+    <string name="genre_psychological">Psicológico</string>
+
     <!-- Anime List -->
     <string name="trending_anime">Anime en tendencia</string>
     <string name="popular_anime">Anime popular</string>

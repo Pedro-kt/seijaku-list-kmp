@@ -20,6 +20,77 @@
     <string name="notifications">Notifications</string>
     <string name="user_profile">User profile</string>
 
+    <!-- Search Screen -->
+    <string name="search_recent_searches">Recent searches</string>
+    <string name="search_trending_today">Trending today</string>
+    <string name="search_explore_by_genre">Explore by genre</string>
+    <string name="search_filters">Filters</string>
+    <string name="search_filter_characters">Characters</string>
+    <string name="search_searching">Searching...</string>
+    <string name="search_no_results">No results found</string>
+    <string name="search_no_results_hint">Try different keywords or check spelling</string>
+    <string name="search_results_count">%1$d results</string>
+    <string name="search_results_for">Results for</string>
+    <string name="error_search_failed">Search failed</string>
+
+    <!-- Quick Filters -->
+    <string name="quick_filter_current_season">Current season</string>
+    <string name="quick_filter_airing_today">Airing today</string>
+    <string name="quick_filter_top_100">Top 100</string>
+    <string name="quick_filter_random">Random</string>
+
+    <!-- Mood Filters -->
+    <string name="mood_cry_title">To cry</string>
+    <string name="mood_cry_description">Drama that leaves a mark</string>
+    <string name="mood_adrenaline_title">Adrenaline</string>
+    <string name="mood_adrenaline_description">Fights and high pace</string>
+    <string name="mood_calm_title">Calm</string>
+    <string name="mood_calm_description">Slow, without conflict</string>
+    <string name="mood_laugh_title">To laugh</string>
+    <string name="mood_laugh_description">Comedy without thinking</string>
+    <string name="mood_mind_breaking_title">Mind-breaking</string>
+    <string name="mood_mind_breaking_description">Mystery and tension</string>
+    <string name="mood_marathon_title">Long marathon</string>
+    <string name="mood_marathon_description">+75 episodes</string>
+    <string name="mood_what_are_you_looking_for">What are you looking for?</string>
+    <string name="mood_subtitle">Search by how you want to feel.</string>
+
+    <!-- Filters -->
+    <string name="filters_title">Filters</string>
+    <string name="filter_status">Status</string>
+    <string name="filter_status_all">All</string>
+    <string name="filter_status_airing">Airing</string>
+    <string name="filter_status_publishing">Publishing</string>
+    <string name="filter_status_finished">Finished</string>
+    <string name="filter_status_upcoming">Upcoming</string>
+    <string name="filter_min_score">Minimum score</string>
+    <string name="filter_score_any">Any</string>
+    <string name="filter_format">Type</string>
+    <string name="filter_format_all">All</string>
+    <string name="filter_format_tv">TV</string>
+    <string name="filter_format_movie">Movie</string>
+    <string name="filter_format_ova">OVA</string>
+    <string name="filter_format_special">Special</string>
+    <string name="filter_format_manga">Manga</string>
+    <string name="filter_format_novel">Novel</string>
+    <string name="filter_format_one_shot">One-shot</string>
+    <string name="filter_reset">Reset</string>
+    <string name="filter_apply">Apply</string>
+
+    <!-- Genres -->
+    <string name="genre_action">Action</string>
+    <string name="genre_adventure">Adventure</string>
+    <string name="genre_comedy">Comedy</string>
+    <string name="genre_drama">Drama</string>
+    <string name="genre_fantasy">Fantasy</string>
+    <string name="genre_romance">Romance</string>
+    <string name="genre_sci_fi">Sci-Fi</string>
+    <string name="genre_slice_of_life">Slice of life</string>
+    <string name="genre_suspense">Suspense</string>
+    <string name="genre_sports">Sports</string>
+    <string name="genre_horror">Horror</string>
+    <string name="genre_psychological">Psychological</string>
+
     <!-- Anime List -->
     <string name="trending_anime">Trending Anime</string>
     <string name="popular_anime">Popular Anime</string>

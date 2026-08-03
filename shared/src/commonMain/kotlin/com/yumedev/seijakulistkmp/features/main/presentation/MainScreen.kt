@@ -11,6 +11,7 @@ import com.yumedev.seijakulistkmp.features.manga.presentation.MangaListScreenCon
 import com.yumedev.seijakulistkmp.features.profile.presentation.ProfileScreenContent
 import com.yumedev.seijakulistkmp.features.search.presentation.SearchScreenContent
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Book
 import dev.seyfarth.tablericons.filled.DeviceTv
@@ -34,23 +35,50 @@ class MainScreen : Screen {
 @Composable
 fun MainScreenContent() {
     var selectedItem by remember { mutableStateOf<BottomNavItem>(BottomNavItem.Home) }
+    var isSearchExpanded by remember { mutableStateOf(false) }
+    var shouldExpandSearch by remember { mutableStateOf(false) }
+
+    LaunchedEffect(selectedItem) {
+        if (selectedItem != BottomNavItem.Search) {
+            isSearchExpanded = false
+            shouldExpandSearch = false
+        }
+    }
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
         bottomBar = {
-            NavigationBar {
-                TabNavigationItems(
-                    selectedItem = selectedItem,
-                    onItemSelected = { selectedItem = it }
-                )
+            if (!isSearchExpanded) {
+                NavigationBar {
+                    TabNavigationItems(
+                        selectedItem = selectedItem,
+                        onItemSelected = { selectedItem = it }
+                    )
+                }
             }
         }
     ) { paddingValues ->
-        Box() {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
             when (selectedItem) {
-                BottomNavItem.Home -> HomeScreenContent()
+                BottomNavItem.Home -> HomeScreenContent(
+                    onNavigateToSearch = {
+                        shouldExpandSearch = true
+                        selectedItem = BottomNavItem.Search
+                    }
+                )
                 BottomNavItem.Anime -> AnimeListScreenContent()
                 BottomNavItem.Manga -> MangaListScreenContent()
-                BottomNavItem.Search -> SearchScreenContent()
+                BottomNavItem.Search -> SearchScreenContent(
+                    shouldExpandOnStart = shouldExpandSearch,
+                    onExpandedChange = { isExpanded ->
+                        isSearchExpanded = isExpanded
+                    },
+                    onExpandHandled = {
+                        shouldExpandSearch = false
+                    }
+                )
                 BottomNavItem.Profile -> ProfileScreenContent()
             }
         }

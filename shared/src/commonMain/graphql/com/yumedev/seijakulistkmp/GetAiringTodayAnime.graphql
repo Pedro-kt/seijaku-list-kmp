@@ -1,0 +1,29 @@
+query GetAiringTodayAnime($airingAtGreater: Int, $airingAtLesser: Int, $page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+        airingSchedules(
+            airingAt_greater: $airingAtGreater,
+            airingAt_lesser: $airingAtLesser,
+            sort: TIME
+        ) {
+            media {
+                id
+                title {
+                    romaji
+                    english
+                    native
+                }
+                coverImage {
+                    extraLarge
+                    large
+                    medium
+                    color
+                }
+                averageScore
+                format
+                status
+                episodes
+                genres
+            }
+        }
+    }
+}

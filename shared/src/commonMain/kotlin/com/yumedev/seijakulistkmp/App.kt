@@ -12,6 +12,7 @@ import com.yumedev.seijakulistkmp.di.animeModule
 import com.yumedev.seijakulistkmp.di.coreModule
 import com.yumedev.seijakulistkmp.di.homeModule
 import com.yumedev.seijakulistkmp.di.networkModule
+import com.yumedev.seijakulistkmp.di.searchModule
 import com.yumedev.seijakulistkmp.features.main.presentation.MainScreen
 import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
 import org.koin.compose.KoinApplication
@@ -33,7 +34,8 @@ fun App() {
             coreModule,
             networkModule,
             animeModule,
-            homeModule
+            homeModule,
+            searchModule
         )
     }) {
         SeijakuTheme {
