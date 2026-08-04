@@ -178,6 +178,7 @@
     <string name="detail_votes">%1$s votos</string>
     <string name="detail_chapters_count">%1$d capítulos</string>
     <string name="detail_episodes_count">%1$d episodios</string>
+    <string name="detail_trailer">Tráiler</string>
 
     <!-- Character Roles -->
     <string name="character_role_main">Principal</string>
