@@ -42,59 +42,64 @@ fun DetailHeader(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .width(140.dp)
-                .height(200.dp)
-                .clip(RoundedCornerShape(12.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            coverImageUrl?.let { imageUrl ->
-                AsyncImage(
-                    model = imageUrl,
-                    contentDescription = title,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+            Box(
+                modifier = Modifier
+                    .width(140.dp)
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            ) {
+                coverImageUrl?.let { imageUrl ->
+                    AsyncImage(
+                        model = imageUrl,
+                        contentDescription = title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                if (type != null || demographic != null) {
+                    Text(
+                        text = buildString {
+                            if (type != null) append(type.uppercase())
+                            if (type != null && demographic != null) append(" · ")
+                            if (demographic != null) append(demographic.uppercase())
+                        },
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
                 )
+
+                titleNative?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (type != null || demographic != null) {
-            Text(
-                text = buildString {
-                    if (type != null) append(type.uppercase())
-                    if (type != null && demographic != null) append(" · ")
-                    if (demographic != null) append(demographic.uppercase())
-                },
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-        }
-
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-
-        titleNative?.let {
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = it,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                textAlign = TextAlign.Center
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
+        // Metadata Row
         Text(
             text = buildMetadataString(
                 year = year,
@@ -105,50 +110,67 @@ fun DetailHeader(
                 status = status
             ),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-            textAlign = TextAlign.Center
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Row(
+        Surface(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+            shape = RoundedCornerShape(12.dp)
         ) {
-            averageScore?.let { score ->
-                StatItem(
-                    icon = {
-                        Icon(
-                            imageVector = TablerIcons.Filled.Star,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    },
-                    value = formatScore(score),
-                    label = formatVotes(totalVotes),
-                    modifier = Modifier.weight(1f)
-                )
-            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                averageScore?.let { score ->
+                    StatItem(
+                        icon = {
+                            Icon(
+                                imageVector = TablerIcons.Filled.Star,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        },
+                        value = formatScore(score),
+                        label = formatVotes(totalVotes),
+                        modifier = Modifier.weight(1f).padding(vertical = 16.dp)
+                    )
+                }
 
-            rankingPosition?.let { rank ->
-                StatItem(
-                    value = "#$rank",
-                    label = stringResource(Res.string.detail_ranking),
-                    modifier = Modifier.weight(1f)
-                )
-            }
+                if (averageScore != null && rankingPosition != null) {
+                    VerticalDivider(
+                        modifier = Modifier.fillMaxHeight(),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                    )
+                }
 
-            popularityPosition?.let { popularity ->
-                StatItem(
-                    value = "#$popularity",
-                    label = stringResource(Res.string.detail_popularity),
-                    modifier = Modifier.weight(1f)
-                )
+                rankingPosition?.let { rank ->
+                    StatItem(
+                        value = "#$rank",
+                        label = stringResource(Res.string.detail_ranking),
+                        modifier = Modifier.weight(1f).padding(vertical = 16.dp)
+                    )
+                }
+
+                if (rankingPosition != null && popularityPosition != null) {
+                    VerticalDivider(
+                        modifier = Modifier.fillMaxHeight(),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                    )
+                }
+
+                popularityPosition?.let { popularity ->
+                    StatItem(
+                        value = "#$popularity",
+                        label = stringResource(Res.string.detail_popularity),
+                        modifier = Modifier.weight(1f).padding(vertical = 16.dp)
+                    )
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(20.dp))
 
         Button(
             onClick = onAddToListClick,

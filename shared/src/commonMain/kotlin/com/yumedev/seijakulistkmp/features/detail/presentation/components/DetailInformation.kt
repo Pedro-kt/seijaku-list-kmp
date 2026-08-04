@@ -70,26 +70,53 @@ fun DetailInformation(
             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
-                infoItems.chunked(2).forEach { rowItems ->
+                infoItems.chunked(2).forEachIndexed { index, rowItems ->
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min),
+                        horizontalArrangement = Arrangement.spacedBy(0.dp)
                     ) {
-                        rowItems.forEach { item ->
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(16.dp)
+                        ) {
                             InfoItemView(
-                                label = item.label,
-                                value = item.value,
-                                modifier = Modifier.weight(1f)
+                                label = rowItems[0].label,
+                                value = rowItems[0].value,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
-                        if (rowItems.size == 1) {
+
+                        if (rowItems.size == 2) {
+                            VerticalDivider(
+                                modifier = Modifier.fillMaxHeight(),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(16.dp)
+                            ) {
+                                InfoItemView(
+                                    label = rowItems[1].label,
+                                    value = rowItems[1].value,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        } else {
                             Spacer(modifier = Modifier.weight(1f))
                         }
+                    }
+
+                    if (index < infoItems.chunked(2).size - 1) {
+                        HorizontalDivider(
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                        )
                     }
                 }
             }
