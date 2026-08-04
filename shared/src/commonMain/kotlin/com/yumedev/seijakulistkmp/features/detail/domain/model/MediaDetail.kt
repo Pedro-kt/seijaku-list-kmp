@@ -31,6 +31,7 @@ data class MediaDetail(
     val episodes_list: List<Episode>?,
     val chapters_list: List<Chapter>?,
     val images: List<String>,
+    val trailer: Trailer?,
     val isFavorite: Boolean = false,
     val isInList: Boolean = false
 )
@@ -61,4 +62,10 @@ data class Chapter(
     val volume: Int?,
     val releaseDate: String?,
     val rating: Double?
+)
+
+data class Trailer(
+    val id: String,
+    val site: String,
+    val thumbnail: String?
 )

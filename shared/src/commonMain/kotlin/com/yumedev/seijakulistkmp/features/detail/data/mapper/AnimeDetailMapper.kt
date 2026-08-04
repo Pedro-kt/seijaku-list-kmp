@@ -74,6 +74,14 @@ fun GetAnimeDetailQuery.Media.toMediaDetail(): MediaDetail {
         ?.minByOrNull { it?.rank ?: Int.MAX_VALUE }
         ?.rank
 
+    val trailerData = trailer?.let { t ->
+        com.yumedev.seijakulistkmp.features.detail.domain.model.Trailer(
+            id = t.id ?: "",
+            site = t.site ?: "",
+            thumbnail = t.thumbnail
+        )
+    }
+
     return MediaDetail(
         id = id,
         title = displayTitle,
@@ -105,6 +113,7 @@ fun GetAnimeDetailQuery.Media.toMediaDetail(): MediaDetail {
         episodes_list = episodesList.takeIf { it.isNotEmpty() },
         chapters_list = null,
         images = emptyList(),
+        trailer = trailerData,
         isFavorite = false,
         isInList = false
     )

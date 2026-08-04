@@ -108,6 +108,7 @@ fun GetMangaDetailQuery.Media.toMediaDetail(): MediaDetail {
         episodes_list = null,
         chapters_list = null,
         images = emptyList(),
+        trailer = null,
         isFavorite = false,
         isInList = false
     )

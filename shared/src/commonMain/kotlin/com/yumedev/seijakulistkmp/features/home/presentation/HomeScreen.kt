@@ -48,7 +48,9 @@ class HomeScreen : Screen {
 
 @Composable
 fun HomeScreenContent(
-    onNavigateToSearch: () -> Unit = {}
+    onNavigateToSearch: () -> Unit = {},
+    onNavigateToAnimeDetail: (Int) -> Unit = {},
+    onNavigateToMangaDetail: (Int) -> Unit = {}
 ) {
     val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.state.collectAsState()
@@ -148,7 +150,8 @@ fun HomeScreenContent(
                         onFeaturedRetry = { viewModel.retryLoadFeaturedAnime() },
                         onAiringNowRetry = { viewModel.retryLoadAiringNow() },
                         onNextSeasonRetry = { viewModel.retryLoadNextSeason() },
-                        onTopRatedRetry = { viewModel.retryLoadTopRated() }
+                        onTopRatedRetry = { viewModel.retryLoadTopRated() },
+                        onAnimeClick = onNavigateToAnimeDetail
                     )
                     1 -> MangaTabContent(
                         scrollState = mangaScrollState,
@@ -158,7 +161,8 @@ fun HomeScreenContent(
                         onPopularRetry = { viewModel.retryLoadPopularManga() },
                         onTopRatedRetry = { viewModel.retryLoadTopRatedManga() },
                         onRecentlyAddedRetry = { viewModel.retryLoadRecentlyAddedManga() },
-                        onManhwaRetry = { viewModel.retryLoadManhwaManga() }
+                        onManhwaRetry = { viewModel.retryLoadManhwaManga() },
+                        onMangaClick = onNavigateToMangaDetail
                     )
                 }
             }
@@ -173,7 +177,8 @@ private fun AnimeTabContent(
     onFeaturedRetry: () -> Unit,
     onAiringNowRetry: () -> Unit,
     onNextSeasonRetry: () -> Unit,
-    onTopRatedRetry: () -> Unit
+    onTopRatedRetry: () -> Unit,
+    onAnimeClick: (Int) -> Unit
 ) {
     LazyColumn(
         state = scrollState,
@@ -264,7 +269,8 @@ private fun AnimeTabContent(
                 state.featuredAnime.isNotEmpty() -> {
                     FeaturedCarousel(
                         items = state.featuredAnime,
-                        modifier = Modifier.padding(top = 16.dp)
+                        modifier = Modifier.padding(top = 16.dp),
+                        onItemClick = { item -> onAnimeClick(item.id) }
                     )
                 }
             }
@@ -275,7 +281,7 @@ private fun AnimeTabContent(
                 title = stringResource(Res.string.airing_now),
                 items = state.airingNowAnime,
                 onSeeMoreClick = { /* TODO: Navigate to Airing Now list */ },
-                onItemClick = { item -> /* TODO: Navigate to anime detail */ }
+                onItemClick = { item -> onAnimeClick(item.id) }
             )
         }
 
@@ -284,7 +290,7 @@ private fun AnimeTabContent(
                 title = stringResource(Res.string.seasonal),
                 items = state.nextSeasonAnime,
                 onSeeMoreClick = { /* TODO: Navigate to Next Season list */ },
-                onItemClick = { item -> /* TODO: Navigate to anime detail */ }
+                onItemClick = { item -> onAnimeClick(item.id) }
             )
         }
 
@@ -293,7 +299,7 @@ private fun AnimeTabContent(
                 title = stringResource(Res.string.top_rated),
                 items = state.topRatedAnime,
                 onSeeMoreClick = { /* TODO: Navigate to Top Rated list */ },
-                onItemClick = { item -> /* TODO: Navigate to anime detail */ }
+                onItemClick = { item -> onAnimeClick(item.id) }
             )
         }
 
@@ -310,7 +316,8 @@ private fun MangaTabContent(
     onPopularRetry: () -> Unit,
     onTopRatedRetry: () -> Unit,
     onRecentlyAddedRetry: () -> Unit,
-    onManhwaRetry: () -> Unit
+    onManhwaRetry: () -> Unit,
+    onMangaClick: (Int) -> Unit
 ) {
     LazyColumn(
         state = scrollState,
@@ -402,7 +409,8 @@ private fun MangaTabContent(
                 state.featuredManga.isNotEmpty() -> {
                     FeaturedCarousel(
                         items = state.featuredManga,
-                        modifier = Modifier.padding(top = 16.dp)
+                        modifier = Modifier.padding(top = 16.dp),
+                        onItemClick = { item -> onMangaClick(item.id) }
                     )
                 }
             }
@@ -414,7 +422,7 @@ private fun MangaTabContent(
                 title = stringResource(Res.string.publishing_now),
                 items = state.publishingManga,
                 onSeeMoreClick = { /* TODO: Navigate to Publishing list */ },
-                onItemClick = { item -> /* TODO: Navigate to manga detail */ }
+                onItemClick = { item -> onMangaClick(item.id) }
             )
         }
 
@@ -424,7 +432,7 @@ private fun MangaTabContent(
                 title = stringResource(Res.string.popular_manga),
                 items = state.popularManga,
                 onSeeMoreClick = { /* TODO: Navigate to Popular list */ },
-                onItemClick = { item -> /* TODO: Navigate to manga detail */ }
+                onItemClick = { item -> onMangaClick(item.id) }
             )
         }
 
@@ -434,7 +442,7 @@ private fun MangaTabContent(
                 title = stringResource(Res.string.top_rated_manga),
                 items = state.topRatedManga,
                 onSeeMoreClick = { /* TODO: Navigate to Top Rated list */ },
-                onItemClick = { item -> /* TODO: Navigate to manga detail */ }
+                onItemClick = { item -> onMangaClick(item.id) }
             )
         }
 
@@ -444,7 +452,7 @@ private fun MangaTabContent(
                 title = stringResource(Res.string.recently_added),
                 items = state.recentlyAddedManga,
                 onSeeMoreClick = { /* TODO: Navigate to Recently Added list */ },
-                onItemClick = { item -> /* TODO: Navigate to manga detail */ }
+                onItemClick = { item -> onMangaClick(item.id) }
             )
         }
 
@@ -454,7 +462,7 @@ private fun MangaTabContent(
                 title = stringResource(Res.string.manhwa),
                 items = state.manhwaManga,
                 onSeeMoreClick = { /* TODO: Navigate to Manhwa list */ },
-                onItemClick = { item -> /* TODO: Navigate to manga detail */ }
+                onItemClick = { item -> onMangaClick(item.id) }
             )
         }
 
