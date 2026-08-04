@@ -94,7 +94,7 @@ fun DetailInformation(
                         if (rowItems.size == 2) {
                             VerticalDivider(
                                 modifier = Modifier.fillMaxHeight(),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                             )
 
                             Box(
@@ -115,7 +115,7 @@ fun DetailInformation(
 
                     if (index < infoItems.chunked(2).size - 1) {
                         HorizontalDivider(
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                         )
                     }
                 }

@@ -182,7 +182,7 @@ private fun LoadingContent(onBack: () -> Unit) {
                             if (index < 2) {
                                 VerticalDivider(
                                     modifier = Modifier.fillMaxHeight(),
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                                 )
                             }
                         }
