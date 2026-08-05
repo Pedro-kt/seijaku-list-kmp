@@ -19,6 +19,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.core.error.ErrorType
+import com.yumedev.seijakulistkmp.core.utils.rememberShareHelper
 import com.yumedev.seijakulistkmp.core.utils.rememberUrlOpener
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaDetail
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
@@ -42,6 +43,7 @@ data class DetailScreen(
         val viewModel = koinViewModel<DetailViewModel>()
         val state by viewModel.state.collectAsState()
         val urlOpener = rememberUrlOpener()
+        val shareHelper = rememberShareHelper()
 
         LaunchedEffect(mediaId, mediaType) {
             viewModel.loadMediaDetail(mediaId, mediaType)
@@ -62,7 +64,15 @@ data class DetailScreen(
                     mediaDetail = mediaDetailUi,
                     onBackClick = { navigator.pop() },
                     onFavoriteClick = { viewModel.toggleFavorite() },
-                    onShareClick = { /* TODO: Implement share */ },
+                    onShareClick = {
+                        val typeText = if (mediaDetailUi.type == MediaType.ANIME) "anime" else "manga"
+                        val shareText = buildString {
+                            append(mediaDetailUi.title)
+                            append("\n\n")
+                            append("https://anilist.co/$typeText/${mediaDetailUi.id}")
+                        }
+                        shareHelper.shareText(shareText, mediaDetailUi.title)
+                    },
                     onMoreClick = { /* TODO: Implement more options */ },
                     onAddToListClick = { viewModel.addToList() },
                     onCharacterClick = { /* TODO: Navigate to character detail */ },
