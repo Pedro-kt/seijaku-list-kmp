@@ -1,10 +1,7 @@
 package com.yumedev.seijakulistkmp.features.detail.data.mapper
 
 import com.yumedev.seijakulistkmp.data.remote.graphql.GetMangaDetailQuery
-import com.yumedev.seijakulistkmp.features.detail.domain.model.Character
-import com.yumedev.seijakulistkmp.features.detail.domain.model.Chapter
-import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaDetail
-import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
+import com.yumedev.seijakulistkmp.features.detail.domain.model.*
 
 fun GetMangaDetailQuery.Media.toMediaDetail(): MediaDetail {
     val displayTitle = title?.english ?: title?.romaji ?: title?.native ?: "Unknown"
@@ -51,11 +48,7 @@ fun GetMangaDetailQuery.Media.toMediaDetail(): MediaDetail {
                     id = node.id,
                     name = node.name?.full ?: "Unknown",
                     imageUrl = node.image?.large ?: node.image?.medium,
-                    role = when (edge.role?.rawValue) {
-                        "MAIN" -> "Principal"
-                        "SUPPORTING" -> "Secundario"
-                        else -> edge.role?.rawValue ?: "Unknown"
-                    }
+                    role = edge.role?.rawValue ?: "UNKNOWN"
                 )
             }
         } ?: emptyList()
@@ -76,6 +69,23 @@ fun GetMangaDetailQuery.Media.toMediaDetail(): MediaDetail {
         ?.firstOrNull { tag ->
             tag in listOf("Shounen", "Seinen", "Shoujo", "Josei", "Kids")
         }
+
+    val externalLinksList = externalLinks?.mapNotNull { link ->
+        link?.let {
+            ExternalLink(
+                id = it.id,
+                url = it.url,
+                site = it.site ?: "",
+                siteId = it.siteId,
+                type = it.type?.rawValue,
+                language = it.language,
+                color = it.color,
+                icon = it.icon,
+                notes = it.notes,
+                isDisabled = it.isDisabled
+            )
+        }
+    }?.filter { it.isDisabled != true } ?: emptyList()
 
     return MediaDetail(
         id = id,
@@ -109,6 +119,8 @@ fun GetMangaDetailQuery.Media.toMediaDetail(): MediaDetail {
         chapters_list = null,
         images = emptyList(),
         trailer = null,
+        externalLinks = externalLinksList,
+        nextAiringEpisode = null,
         isFavorite = false,
         isInList = false
     )

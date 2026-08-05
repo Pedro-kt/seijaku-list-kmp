@@ -22,6 +22,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.core.error.ErrorType
+import com.yumedev.seijakulistkmp.core.utils.rememberUrlOpener
 import com.yumedev.seijakulistkmp.features.detail.domain.model.Character
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaDetail
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
@@ -41,6 +42,7 @@ data class DetailScreen(
         val navigator = LocalNavigator.currentOrThrow
         val viewModel = koinViewModel<DetailViewModel>()
         val state by viewModel.state.collectAsState()
+        val urlOpener = rememberUrlOpener()
 
         LaunchedEffect(mediaId, mediaType) {
             viewModel.loadMediaDetail(mediaId, mediaType)
@@ -65,7 +67,8 @@ data class DetailScreen(
                     onCharacterClick = { /* TODO: Navigate to character detail */ },
                     onSeeAllChaptersClick = { /* TODO: Navigate to chapters list */ },
                     onChapterClick = { /* TODO: Navigate to chapter/episode */ },
-                    onImageClick = { /* TODO: Open image viewer */ }
+                    onImageClick = { /* TODO: Open image viewer */ },
+                    onExternalLinkClick = { url -> urlOpener.openUrl(url) }
                 )
             }
             else -> {
@@ -317,6 +320,7 @@ fun DetailScreenContent(
     onSeeAllChaptersClick: () -> Unit,
     onChapterClick: (Int) -> Unit,
     onImageClick: (String) -> Unit,
+    onExternalLinkClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -354,6 +358,7 @@ fun DetailScreenContent(
                 totalVotes = mediaDetail.totalVotes,
                 rankingPosition = mediaDetail.rankingPosition,
                 popularityPosition = mediaDetail.popularityPosition,
+                nextAiringEpisode = mediaDetail.nextAiringEpisode,
                 onAddToListClick = onAddToListClick
             )
 
@@ -395,6 +400,17 @@ fun DetailScreenContent(
                 characters = mediaDetail.mainCharacters,
                 onCharacterClick = onCharacterClick
             )
+
+            if (mediaDetail.type == com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType.ANIME) {
+                DetailExternalLinks(
+                    links = mediaDetail.externalLinks,
+                    onLinkClick = { link ->
+                        link.url?.let { url ->
+                            onExternalLinkClick(url)
+                        }
+                    }
+                )
+            }
 
             DetailChaptersList(
                 type = mediaDetail.type,

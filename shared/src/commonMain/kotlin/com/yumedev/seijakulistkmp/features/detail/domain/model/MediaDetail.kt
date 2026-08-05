@@ -32,6 +32,8 @@ data class MediaDetail(
     val chapters_list: List<Chapter>?,
     val images: List<String>,
     val trailer: Trailer?,
+    val externalLinks: List<ExternalLink>,
+    val nextAiringEpisode: NextAiringEpisode?,
     val isFavorite: Boolean = false,
     val isInList: Boolean = false
 )
@@ -51,6 +53,9 @@ data class Character(
 data class Episode(
     val number: Int,
     val title: String,
+    val thumbnail: String?,
+    val url: String?,
+    val site: String?,
     val airDate: String?,
     val duration: Int?,
     val rating: Double?
@@ -68,4 +73,23 @@ data class Trailer(
     val id: String,
     val site: String,
     val thumbnail: String?
+)
+
+data class ExternalLink(
+    val id: Int,
+    val url: String?,
+    val site: String,
+    val siteId: Int?,
+    val type: String?,
+    val language: String?,
+    val color: String?,
+    val icon: String?,
+    val notes: String?,
+    val isDisabled: Boolean?
+)
+
+data class NextAiringEpisode(
+    val episode: Int,
+    val airingAt: Long,
+    val timeUntilAiring: Long
 )

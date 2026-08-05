@@ -1,10 +1,7 @@
 package com.yumedev.seijakulistkmp.features.detail.data.mapper
 
 import com.yumedev.seijakulistkmp.data.remote.graphql.GetAnimeDetailQuery
-import com.yumedev.seijakulistkmp.features.detail.domain.model.Character
-import com.yumedev.seijakulistkmp.features.detail.domain.model.Episode
-import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaDetail
-import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
+import com.yumedev.seijakulistkmp.features.detail.domain.model.*
 
 fun GetAnimeDetailQuery.Media.toMediaDetail(): MediaDetail {
     val displayTitle = title?.english ?: title?.romaji ?: title?.native ?: "Unknown"
@@ -45,11 +42,7 @@ fun GetAnimeDetailQuery.Media.toMediaDetail(): MediaDetail {
                     id = node.id,
                     name = node.name?.full ?: "Unknown",
                     imageUrl = node.image?.large ?: node.image?.medium,
-                    role = when (edge.role?.rawValue) {
-                        "MAIN" -> "Principal"
-                        "SUPPORTING" -> "Secundario"
-                        else -> edge.role?.rawValue ?: "Unknown"
-                    }
+                    role = edge.role?.rawValue ?: "UNKNOWN"
                 )
             }
         } ?: emptyList()
@@ -58,6 +51,9 @@ fun GetAnimeDetailQuery.Media.toMediaDetail(): MediaDetail {
         Episode(
             number = index + 1,
             title = ep?.title ?: "Episode ${index + 1}",
+            thumbnail = ep?.thumbnail,
+            url = ep?.url,
+            site = ep?.site,
             airDate = null,
             duration = duration,
             rating = null
@@ -75,10 +71,35 @@ fun GetAnimeDetailQuery.Media.toMediaDetail(): MediaDetail {
         ?.rank
 
     val trailerData = trailer?.let { t ->
-        com.yumedev.seijakulistkmp.features.detail.domain.model.Trailer(
+        Trailer(
             id = t.id ?: "",
             site = t.site ?: "",
             thumbnail = t.thumbnail
+        )
+    }
+
+    val externalLinksList = externalLinks?.mapNotNull { link ->
+        link?.let {
+            ExternalLink(
+                id = it.id,
+                url = it.url,
+                site = it.site ?: "",
+                siteId = it.siteId,
+                type = it.type?.rawValue,
+                language = it.language,
+                color = it.color,
+                icon = it.icon,
+                notes = it.notes,
+                isDisabled = it.isDisabled
+            )
+        }
+    }?.filter { it.isDisabled != true } ?: emptyList()
+
+    val nextAiring = nextAiringEpisode?.let {
+        NextAiringEpisode(
+            episode = it.episode,
+            airingAt = it.airingAt.toLong(),
+            timeUntilAiring = it.timeUntilAiring.toLong()
         )
     }
 
@@ -114,6 +135,8 @@ fun GetAnimeDetailQuery.Media.toMediaDetail(): MediaDetail {
         chapters_list = null,
         images = emptyList(),
         trailer = trailerData,
+        externalLinks = externalLinksList,
+        nextAiringEpisode = nextAiring,
         isFavorite = false,
         isInList = false
     )

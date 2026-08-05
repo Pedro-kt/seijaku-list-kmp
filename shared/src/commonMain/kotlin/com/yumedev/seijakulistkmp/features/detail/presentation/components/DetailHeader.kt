@@ -35,6 +35,7 @@ fun DetailHeader(
     totalVotes: Int?,
     rankingPosition: Int?,
     popularityPosition: Int?,
+    nextAiringEpisode: com.yumedev.seijakulistkmp.features.detail.domain.model.NextAiringEpisode?,
     onAddToListClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -99,19 +100,30 @@ fun DetailHeader(
             }
         }
 
-        // Metadata Row
-        Text(
-            text = buildMetadataString(
-                year = year,
-                format = format,
-                chapters = chapters,
-                volumes = volumes,
-                episodes = episodes,
-                status = status
-            ),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-        )
+        // Metadata Row with optional airing badge
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = buildMetadataString(
+                    year = year,
+                    format = format,
+                    chapters = chapters,
+                    volumes = volumes,
+                    episodes = episodes,
+                    status = status
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                modifier = Modifier.weight(1f, fill = false)
+            )
+
+            nextAiringEpisode?.let { airing ->
+                NextAiringPill(airing)
+            }
+        }
 
         Surface(
             modifier = Modifier.fillMaxWidth(),
@@ -222,6 +234,7 @@ private fun StatItem(
     }
 }
 
+@Composable
 private fun buildMetadataString(
     year: Int?,
     format: String?,
@@ -236,8 +249,20 @@ private fun buildMetadataString(
         chapters?.let { add("$it cap") }
         volumes?.let { add("$it vol") }
         episodes?.let { add("$it ep") }
-        status?.let { add(it) }
+        status?.let { add(getStatusText(it)) }
     }.joinToString(" · ")
+}
+
+@Composable
+private fun getStatusText(status: String): String {
+    return when (status.uppercase()) {
+        "FINISHED" -> stringResource(Res.string.status_finished)
+        "RELEASING" -> stringResource(Res.string.status_airing)
+        "NOT_YET_RELEASED" -> stringResource(Res.string.status_not_yet_aired)
+        "CANCELLED" -> stringResource(Res.string.status_cancelled)
+        "HIATUS" -> stringResource(Res.string.status_cancelled)
+        else -> status
+    }
 }
 
 private fun formatScore(score: Double): String {
@@ -257,5 +282,37 @@ private fun formatVotes(votes: Int?): String {
             "${k}K votos"
         }
         else -> "$votes votos"
+    }
+}
+
+@Composable
+private fun NextAiringPill(
+    airingEpisode: com.yumedev.seijakulistkmp.features.detail.domain.model.NextAiringEpisode,
+    modifier: Modifier = Modifier
+) {
+    val timeUntilAiring = airingEpisode.timeUntilAiring
+    val (timeValue, timeUnit) = when {
+        timeUntilAiring < 3600 -> (timeUntilAiring / 60).toInt() to stringResource(Res.string.detail_time_minutes)
+        timeUntilAiring < 86400 -> (timeUntilAiring / 3600).toInt() to stringResource(Res.string.detail_time_hours)
+        else -> (timeUntilAiring / 86400).toInt() to stringResource(Res.string.detail_time_days)
+    }
+
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
+    ) {
+        Text(
+            text = stringResource(
+                Res.string.detail_next_episode_short,
+                airingEpisode.episode,
+                timeValue,
+                timeUnit
+            ),
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+        )
     }
 }

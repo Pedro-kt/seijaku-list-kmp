@@ -115,11 +115,20 @@ private fun CharacterItem(
         }
 
         Text(
-            text = character.role,
+            text = getCharacterRoleText(character.role),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             textAlign = TextAlign.Center,
             maxLines = 1
         )
+    }
+}
+
+@Composable
+private fun getCharacterRoleText(role: String): String {
+    return when (role) {
+        "MAIN" -> stringResource(Res.string.character_role_main)
+        "SUPPORTING" -> stringResource(Res.string.character_role_supporting)
+        else -> role
     }
 }

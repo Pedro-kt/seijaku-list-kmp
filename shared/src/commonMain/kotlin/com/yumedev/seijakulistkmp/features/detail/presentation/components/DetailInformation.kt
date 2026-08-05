@@ -187,7 +187,7 @@ private fun buildInfoItems(
         status?.let {
             add(InfoItem(
                 label = stringResource(Res.string.detail_info_status),
-                value = it
+                value = getStatusText(it)
             ))
         }
 
@@ -268,5 +268,17 @@ private fun buildInfoItems(
                 value = it
             ))
         }
+    }
+}
+
+@Composable
+private fun getStatusText(status: String): String {
+    return when (status.uppercase()) {
+        "FINISHED" -> stringResource(Res.string.status_finished)
+        "RELEASING" -> stringResource(Res.string.status_airing)
+        "NOT_YET_RELEASED" -> stringResource(Res.string.status_not_yet_aired)
+        "CANCELLED" -> stringResource(Res.string.status_cancelled)
+        "HIATUS" -> stringResource(Res.string.status_cancelled)
+        else -> status
     }
 }

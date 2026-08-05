@@ -147,6 +147,14 @@
     <string name="detail_read_less">Read less</string>
     <string name="detail_see_all_chapters">See chapters (%1$d)</string>
     <string name="detail_see_all_episodes">See episodes (%1$d)</string>
+    <string name="detail_see_less">See less</string>
+    <string name="detail_watch_on">Watch on</string>
+    <string name="detail_episode_number">Episode %1$d</string>
+    <string name="detail_next_episode">Episode %1$d in %2$d %3$s</string>
+    <string name="detail_next_episode_short">Ep. %1$d in %2$d%3$s</string>
+    <string name="detail_time_minutes">m</string>
+    <string name="detail_time_hours">h</string>
+    <string name="detail_time_days">d</string>
 
     <!-- Detail Sections -->
     <string name="detail_synopsis">Synopsis</string>

@@ -4,17 +4,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.yumedev.seijakulistkmp.features.detail.domain.model.Chapter
 import com.yumedev.seijakulistkmp.features.detail.domain.model.Episode
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
+import dev.seyfarth.tablericons.outlined.PlayerPlay
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
 
@@ -34,6 +38,8 @@ fun DetailChaptersList(
     }
 
     if (!hasContent) return
+
+    var isExpanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -71,7 +77,8 @@ fun DetailChaptersList(
         ) {
             when (type) {
                 MediaType.MANGA -> {
-                    chapters?.take(3)?.forEach { chapter ->
+                    val itemsToShow = if (isExpanded) chapters else chapters?.take(3)
+                    itemsToShow?.forEach { chapter ->
                         ChapterItem(
                             number = chapter.number,
                             title = chapter.title,
@@ -88,18 +95,10 @@ fun DetailChaptersList(
                     }
                 }
                 MediaType.ANIME -> {
-                    episodes?.take(3)?.forEach { episode ->
-                        ChapterItem(
-                            number = episode.number,
-                            title = episode.title,
-                            metadata = buildString {
-                                episode.duration?.let { append("${it}min") }
-                                episode.airDate?.let {
-                                    if (episode.duration != null) append(" · ")
-                                    append(it)
-                                }
-                            },
-                            rating = episode.rating,
+                    val itemsToShow = if (isExpanded) episodes else episodes?.take(3)
+                    itemsToShow?.forEach { episode ->
+                        EpisodeItem(
+                            episode = episode,
                             onClick = { onItemClick(episode.number) }
                         )
                     }
@@ -109,19 +108,119 @@ fun DetailChaptersList(
         totalCount?.let { count ->
             if (count > 3) {
                 OutlinedButton(
-                    onClick = onSeeAllClick,
+                    onClick = { isExpanded = !isExpanded },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp)
                 ) {
                     Text(
-                        text = stringResource(
-                            if (type == MediaType.MANGA) Res.string.detail_see_all_chapters
-                            else Res.string.detail_see_all_episodes,
-                            count
-                        ),
+                        text = if (isExpanded) {
+                            stringResource(Res.string.detail_see_less)
+                        } else {
+                            stringResource(
+                                if (type == MediaType.MANGA) Res.string.detail_see_all_chapters
+                                else Res.string.detail_see_all_episodes,
+                                count
+                            )
+                        },
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.SemiBold
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EpisodeItem(
+    episode: Episode,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(120.dp)
+                    .height(70.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            ) {
+                if (!episode.thumbnail.isNullOrBlank()) {
+                    AsyncImage(
+                        model = episode.thumbnail,
+                        contentDescription = episode.title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = episode.number.toString(),
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                // Title
+                Text(
+                    text = episode.title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    episode.site?.let { site ->
+                        Surface(
+                            shape = RoundedCornerShape(4.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer
+                        ) {
+                            Text(
+                                text = site,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+                    episode.duration?.let { duration ->
+                        Text(
+                            text = "${duration}min",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    }
                 }
             }
         }
