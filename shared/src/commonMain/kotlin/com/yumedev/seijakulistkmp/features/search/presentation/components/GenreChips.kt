@@ -10,25 +10,36 @@ import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.features.search.presentation.model.Genre
 import com.yumedev.seijakulistkmp.features.search.presentation.model.toLabel
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GenreChips(
     genres: List<Genre>,
     onGenreClick: (Genre, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    FlowRow(
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        genres.forEach { genre ->
-            val genreLabel = genre.toLabel()
-            GenreChip(
-                genre = genre,
-                onClick = { onGenreClick(genre, genreLabel) }
-            )
+        genres.chunked(3).forEach { rowGenres ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                rowGenres.forEach { genre ->
+                    val genreLabel = genre.toLabel()
+                    GenreChip(
+                        genre = genre,
+                        onClick = { onGenreClick(genre, genreLabel) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                repeat(3 - rowGenres.size) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
         }
     }
 }
@@ -41,25 +52,27 @@ private fun GenreChip(
 ) {
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.secondaryContainer,
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
         modifier = modifier
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = genre.icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(20.dp)
             )
             Text(
                 text = genre.toLabel(),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
