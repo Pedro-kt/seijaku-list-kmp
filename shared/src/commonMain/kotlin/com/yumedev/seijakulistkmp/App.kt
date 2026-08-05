@@ -10,6 +10,7 @@ import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import com.yumedev.seijakulistkmp.di.animeModule
 import com.yumedev.seijakulistkmp.di.coreModule
+import com.yumedev.seijakulistkmp.di.detailModule
 import com.yumedev.seijakulistkmp.di.homeModule
 import com.yumedev.seijakulistkmp.di.networkModule
 import com.yumedev.seijakulistkmp.di.searchModule
@@ -35,7 +36,8 @@ fun App() {
             networkModule,
             animeModule,
             homeModule,
-            searchModule
+            searchModule,
+            detailModule
         )
     }) {
         SeijakuTheme {

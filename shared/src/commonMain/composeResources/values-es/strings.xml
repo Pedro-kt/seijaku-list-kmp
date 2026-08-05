@@ -140,4 +140,84 @@
     <string name="error_loading_featured_hint">Verifica tu conexión e intenta nuevamente</string>
     <string name="error_server_unavailable">Servicio temporalmente no disponible</string>
     <string name="error_server_unavailable_hint">El servidor está experimentando problemas. Intenta más tarde</string>
+
+    <!-- Detail Screen -->
+    <string name="detail_add_to_list">Añadir a mi lista</string>
+    <string name="detail_read_more">Leer más</string>
+    <string name="detail_read_less">Leer menos</string>
+    <string name="detail_see_all_chapters">Ver capítulos (%1$d)</string>
+    <string name="detail_see_all_episodes">Ver episodios (%1$d)</string>
+    <string name="detail_see_less">Ver menos</string>
+    <string name="detail_watch_on">Ver en</string>
+    <string name="detail_episode_number">Episodio %1$d</string>
+    <string name="detail_next_episode">Episodio %1$d en %2$d %3$s</string>
+    <string name="detail_next_episode_short">Ep. %1$d en %2$d%3$s</string>
+    <string name="detail_time_minutes">m</string>
+    <string name="detail_time_hours">h</string>
+    <string name="detail_time_days">d</string>
+
+    <!-- Detail Sections -->
+    <string name="detail_synopsis">Sinopsis</string>
+    <string name="detail_information">Información</string>
+    <string name="detail_genres">Géneros</string>
+    <string name="detail_main_characters">Personajes</string>
+    <string name="detail_chapters">Capítulos</string>
+    <string name="detail_episodes">Episodios</string>
+    <string name="detail_images">Imágenes</string>
+
+    <!-- Detail Info Labels -->
+    <string name="detail_info_type">Tipo</string>
+    <string name="detail_info_volumes">Volúmenes</string>
+    <string name="detail_info_status">Estado</string>
+    <string name="detail_info_chapters">Capítulos</string>
+    <string name="detail_info_episodes">Episodios</string>
+    <string name="detail_info_publication">Publicación</string>
+    <string name="detail_info_serialization">Serialización</string>
+    <string name="detail_info_author">Autor</string>
+    <string name="detail_info_art">Arte</string>
+    <string name="detail_info_demographic">Demografía</string>
+    <string name="detail_info_license">Licencia</string>
+    <string name="detail_info_studio">Estudio</string>
+    <string name="detail_info_broadcast">Emisión</string>
+
+    <!-- Detail Stats -->
+    <string name="detail_ranking">Ranking</string>
+    <string name="detail_popularity">Popularidad</string>
+    <string name="detail_votes">%1$s votos</string>
+    <string name="detail_chapters_count">%1$d capítulos</string>
+    <string name="detail_episodes_count">%1$d episodios</string>
+    <string name="detail_trailer">Tráiler</string>
+
+    <!-- Character Roles -->
+    <string name="character_role_main">Principal</string>
+    <string name="character_role_supporting">Secundario</string>
+
+    <!-- Add to List Bottom Sheet -->
+    <string name="list_edit_title">Editar</string>
+    <string name="list_status">Estado</string>
+    <string name="list_status_watching">Viendo</string>
+    <string name="list_status_reading">Leyendo</string>
+    <string name="list_status_completed">Completado</string>
+    <string name="list_status_paused">En pausa</string>
+    <string name="list_status_dropped">Abandonado</string>
+    <string name="list_status_plan_to_watch">Plan ver</string>
+    <string name="list_status_plan_to_read">Plan leer</string>
+    <string name="list_episodes_watched">Episodios vistos</string>
+    <string name="list_chapters_read">Capítulos vistos</string>
+    <string name="list_decrease">Disminuir</string>
+    <string name="list_increase">Aumentar</string>
+    <string name="list_your_score">Tu score</string>
+    <string name="list_not_scored">Sin puntuar</string>
+    <string name="list_note">Nota</string>
+    <string name="list_note_placeholder">Tu opinión...</string>
+    <string name="list_start_date">Inicio</string>
+    <string name="list_rewatches">Reinicios</string>
+    <string name="list_cancel">Cancelar</string>
+    <string name="list_save">Guardar</string>
+
+    <!-- List Priority -->
+    <string name="list_priority">Prioridad</string>
+    <string name="list_priority_high">Alta</string>
+    <string name="list_priority_medium">Media</string>
+    <string name="list_priority_low">Baja</string>
 </resources>

@@ -14,6 +14,7 @@ import com.yumedev.seijakulistkmp.features.search.presentation.components.Expand
 import com.yumedev.seijakulistkmp.features.search.presentation.components.SearchResultsContent
 import com.yumedev.seijakulistkmp.features.search.presentation.model.toApiValue
 import org.koin.compose.viewmodel.koinViewModel
+import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaType as SearchMediaType
 
 class SearchScreen : Screen {
     @Composable
@@ -26,7 +27,9 @@ class SearchScreen : Screen {
 fun SearchScreenContent(
     shouldExpandOnStart: Boolean = false,
     onExpandedChange: (Boolean) -> Unit = {},
-    onExpandHandled: () -> Unit = {}
+    onExpandHandled: () -> Unit = {},
+    onNavigateToAnimeDetail: (Int) -> Unit = {},
+    onNavigateToMangaDetail: (Int) -> Unit = {}
 ) {
     val viewModel = koinViewModel<SearchViewModel>()
     val state by viewModel.state.collectAsState()
@@ -60,7 +63,14 @@ fun SearchScreenContent(
                 isLoading = state.isSearching,
                 error = state.searchError,
                 onResultClick = { result ->
-                    // TODO: Navigate to anime/manga detail
+                    when (result.mediaType) {
+                        SearchMediaType.ANIME -> {
+                            onNavigateToAnimeDetail(result.id)
+                        }
+                        SearchMediaType.MANGA -> {
+                            onNavigateToMangaDetail(result.id)
+                        }
+                    }
                 },
                 onCharacterClick = { character ->
                     // TODO: Navigate to character detail

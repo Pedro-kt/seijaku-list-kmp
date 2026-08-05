@@ -1,0 +1,119 @@
+query GetMangaDetail($id: Int!) {
+    Media(id: $id, type: MANGA) {
+        id
+        title {
+            romaji
+            english
+            native
+        }
+        coverImage {
+            extraLarge
+            large
+            medium
+            color
+        }
+        bannerImage
+        format
+        status
+        description
+        startDate {
+            year
+            month
+            day
+        }
+        endDate {
+            year
+            month
+            day
+        }
+        chapters
+        volumes
+        source
+        averageScore
+        meanScore
+        popularity
+        favourites
+        rankings {
+            rank
+            type
+            allTime
+        }
+        genres
+        tags {
+            id
+            name
+            rank
+        }
+        staff(page: 1, perPage: 10) {
+            edges {
+                node {
+                    id
+                    name {
+                        full
+                        native
+                    }
+                }
+                role
+            }
+        }
+        characters(page: 1, perPage: 25, sort: ROLE) {
+            edges {
+                node {
+                    id
+                    name {
+                        full
+                        native
+                    }
+                    image {
+                        large
+                        medium
+                    }
+                }
+                role
+            }
+        }
+        relations {
+            edges {
+                node {
+                    id
+                    title {
+                        romaji
+                    }
+                    coverImage {
+                        medium
+                    }
+                    type
+                    format
+                }
+                relationType
+            }
+        }
+        externalLinks {
+            id
+            url
+            site
+            siteId
+            type
+            language
+            color
+            icon
+            notes
+            isDisabled
+        }
+        recommendations(page: 1, perPage: 5) {
+            edges {
+                node {
+                    mediaRecommendation {
+                        id
+                        title {
+                            romaji
+                        }
+                        coverImage {
+                            medium
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

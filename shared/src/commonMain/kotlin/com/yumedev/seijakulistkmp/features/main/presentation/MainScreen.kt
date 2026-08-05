@@ -5,7 +5,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.features.anime.presentation.list.AnimeListScreenContent
+import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
+import com.yumedev.seijakulistkmp.features.detail.presentation.DetailScreen
 import com.yumedev.seijakulistkmp.features.home.presentation.HomeScreenContent
 import com.yumedev.seijakulistkmp.features.manga.presentation.MangaListScreenContent
 import com.yumedev.seijakulistkmp.features.profile.presentation.ProfileScreenContent
@@ -34,6 +38,7 @@ class MainScreen : Screen {
 
 @Composable
 fun MainScreenContent() {
+    val navigator = LocalNavigator.currentOrThrow
     var selectedItem by remember { mutableStateOf<BottomNavItem>(BottomNavItem.Home) }
     var isSearchExpanded by remember { mutableStateOf(false) }
     var shouldExpandSearch by remember { mutableStateOf(false) }
@@ -66,6 +71,12 @@ fun MainScreenContent() {
                     onNavigateToSearch = {
                         shouldExpandSearch = true
                         selectedItem = BottomNavItem.Search
+                    },
+                    onNavigateToAnimeDetail = { animeId ->
+                        navigator.push(DetailScreen(animeId, MediaType.ANIME))
+                    },
+                    onNavigateToMangaDetail = { mangaId ->
+                        navigator.push(DetailScreen(mangaId, MediaType.MANGA))
                     }
                 )
                 BottomNavItem.Anime -> AnimeListScreenContent()
@@ -77,6 +88,12 @@ fun MainScreenContent() {
                     },
                     onExpandHandled = {
                         shouldExpandSearch = false
+                    },
+                    onNavigateToAnimeDetail = { animeId ->
+                        navigator.push(DetailScreen(animeId, MediaType.ANIME))
+                    },
+                    onNavigateToMangaDetail = { mangaId ->
+                        navigator.push(DetailScreen(mangaId, MediaType.MANGA))
                     }
                 )
                 BottomNavItem.Profile -> ProfileScreenContent()
