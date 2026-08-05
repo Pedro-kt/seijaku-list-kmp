@@ -214,4 +214,10 @@
     <string name="list_rewatches">Rewatches</string>
     <string name="list_cancel">Cancel</string>
     <string name="list_save">Save</string>
+
+    <!-- List Priority -->
+    <string name="list_priority">Priority</string>
+    <string name="list_priority_high">High</string>
+    <string name="list_priority_medium">Medium</string>
+    <string name="list_priority_low">Low</string>
 </resources>

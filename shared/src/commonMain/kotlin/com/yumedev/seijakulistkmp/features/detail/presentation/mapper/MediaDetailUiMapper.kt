@@ -127,6 +127,7 @@ fun MediaDetail.toUiModel(
         coverImageUrl = coverImageUrl,
         bannerImageUrl = bannerImageUrl,
         type = type,
+        status = status,
         headerMetadata = headerMetadata,
         typeLabel = format,
         demographic = demographic,

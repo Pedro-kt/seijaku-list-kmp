@@ -10,6 +10,7 @@ data class MediaDetailUiModel(
     val coverImageUrl: String?,
     val bannerImageUrl: String?,
     val type: MediaType,
+    val status: String?,
     val headerMetadata: String,
     val typeLabel: String?,
     val demographic: String?,

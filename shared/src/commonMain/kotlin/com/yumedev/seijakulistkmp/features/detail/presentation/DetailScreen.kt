@@ -456,10 +456,11 @@ fun DetailScreenContent(
         AddToListBottomSheet(
             mediaTitle = mediaDetail.title,
             mediaType = mediaDetail.type,
+            mediaStatus = mediaDetail.status,
             totalEpisodes = mediaDetail.totalEpisodes,
             totalChapters = mediaDetail.totalChapters,
             onDismiss = { showAddToListBottomSheet = false },
-            onSave = { status, progress, score, note, startDate, rewatches ->
+            onSave = { status, progress, score, note, startDate, rewatches, priority ->
                 // TODO: Save to backend/database
                 onAddToListClick()
             }

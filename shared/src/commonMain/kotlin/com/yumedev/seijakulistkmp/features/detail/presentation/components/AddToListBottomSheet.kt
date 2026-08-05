@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
+import com.yumedev.seijakulistkmp.features.detail.presentation.utils.AddToListHelper
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.CalendarEvent
 import dev.seyfarth.tablericons.outlined.Minus
@@ -31,11 +32,18 @@ enum class ListStatus {
     PLAN_TO_READ
 }
 
+enum class ListPriority {
+    HIGH,
+    MEDIUM,
+    LOW
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddToListBottomSheet(
     mediaTitle: String,
     mediaType: MediaType,
+    mediaStatus: String?, // RELEASING, NOT_YET_RELEASED, FINISHED, etc.
     totalEpisodes: Int?,
     totalChapters: Int?,
     currentProgress: Int = 0,
@@ -44,6 +52,7 @@ fun AddToListBottomSheet(
     currentNote: String = "",
     currentStartDate: String? = null,
     currentRewatches: Int = 0,
+    currentPriority: ListPriority = ListPriority.MEDIUM,
     onDismiss: () -> Unit,
     onSave: (
         status: ListStatus,
@@ -51,19 +60,23 @@ fun AddToListBottomSheet(
         score: Float?,
         note: String,
         startDate: String?,
-        rewatches: Int
+        rewatches: Int,
+        priority: ListPriority
     ) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedStatus by remember { mutableStateOf(currentStatus ?: getDefaultStatus(mediaType)) }
+    var selectedStatus by remember { mutableStateOf(currentStatus ?: AddToListHelper.getDefaultStatus(mediaType, mediaStatus)) }
     var progress by remember { mutableStateOf(currentProgress) }
     var score by remember { mutableStateOf(currentScore) }
     var note by remember { mutableStateOf(currentNote) }
     var startDate by remember { mutableStateOf(currentStartDate) }
     var rewatches by remember { mutableStateOf(currentRewatches) }
+    var priority by remember { mutableStateOf(currentPriority) }
 
     val isAnime = mediaType == MediaType.ANIME
     val maxProgress = if (isAnime) totalEpisodes else totalChapters
+
+    val isPlanToWatch = selectedStatus == ListStatus.PLAN_TO_WATCH || selectedStatus == ListStatus.PLAN_TO_READ
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -117,29 +130,57 @@ fun AddToListBottomSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    getStatusOptions(isAnime).forEach { status ->
+                    AddToListHelper.getStatusOptions(isAnime).forEach { status ->
+                        val isEnabled = AddToListHelper.isStatusEnabled(status, mediaStatus)
                         FilterChip(
                             selected = selectedStatus == status,
-                            onClick = { selectedStatus = status },
+                            onClick = { if (isEnabled) selectedStatus = status },
                             label = {
                                 Text(getStatusLabel(status, isAnime))
-                            }
+                            },
+                            enabled = isEnabled
                         )
                     }
                 }
             }
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = stringResource(
-                        if (isAnime) Res.string.list_episodes_watched
-                        else Res.string.list_chapters_read
-                    ),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            if (isPlanToWatch) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = stringResource(Res.string.list_priority),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ListPriority.entries.forEach { priorityOption ->
+                            FilterChip(
+                                selected = priority == priorityOption,
+                                onClick = { priority = priorityOption },
+                                label = {
+                                    Text(getPriorityLabel(priorityOption))
+                                }
+                            )
+                        }
+                    }
+                }
+            } else {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = stringResource(
+                            if (isAnime) Res.string.list_episodes_watched
+                            else Res.string.list_chapters_read
+                        ),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -348,6 +389,7 @@ fun AddToListBottomSheet(
                     }
                 }
             }
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -372,7 +414,8 @@ fun AddToListBottomSheet(
                             score,
                             note,
                             startDate,
-                            rewatches
+                            rewatches,
+                            priority
                         )
                         onDismiss()
                     },
@@ -393,34 +436,6 @@ fun AddToListBottomSheet(
     }
 }
 
-private fun getStatusOptions(isAnime: Boolean): List<ListStatus> {
-    return if (isAnime) {
-        listOf(
-            ListStatus.WATCHING,
-            ListStatus.COMPLETED,
-            ListStatus.PAUSED,
-            ListStatus.DROPPED,
-            ListStatus.PLAN_TO_WATCH
-        )
-    } else {
-        listOf(
-            ListStatus.READING,
-            ListStatus.COMPLETED,
-            ListStatus.PAUSED,
-            ListStatus.DROPPED,
-            ListStatus.PLAN_TO_READ
-        )
-    }
-}
-
-private fun getDefaultStatus(mediaType: MediaType): ListStatus {
-    return if (mediaType == MediaType.ANIME) {
-        ListStatus.WATCHING
-    } else {
-        ListStatus.READING
-    }
-}
-
 @Composable
 private fun getStatusLabel(status: ListStatus, isAnime: Boolean): String {
     return when (status) {
@@ -431,5 +446,14 @@ private fun getStatusLabel(status: ListStatus, isAnime: Boolean): String {
         ListStatus.DROPPED -> stringResource(Res.string.list_status_dropped)
         ListStatus.PLAN_TO_WATCH -> stringResource(Res.string.list_status_plan_to_watch)
         ListStatus.PLAN_TO_READ -> stringResource(Res.string.list_status_plan_to_read)
+    }
+}
+
+@Composable
+private fun getPriorityLabel(priority: ListPriority): String {
+    return when (priority) {
+        ListPriority.HIGH -> stringResource(Res.string.list_priority_high)
+        ListPriority.MEDIUM -> stringResource(Res.string.list_priority_medium)
+        ListPriority.LOW -> stringResource(Res.string.list_priority_low)
     }
 }

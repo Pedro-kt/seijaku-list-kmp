@@ -214,4 +214,10 @@
     <string name="list_rewatches">Reinicios</string>
     <string name="list_cancel">Cancelar</string>
     <string name="list_save">Guardar</string>
+
+    <!-- List Priority -->
+    <string name="list_priority">Prioridad</string>
+    <string name="list_priority_high">Alta</string>
+    <string name="list_priority_medium">Media</string>
+    <string name="list_priority_low">Baja</string>
 </resources>
