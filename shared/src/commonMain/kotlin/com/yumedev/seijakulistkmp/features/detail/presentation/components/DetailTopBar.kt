@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowLeft
-import dev.seyfarth.tablericons.outlined.Dots
 import dev.seyfarth.tablericons.outlined.Share
 import dev.seyfarth.tablericons.outlined.Star
 
@@ -15,7 +14,6 @@ fun DetailTopBar(
     onBackClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onShareClick: () -> Unit,
-    onMoreClick: () -> Unit,
     isFavorite: Boolean = false,
     modifier: Modifier = Modifier
 ) {
@@ -41,12 +39,6 @@ fun DetailTopBar(
                 Icon(
                     imageVector = TablerIcons.Outlined.Share,
                     contentDescription = "Share"
-                )
-            }
-            IconButton(onClick = onMoreClick) {
-                Icon(
-                    imageVector = TablerIcons.Outlined.Dots,
-                    contentDescription = "More options"
                 )
             }
         },

@@ -73,7 +73,6 @@ data class DetailScreen(
                         }
                         shareHelper.shareText(shareText, mediaDetailUi.title)
                     },
-                    onMoreClick = { /* TODO: Implement more options */ },
                     onAddToListClick = { viewModel.addToList() },
                     onCharacterClick = { /* TODO: Navigate to character detail */ },
                     onSeeAllChaptersClick = { /* TODO: Navigate to chapters list */ },
@@ -105,7 +104,6 @@ private fun LoadingContent(onBack: () -> Unit) {
                 onBackClick = onBack,
                 onFavoriteClick = {},
                 onShareClick = {},
-                onMoreClick = {},
                 isFavorite = false
             )
         }
@@ -286,7 +284,6 @@ private fun ErrorContent(
                 onBackClick = onBack,
                 onFavoriteClick = {},
                 onShareClick = {},
-                onMoreClick = {},
                 isFavorite = false
             )
         }
@@ -367,7 +364,6 @@ fun DetailScreenContent(
     onBackClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onShareClick: () -> Unit,
-    onMoreClick: () -> Unit,
     onAddToListClick: () -> Unit,
     onCharacterClick: (Int) -> Unit,
     onSeeAllChaptersClick: () -> Unit,
@@ -385,7 +381,6 @@ fun DetailScreenContent(
                 onBackClick = onBackClick,
                 onFavoriteClick = onFavoriteClick,
                 onShareClick = onShareClick,
-                onMoreClick = onMoreClick,
                 isFavorite = mediaDetail.isFavorite
             )
         },
