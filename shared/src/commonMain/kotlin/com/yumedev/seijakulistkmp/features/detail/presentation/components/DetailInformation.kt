@@ -30,58 +30,41 @@ fun DetailInformation(
             fontWeight = FontWeight.Bold
         )
 
-        Surface(
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items.chunked(2).forEachIndexed { index, rowItems ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(IntrinsicSize.Min),
-                        horizontalArrangement = Arrangement.spacedBy(0.dp)
+            items.chunked(2).forEach { rowItems ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Surface(
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(16.dp)
-                        ) {
-                            InfoItemView(
-                                label = rowItems[0].label,
-                                value = rowItems[0].value,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-
-                        if (rowItems.size == 2) {
-                            VerticalDivider(
-                                modifier = Modifier.fillMaxHeight(),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                            )
-
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(16.dp)
-                            ) {
-                                InfoItemView(
-                                    label = rowItems[1].label,
-                                    value = rowItems[1].value,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                        } else {
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
+                        InfoItemView(
+                            label = rowItems[0].label,
+                            value = rowItems[0].value,
+                            modifier = Modifier.padding(16.dp)
+                        )
                     }
 
-                    if (index < items.chunked(2).size - 1) {
-                        HorizontalDivider(
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                        )
+                    if (rowItems.size == 2) {
+                        Surface(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        ) {
+                            InfoItemView(
+                                label = rowItems[1].label,
+                                value = rowItems[1].value,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                    } else {
+                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             }
@@ -96,7 +79,7 @@ private fun InfoItemView(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(

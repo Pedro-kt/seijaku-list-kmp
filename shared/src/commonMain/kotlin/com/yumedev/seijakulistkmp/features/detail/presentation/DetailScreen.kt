@@ -168,22 +168,18 @@ private fun LoadingContent(onBack: () -> Unit) {
                         .clip(RoundedCornerShape(8.dp))
                 )
 
-                Surface(
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    shape = RoundedCornerShape(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(IntrinsicSize.Min),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        repeat(3) { index ->
+                    repeat(3) {
+                        Surface(
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
                             Column(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(vertical = 16.dp),
+                                modifier = Modifier.padding(vertical = 16.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
@@ -196,13 +192,6 @@ private fun LoadingContent(onBack: () -> Unit) {
                                     modifier = Modifier
                                         .size(60.dp, 16.dp)
                                         .clip(RoundedCornerShape(8.dp))
-                                )
-                            }
-
-                            if (index < 2) {
-                                VerticalDivider(
-                                    modifier = Modifier.fillMaxHeight(),
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                                 )
                             }
                         }

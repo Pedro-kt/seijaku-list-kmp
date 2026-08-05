@@ -113,18 +113,16 @@ fun DetailHeader(
             }
         }
 
-        Surface(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-            shape = RoundedCornerShape(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                formattedScore?.let { score ->
+            formattedScore?.let { score ->
+                Surface(
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
                     StatItem(
                         icon = {
                             Icon(
@@ -136,37 +134,35 @@ fun DetailHeader(
                         },
                         value = score,
                         label = formattedVotes ?: "",
-                        modifier = Modifier.weight(1f).padding(vertical = 16.dp)
+                        modifier = Modifier.padding(vertical = 16.dp)
                     )
                 }
+            }
 
-                if (formattedScore != null && rankingText != null) {
-                    VerticalDivider(
-                        modifier = Modifier.fillMaxHeight(),
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                    )
-                }
-
-                rankingText?.let { rank ->
+            rankingText?.let { rank ->
+                Surface(
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
                     StatItem(
                         value = rank,
                         label = stringResource(Res.string.detail_ranking),
-                        modifier = Modifier.weight(1f).padding(vertical = 16.dp)
+                        modifier = Modifier.padding(vertical = 16.dp)
                     )
                 }
+            }
 
-                if (rankingText != null && popularityText != null) {
-                    VerticalDivider(
-                        modifier = Modifier.fillMaxHeight(),
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                    )
-                }
-
-                popularityText?.let { popularity ->
+            popularityText?.let { popularity ->
+                Surface(
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
                     StatItem(
                         value = popularity,
                         label = stringResource(Res.string.detail_popularity),
-                        modifier = Modifier.weight(1f).padding(vertical = 16.dp)
+                        modifier = Modifier.padding(vertical = 16.dp)
                     )
                 }
             }
