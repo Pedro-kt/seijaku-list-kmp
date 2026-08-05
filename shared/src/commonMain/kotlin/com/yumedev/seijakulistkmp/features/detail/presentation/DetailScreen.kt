@@ -69,7 +69,15 @@ data class DetailScreen(
                     onSeeAllChaptersClick = { /* TODO: Navigate to chapters list */ },
                     onChapterClick = { /* TODO: Navigate to chapter/episode */ },
                     onImageClick = { /* TODO: Open image viewer */ },
-                    onExternalLinkClick = { url -> url?.let { urlOpener.openUrl(it) } }
+                    onExternalLinkClick = { url -> url?.let { urlOpener.openUrl(it) } },
+                    onTrailerClick = { id, site ->
+                        val url = when (site.lowercase()) {
+                            "youtube" -> "https://www.youtube.com/watch?v=$id"
+                            "dailymotion" -> "https://www.dailymotion.com/video/$id"
+                            else -> "https://www.youtube.com/watch?v=$id"
+                        }
+                        urlOpener.openUrl(url)
+                    }
                 )
             }
             else -> {
@@ -356,6 +364,7 @@ fun DetailScreenContent(
     onChapterClick: (Int) -> Unit,
     onImageClick: (String) -> Unit,
     onExternalLinkClick: (String?) -> Unit,
+    onTrailerClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showAddToListBottomSheet by remember { mutableStateOf(false) }
@@ -405,9 +414,7 @@ fun DetailScreenContent(
             mediaDetail.trailer?.let { trailer ->
                 DetailTrailer(
                     trailer = trailer,
-                    onTrailerClick = { id, site ->
-                        // TODO: Open trailer in browser or YouTube app
-                    }
+                    onTrailerClick = onTrailerClick
                 )
             }
 
