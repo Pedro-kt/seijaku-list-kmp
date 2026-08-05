@@ -16,7 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.yumedev.seijakulistkmp.features.detail.domain.model.Trailer
+import com.yumedev.seijakulistkmp.features.detail.presentation.model.TrailerUiModel
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.PlayerPlay
 import org.jetbrains.compose.resources.stringResource
@@ -24,7 +24,7 @@ import seijakulistkmp.shared.generated.resources.*
 
 @Composable
 fun DetailTrailer(
-    trailer: Trailer,
+    trailer: TrailerUiModel,
     onTrailerClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {

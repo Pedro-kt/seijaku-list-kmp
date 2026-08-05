@@ -34,8 +34,6 @@ fun GetAnimeDetailQuery.Media.toMediaDetail(): MediaDetail {
     }
 
     val mainCharacters = characters?.edges
-        ?.filter { it?.role?.rawValue == "MAIN" }
-        ?.take(10)
         ?.mapNotNull { edge ->
             edge?.node?.let { node ->
                 Character(

@@ -160,7 +160,7 @@
     <string name="detail_synopsis">Synopsis</string>
     <string name="detail_information">Information</string>
     <string name="detail_genres">Genres</string>
-    <string name="detail_main_characters">Main characters</string>
+    <string name="detail_main_characters">Characters</string>
     <string name="detail_chapters">Chapters</string>
     <string name="detail_episodes">Episodes</string>
     <string name="detail_images">Images</string>
@@ -191,4 +191,27 @@
     <!-- Character Roles -->
     <string name="character_role_main">Main</string>
     <string name="character_role_supporting">Supporting</string>
+
+    <!-- Add to List Bottom Sheet -->
+    <string name="list_edit_title">Edit</string>
+    <string name="list_status">Status</string>
+    <string name="list_status_watching">Watching</string>
+    <string name="list_status_reading">Reading</string>
+    <string name="list_status_completed">Completed</string>
+    <string name="list_status_paused">Paused</string>
+    <string name="list_status_dropped">Dropped</string>
+    <string name="list_status_plan_to_watch">Plan to watch</string>
+    <string name="list_status_plan_to_read">Plan to read</string>
+    <string name="list_episodes_watched">Episodes watched</string>
+    <string name="list_chapters_read">Chapters read</string>
+    <string name="list_decrease">Decrease</string>
+    <string name="list_increase">Increase</string>
+    <string name="list_your_score">Your score</string>
+    <string name="list_not_scored">Not scored</string>
+    <string name="list_note">Note</string>
+    <string name="list_note_placeholder">Your opinion...</string>
+    <string name="list_start_date">Start date</string>
+    <string name="list_rewatches">Rewatches</string>
+    <string name="list_cancel">Cancel</string>
+    <string name="list_save">Save</string>
 </resources>

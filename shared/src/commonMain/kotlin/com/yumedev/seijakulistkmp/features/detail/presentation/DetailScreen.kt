@@ -8,10 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,10 +20,12 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.core.error.ErrorType
 import com.yumedev.seijakulistkmp.core.utils.rememberUrlOpener
-import com.yumedev.seijakulistkmp.features.detail.domain.model.Character
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaDetail
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
 import com.yumedev.seijakulistkmp.features.detail.presentation.components.*
+import com.yumedev.seijakulistkmp.features.detail.presentation.mapper.toUiModel
+import com.yumedev.seijakulistkmp.features.detail.presentation.model.DetailStrings
+import com.yumedev.seijakulistkmp.features.detail.presentation.model.MediaDetailUiModel
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AlertCircle
 import org.jetbrains.compose.resources.stringResource
@@ -57,8 +56,10 @@ data class DetailScreen(
                 )
             }
             state.mediaDetail != null -> {
+                val mediaDetailUi = rememberMediaDetailUiModel(state.mediaDetail!!)
+
                 DetailScreenContent(
-                    mediaDetail = state.mediaDetail!!,
+                    mediaDetail = mediaDetailUi,
                     onBackClick = { navigator.pop() },
                     onFavoriteClick = { viewModel.toggleFavorite() },
                     onShareClick = { /* TODO: Implement share */ },
@@ -68,7 +69,7 @@ data class DetailScreen(
                     onSeeAllChaptersClick = { /* TODO: Navigate to chapters list */ },
                     onChapterClick = { /* TODO: Navigate to chapter/episode */ },
                     onImageClick = { /* TODO: Open image viewer */ },
-                    onExternalLinkClick = { url -> urlOpener.openUrl(url) }
+                    onExternalLinkClick = { url -> url?.let { urlOpener.openUrl(it) } }
                 )
             }
             else -> {
@@ -307,22 +308,58 @@ private fun ErrorContent(
     }
 }
 
+@Composable
+private fun rememberMediaDetailUiModel(mediaDetail: MediaDetail): MediaDetailUiModel {
+    val primaryColor = MaterialTheme.colorScheme.primary
+
+    val strings = DetailStrings(
+        statusFinished = stringResource(Res.string.status_finished),
+        statusAiring = stringResource(Res.string.status_airing),
+        statusNotYetAired = stringResource(Res.string.status_not_yet_aired),
+        statusCancelled = stringResource(Res.string.status_cancelled),
+        votes = stringResource(Res.string.detail_votes, ""),
+        timeMinutes = stringResource(Res.string.detail_time_minutes),
+        timeHours = stringResource(Res.string.detail_time_hours),
+        timeDays = stringResource(Res.string.detail_time_days),
+        characterRoleMain = stringResource(Res.string.character_role_main),
+        characterRoleSupporting = stringResource(Res.string.character_role_supporting),
+        infoType = stringResource(Res.string.detail_info_type),
+        infoVolumes = stringResource(Res.string.detail_info_volumes),
+        infoStatus = stringResource(Res.string.detail_info_status),
+        infoChapters = stringResource(Res.string.detail_info_chapters),
+        infoEpisodes = stringResource(Res.string.detail_info_episodes),
+        infoPublication = stringResource(Res.string.detail_info_publication),
+        infoSerialization = stringResource(Res.string.detail_info_serialization),
+        infoAuthor = stringResource(Res.string.detail_info_author),
+        infoArt = stringResource(Res.string.detail_info_art),
+        infoDemographic = stringResource(Res.string.detail_info_demographic),
+        infoLicense = stringResource(Res.string.detail_info_license),
+        infoStudio = stringResource(Res.string.detail_info_studio)
+    )
+
+    return remember(mediaDetail, strings, primaryColor) {
+        mediaDetail.toUiModel(strings, primaryColor)
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreenContent(
-    mediaDetail: MediaDetail,
+    mediaDetail: MediaDetailUiModel,
     onBackClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onShareClick: () -> Unit,
     onMoreClick: () -> Unit,
     onAddToListClick: () -> Unit,
-    onCharacterClick: (Character) -> Unit,
+    onCharacterClick: (Int) -> Unit,
     onSeeAllChaptersClick: () -> Unit,
     onChapterClick: (Int) -> Unit,
     onImageClick: (String) -> Unit,
-    onExternalLinkClick: (String) -> Unit,
+    onExternalLinkClick: (String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showAddToListBottomSheet by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             DetailTopBar(
@@ -344,22 +381,17 @@ fun DetailScreenContent(
         ) {
             DetailHeader(
                 coverImageUrl = mediaDetail.coverImageUrl,
-                type = mediaDetail.format,
+                typeLabel = mediaDetail.typeLabel,
                 demographic = mediaDetail.demographic,
                 title = mediaDetail.title,
                 titleNative = mediaDetail.titleNative,
-                year = mediaDetail.year,
-                format = mediaDetail.format,
-                chapters = mediaDetail.chapters,
-                volumes = mediaDetail.volumes,
-                episodes = mediaDetail.episodes,
-                status = mediaDetail.status,
-                averageScore = mediaDetail.averageScore,
-                totalVotes = mediaDetail.totalVotes,
-                rankingPosition = mediaDetail.rankingPosition,
-                popularityPosition = mediaDetail.popularityPosition,
-                nextAiringEpisode = mediaDetail.nextAiringEpisode,
-                onAddToListClick = onAddToListClick
+                metadataText = mediaDetail.headerMetadata,
+                formattedScore = mediaDetail.formattedScore,
+                formattedVotes = mediaDetail.formattedVotes,
+                rankingText = mediaDetail.rankingText,
+                popularityText = mediaDetail.popularityText,
+                nextAiringText = mediaDetail.nextAiringText,
+                onAddToListClick = { showAddToListBottomSheet = true }
             )
 
             DetailSynopsis(
@@ -367,20 +399,7 @@ fun DetailScreenContent(
             )
 
             DetailInformation(
-                type = mediaDetail.type,
-                format = mediaDetail.format,
-                volumes = mediaDetail.volumes,
-                status = mediaDetail.status,
-                chapters = mediaDetail.chapters,
-                episodes = mediaDetail.episodes,
-                startDate = mediaDetail.startDate,
-                endDate = mediaDetail.endDate,
-                serialization = mediaDetail.serialization,
-                author = mediaDetail.author,
-                artist = mediaDetail.artist,
-                studio = mediaDetail.studio,
-                demographic = mediaDetail.demographic,
-                license = mediaDetail.license
+                items = mediaDetail.informationItems
             )
 
             mediaDetail.trailer?.let { trailer ->
@@ -397,26 +416,22 @@ fun DetailScreenContent(
             )
 
             DetailCharacters(
-                characters = mediaDetail.mainCharacters,
+                characters = mediaDetail.characters,
                 onCharacterClick = onCharacterClick
             )
 
-            if (mediaDetail.type == com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType.ANIME) {
+            if (mediaDetail.type == MediaType.ANIME) {
                 DetailExternalLinks(
                     links = mediaDetail.externalLinks,
-                    onLinkClick = { link ->
-                        link.url?.let { url ->
-                            onExternalLinkClick(url)
-                        }
-                    }
+                    onLinkClick = onExternalLinkClick
                 )
             }
 
             DetailChaptersList(
                 type = mediaDetail.type,
-                chapters = mediaDetail.chapters_list,
-                episodes = mediaDetail.episodes_list,
-                totalCount = mediaDetail.chapters ?: mediaDetail.episodes,
+                chapters = mediaDetail.chaptersList,
+                episodes = mediaDetail.episodesList,
+                totalCount = mediaDetail.totalChapters ?: mediaDetail.totalEpisodes,
                 onSeeAllClick = onSeeAllChaptersClick,
                 onItemClick = onChapterClick
             )
@@ -428,5 +443,19 @@ fun DetailScreenContent(
 
             Spacer(modifier = Modifier.height(16.dp))
         }
+    }
+
+    if (showAddToListBottomSheet) {
+        AddToListBottomSheet(
+            mediaTitle = mediaDetail.title,
+            mediaType = mediaDetail.type,
+            totalEpisodes = mediaDetail.totalEpisodes,
+            totalChapters = mediaDetail.totalChapters,
+            onDismiss = { showAddToListBottomSheet = false },
+            onSave = { status, progress, score, note, startDate, rewatches ->
+                // TODO: Save to backend/database
+                onAddToListClick()
+            }
+        )
     }
 }

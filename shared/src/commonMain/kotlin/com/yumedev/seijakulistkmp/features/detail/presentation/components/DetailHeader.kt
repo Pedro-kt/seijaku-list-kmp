@@ -21,21 +21,16 @@ import seijakulistkmp.shared.generated.resources.*
 @Composable
 fun DetailHeader(
     coverImageUrl: String?,
-    type: String?,
+    typeLabel: String?,
     demographic: String?,
     title: String,
     titleNative: String?,
-    year: Int?,
-    format: String?,
-    chapters: Int?,
-    volumes: Int?,
-    episodes: Int?,
-    status: String?,
-    averageScore: Double?,
-    totalVotes: Int?,
-    rankingPosition: Int?,
-    popularityPosition: Int?,
-    nextAiringEpisode: com.yumedev.seijakulistkmp.features.detail.domain.model.NextAiringEpisode?,
+    metadataText: String,
+    formattedScore: String?,
+    formattedVotes: String?,
+    rankingText: String?,
+    popularityText: String?,
+    nextAiringText: String?,
     onAddToListClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -71,11 +66,11 @@ fun DetailHeader(
                     .padding(top = 4.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                if (type != null || demographic != null) {
+                if (typeLabel != null || demographic != null) {
                     Text(
                         text = buildString {
-                            if (type != null) append(type.uppercase())
-                            if (type != null && demographic != null) append(" · ")
+                            if (typeLabel != null) append(typeLabel.uppercase())
+                            if (typeLabel != null && demographic != null) append(" · ")
                             if (demographic != null) append(demographic.uppercase())
                         },
                         style = MaterialTheme.typography.labelLarge,
@@ -107,21 +102,14 @@ fun DetailHeader(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = buildMetadataString(
-                    year = year,
-                    format = format,
-                    chapters = chapters,
-                    volumes = volumes,
-                    episodes = episodes,
-                    status = status
-                ),
+                text = metadataText,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 modifier = Modifier.weight(1f, fill = false)
             )
 
-            nextAiringEpisode?.let { airing ->
-                NextAiringPill(airing)
+            nextAiringText?.let { airingText ->
+                NextAiringPill(airingText)
             }
         }
 
@@ -136,7 +124,7 @@ fun DetailHeader(
                     .height(IntrinsicSize.Min),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                averageScore?.let { score ->
+                formattedScore?.let { score ->
                     StatItem(
                         icon = {
                             Icon(
@@ -146,37 +134,37 @@ fun DetailHeader(
                                 modifier = Modifier.size(16.dp)
                             )
                         },
-                        value = formatScore(score),
-                        label = formatVotes(totalVotes),
+                        value = score,
+                        label = formattedVotes ?: "",
                         modifier = Modifier.weight(1f).padding(vertical = 16.dp)
                     )
                 }
 
-                if (averageScore != null && rankingPosition != null) {
+                if (formattedScore != null && rankingText != null) {
                     VerticalDivider(
                         modifier = Modifier.fillMaxHeight(),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                     )
                 }
 
-                rankingPosition?.let { rank ->
+                rankingText?.let { rank ->
                     StatItem(
-                        value = "#$rank",
+                        value = rank,
                         label = stringResource(Res.string.detail_ranking),
                         modifier = Modifier.weight(1f).padding(vertical = 16.dp)
                     )
                 }
 
-                if (rankingPosition != null && popularityPosition != null) {
+                if (rankingText != null && popularityText != null) {
                     VerticalDivider(
                         modifier = Modifier.fillMaxHeight(),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                     )
                 }
 
-                popularityPosition?.let { popularity ->
+                popularityText?.let { popularity ->
                     StatItem(
-                        value = "#$popularity",
+                        value = popularity,
                         label = stringResource(Res.string.detail_popularity),
                         modifier = Modifier.weight(1f).padding(vertical = 16.dp)
                     )
@@ -235,80 +223,17 @@ private fun StatItem(
 }
 
 @Composable
-private fun buildMetadataString(
-    year: Int?,
-    format: String?,
-    chapters: Int?,
-    volumes: Int?,
-    episodes: Int?,
-    status: String?
-): String {
-    return buildList {
-        year?.let { add(it.toString()) }
-        format?.let { add(it) }
-        chapters?.let { add("$it cap") }
-        volumes?.let { add("$it vol") }
-        episodes?.let { add("$it ep") }
-        status?.let { add(getStatusText(it)) }
-    }.joinToString(" · ")
-}
-
-@Composable
-private fun getStatusText(status: String): String {
-    return when (status.uppercase()) {
-        "FINISHED" -> stringResource(Res.string.status_finished)
-        "RELEASING" -> stringResource(Res.string.status_airing)
-        "NOT_YET_RELEASED" -> stringResource(Res.string.status_not_yet_aired)
-        "CANCELLED" -> stringResource(Res.string.status_cancelled)
-        "HIATUS" -> stringResource(Res.string.status_cancelled)
-        else -> status
-    }
-}
-
-private fun formatScore(score: Double): String {
-    val formatted = (score / 10.0 * 100).toInt() / 100.0
-    return formatted.toString().take(4).trimEnd('.')
-}
-
-private fun formatVotes(votes: Int?): String {
-    votes ?: return ""
-    return when {
-        votes >= 1_000_000 -> {
-            val m = (votes / 100_000.0).toInt() / 10.0
-            "${m}M votos"
-        }
-        votes >= 1_000 -> {
-            val k = (votes / 100.0).toInt() / 10.0
-            "${k}K votos"
-        }
-        else -> "$votes votos"
-    }
-}
-
-@Composable
 private fun NextAiringPill(
-    airingEpisode: com.yumedev.seijakulistkmp.features.detail.domain.model.NextAiringEpisode,
+    airingText: String, // Pre-formatted: "Ep. 12 en 2d"
     modifier: Modifier = Modifier
 ) {
-    val timeUntilAiring = airingEpisode.timeUntilAiring
-    val (timeValue, timeUnit) = when {
-        timeUntilAiring < 3600 -> (timeUntilAiring / 60).toInt() to stringResource(Res.string.detail_time_minutes)
-        timeUntilAiring < 86400 -> (timeUntilAiring / 3600).toInt() to stringResource(Res.string.detail_time_hours)
-        else -> (timeUntilAiring / 86400).toInt() to stringResource(Res.string.detail_time_days)
-    }
-
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
     ) {
         Text(
-            text = stringResource(
-                Res.string.detail_next_episode_short,
-                airingEpisode.episode,
-                timeValue,
-                timeUnit
-            ),
+            text = airingText,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSecondaryContainer,

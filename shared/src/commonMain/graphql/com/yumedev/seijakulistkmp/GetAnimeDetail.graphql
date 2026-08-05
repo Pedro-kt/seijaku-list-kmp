@@ -55,7 +55,7 @@ query GetAnimeDetail($id: Int!) {
                 isMain
             }
         }
-        characters(page: 1, perPage: 10, sort: ROLE) {
+        characters(page: 1, perPage: 25, sort: ROLE) {
             edges {
                 node {
                     id

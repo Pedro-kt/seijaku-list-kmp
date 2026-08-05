@@ -13,9 +13,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.yumedev.seijakulistkmp.features.detail.domain.model.Chapter
-import com.yumedev.seijakulistkmp.features.detail.domain.model.Episode
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
+import com.yumedev.seijakulistkmp.features.detail.presentation.model.ChapterUiModel
+import com.yumedev.seijakulistkmp.features.detail.presentation.model.EpisodeUiModel
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
 import dev.seyfarth.tablericons.outlined.PlayerPlay
@@ -25,8 +25,8 @@ import seijakulistkmp.shared.generated.resources.*
 @Composable
 fun DetailChaptersList(
     type: MediaType,
-    chapters: List<Chapter>?,
-    episodes: List<Episode>?,
+    chapters: List<ChapterUiModel>?,
+    episodes: List<EpisodeUiModel>?,
     totalCount: Int?,
     onSeeAllClick: () -> Unit,
     onItemClick: (Int) -> Unit,
@@ -133,7 +133,7 @@ fun DetailChaptersList(
 
 @Composable
 private fun EpisodeItem(
-    episode: Episode,
+    episode: EpisodeUiModel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

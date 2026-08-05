@@ -17,14 +17,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.yumedev.seijakulistkmp.features.detail.domain.model.Character
+import com.yumedev.seijakulistkmp.features.detail.presentation.model.CharacterUiModel
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
 
 @Composable
 fun DetailCharacters(
-    characters: List<Character>,
-    onCharacterClick: (Character) -> Unit,
+    characters: List<CharacterUiModel>,
+    onCharacterClick: (Int) -> Unit,
+
     modifier: Modifier = Modifier
 ) {
     if (characters.isEmpty()) return
@@ -41,13 +42,13 @@ fun DetailCharacters(
         )
 
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
             items(characters) { character ->
                 CharacterItem(
                     character = character,
-                    onClick = { onCharacterClick(character) }
+                    onClick = { onCharacterClick(character.id) }
                 )
             }
         }
@@ -56,22 +57,20 @@ fun DetailCharacters(
 
 @Composable
 private fun CharacterItem(
-    character: Character,
+    character: CharacterUiModel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .width(80.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .clickable(onClick = onClick),
+        modifier = modifier.width(64.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(80.dp)
+                .size(64.dp)
                 .clip(CircleShape)
+                .clickable(onClick = onClick)
         ) {
             character.imageUrl?.let { imageUrl ->
                 AsyncImage(
@@ -100,35 +99,22 @@ private fun CharacterItem(
             }
         }
 
-        Box(
-            modifier = Modifier.height(40.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = character.name,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+        Text(
+            text = character.name,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Text(
-            text = getCharacterRoleText(character.role),
-            style = MaterialTheme.typography.bodySmall,
+            text = character.roleText,
+            style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             textAlign = TextAlign.Center,
             maxLines = 1
         )
-    }
-}
-
-@Composable
-private fun getCharacterRoleText(role: String): String {
-    return when (role) {
-        "MAIN" -> stringResource(Res.string.character_role_main)
-        "SUPPORTING" -> stringResource(Res.string.character_role_supporting)
-        else -> role
     }
 }

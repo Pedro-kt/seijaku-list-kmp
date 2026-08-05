@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.yumedev.seijakulistkmp.features.detail.domain.model.ExternalLink
+import com.yumedev.seijakulistkmp.features.detail.presentation.model.ExternalLinkUiModel
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ExternalLink
 import org.jetbrains.compose.resources.stringResource
@@ -25,8 +25,9 @@ import seijakulistkmp.shared.generated.resources.*
 
 @Composable
 fun DetailExternalLinks(
-    links: List<ExternalLink>,
-    onLinkClick: (ExternalLink) -> Unit,
+    links: List<ExternalLinkUiModel>,
+    onLinkClick: (String?) -> Unit,
+
     modifier: Modifier = Modifier
 ) {
     if (links.isEmpty()) return
@@ -49,7 +50,7 @@ fun DetailExternalLinks(
             items(links) { link ->
                 ExternalLinkChip(
                     link = link,
-                    onClick = { onLinkClick(link) }
+                    onClick = { onLinkClick(link.url) }
                 )
             }
         }
@@ -58,21 +59,19 @@ fun DetailExternalLinks(
 
 @Composable
 private fun ExternalLinkChip(
-    link: ExternalLink,
+    link: ExternalLinkUiModel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val defaultColor = MaterialTheme.colorScheme.primary
-    val backgroundColor = link.color?.let { colorString ->
-        parseHexColor(colorString) ?: defaultColor
-    } ?: defaultColor
+    val backgroundColor = link.backgroundColor
+    val textColor = link.textColor
 
     Surface(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(20.dp),
-        color = backgroundColor.copy(alpha = 0.12f),
+        color = backgroundColor,
         tonalElevation = 0.dp
     ) {
         Row(
@@ -81,10 +80,10 @@ private fun ExternalLinkChip(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Icon or logo
-            if (!link.icon.isNullOrBlank()) {
+            if (!link.iconUrl.isNullOrBlank()) {
                 AsyncImage(
-                    model = link.icon,
-                    contentDescription = link.site,
+                    model = link.iconUrl,
+                    contentDescription = link.siteName,
                     modifier = Modifier.size(20.dp),
                     contentScale = ContentScale.Fit
                 )
@@ -92,30 +91,20 @@ private fun ExternalLinkChip(
                 Icon(
                     imageVector = TablerIcons.Outlined.ExternalLink,
                     contentDescription = null,
-                    tint = backgroundColor,
+                    tint = textColor,
                     modifier = Modifier.size(18.dp)
                 )
             }
 
             // Site name
             Text(
-                text = link.site,
+                text = link.siteName,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = backgroundColor
+                color = textColor
             )
         }
-    }
-}
-
-private fun parseHexColor(colorString: String): Color? {
-    return try {
-        val hex = colorString.removePrefix("#")
-        val colorInt = hex.toLongOrNull(16) ?: return null
-        Color(colorInt or 0xFF000000)
-    } catch (e: Exception) {
-        null
     }
 }
