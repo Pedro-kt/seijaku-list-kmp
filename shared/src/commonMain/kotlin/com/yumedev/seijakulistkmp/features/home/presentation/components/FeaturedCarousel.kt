@@ -8,6 +8,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,16 +22,36 @@ import coil3.compose.AsyncImage
 import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun FeaturedCarousel(
     items: List<FeaturedMediaItem>,
+    currentPage: Int,
     modifier: Modifier = Modifier,
-    onItemClick: (FeaturedMediaItem) -> Unit = {}
+    onItemClick: (FeaturedMediaItem) -> Unit = {},
+    onUserInteraction: () -> Unit = {}
 ) {
     if (items.isEmpty()) return
 
-    val pagerState = rememberPagerState(pageCount = { items.size })
+    val pagerState = rememberPagerState(
+        initialPage = currentPage,
+        pageCount = { items.size }
+    )
+
+    LaunchedEffect(currentPage) {
+        if (pagerState.currentPage != currentPage) {
+            pagerState.animateScrollToPage(currentPage)
+        }
+    }
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }
+            .distinctUntilChanged()
+            .collect {
+                onUserInteraction()
+            }
+    }
 
     Column(
         modifier = modifier,
@@ -43,7 +65,10 @@ fun FeaturedCarousel(
         ) { page ->
             FeaturedCarouselItem(
                 item = items[page],
-                onClick = { onItemClick(items[page]) }
+                onClick = {
+                    onUserInteraction()
+                    onItemClick(items[page])
+                }
             )
         }
 

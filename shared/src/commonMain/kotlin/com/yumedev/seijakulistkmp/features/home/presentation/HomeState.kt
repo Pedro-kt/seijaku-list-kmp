@@ -8,6 +8,8 @@ import com.yumedev.seijakulistkmp.features.home.presentation.model.MangaCardItem
 data class HomeState(
     val featuredAnime: List<FeaturedMediaItem> = emptyList(),
     val featuredManga: List<FeaturedMediaItem> = emptyList(),
+    val currentFeaturedAnimeIndex: Int = 0,
+    val currentFeaturedMangaIndex: Int = 0,
     val isLoadingFeatured: Boolean = false,
     val featuredError: ErrorUiModel? = null,
 

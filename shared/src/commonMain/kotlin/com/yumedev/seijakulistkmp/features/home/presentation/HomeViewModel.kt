@@ -7,6 +7,8 @@ import com.yumedev.seijakulistkmp.core.error.ErrorMapper
 import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
 import com.yumedev.seijakulistkmp.features.home.domain.usecase.*
 import com.yumedev.seijakulistkmp.features.home.presentation.mapper.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +32,13 @@ class HomeViewModel(
 
     private val _state = MutableStateFlow(HomeState())
     val state: StateFlow<HomeState> = _state.asStateFlow()
+
+    private var animeAutoScrollJob: Job? = null
+    private var mangaAutoScrollJob: Job? = null
+
+    companion object {
+        private const val AUTO_SCROLL_DELAY_MS = 5000L
+    }
 
     init {
         loadAllSections()
@@ -62,10 +71,12 @@ class HomeViewModel(
                         _state.update {
                             it.copy(
                                 featuredAnime = featuredItems,
+                                currentFeaturedAnimeIndex = 0,
                                 isLoadingFeatured = false,
                                 featuredError = null
                             )
                         }
+                        startAnimeAutoScroll()
                     }
 
                     is Resource.Error -> {
@@ -182,10 +193,12 @@ class HomeViewModel(
                 _state.update {
                     it.copy(
                         featuredManga = featuredItems,
+                        currentFeaturedMangaIndex = 0,
                         isLoadingFeatured = false,
                         featuredError = null
                     )
                 }
+                startMangaAutoScroll()
             }.onFailure { error ->
                 val errorType = ErrorMapper.mapToErrorType(error)
                 val errorUi = errorUiMapper.mapFeaturedError(errorType)
@@ -327,6 +340,48 @@ class HomeViewModel(
                 }
             }
         }
+    }
+
+    private fun startAnimeAutoScroll() {
+        animeAutoScrollJob?.cancel()
+        animeAutoScrollJob = viewModelScope.launch {
+            while (true) {
+                delay(AUTO_SCROLL_DELAY_MS)
+                val currentState = _state.value
+                if (currentState.featuredAnime.isNotEmpty()) {
+                    val nextIndex = (currentState.currentFeaturedAnimeIndex + 1) % currentState.featuredAnime.size
+                    _state.update { it.copy(currentFeaturedAnimeIndex = nextIndex) }
+                }
+            }
+        }
+    }
+
+    private fun startMangaAutoScroll() {
+        mangaAutoScrollJob?.cancel()
+        mangaAutoScrollJob = viewModelScope.launch {
+            while (true) {
+                delay(AUTO_SCROLL_DELAY_MS)
+                val currentState = _state.value
+                if (currentState.featuredManga.isNotEmpty()) {
+                    val nextIndex = (currentState.currentFeaturedMangaIndex + 1) % currentState.featuredManga.size
+                    _state.update { it.copy(currentFeaturedMangaIndex = nextIndex) }
+                }
+            }
+        }
+    }
+
+    fun onFeaturedAnimeInteraction() {
+        startAnimeAutoScroll()
+    }
+
+    fun onFeaturedMangaInteraction() {
+        startMangaAutoScroll()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        animeAutoScrollJob?.cancel()
+        mangaAutoScrollJob?.cancel()
     }
 
     fun retryLoadFeaturedAnime() = loadFeaturedAnime()

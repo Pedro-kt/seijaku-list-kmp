@@ -147,6 +147,7 @@ fun HomeScreenContent(
                         scrollState = animeScrollState,
                         state = state,
                         onFeaturedRetry = { viewModel.retryLoadFeaturedAnime() },
+                        onFeaturedInteraction = { viewModel.onFeaturedAnimeInteraction() },
                         onAiringNowRetry = { viewModel.retryLoadAiringNow() },
                         onNextSeasonRetry = { viewModel.retryLoadNextSeason() },
                         onTopRatedRetry = { viewModel.retryLoadTopRated() },
@@ -156,6 +157,7 @@ fun HomeScreenContent(
                         scrollState = mangaScrollState,
                         state = state,
                         onFeaturedRetry = { viewModel.retryLoadFeaturedManga() },
+                        onFeaturedInteraction = { viewModel.onFeaturedMangaInteraction() },
                         onPublishingRetry = { viewModel.retryLoadPublishingManga() },
                         onPopularRetry = { viewModel.retryLoadPopularManga() },
                         onTopRatedRetry = { viewModel.retryLoadTopRatedManga() },
@@ -174,6 +176,7 @@ private fun AnimeTabContent(
     scrollState: LazyListState,
     state: HomeState,
     onFeaturedRetry: () -> Unit,
+    onFeaturedInteraction: () -> Unit,
     onAiringNowRetry: () -> Unit,
     onNextSeasonRetry: () -> Unit,
     onTopRatedRetry: () -> Unit,
@@ -260,8 +263,10 @@ private fun AnimeTabContent(
                 state.featuredAnime.isNotEmpty() -> {
                     FeaturedCarousel(
                         items = state.featuredAnime,
+                        currentPage = state.currentFeaturedAnimeIndex,
                         modifier = Modifier.padding(top = 16.dp),
-                        onItemClick = { item -> onAnimeClick(item.id) }
+                        onItemClick = { item -> onAnimeClick(item.id) },
+                        onUserInteraction = onFeaturedInteraction
                     )
                 }
             }
@@ -303,6 +308,7 @@ private fun MangaTabContent(
     scrollState: LazyListState,
     state: HomeState,
     onFeaturedRetry: () -> Unit,
+    onFeaturedInteraction: () -> Unit,
     onPublishingRetry: () -> Unit,
     onPopularRetry: () -> Unit,
     onTopRatedRetry: () -> Unit,
@@ -392,8 +398,10 @@ private fun MangaTabContent(
                 state.featuredManga.isNotEmpty() -> {
                     FeaturedCarousel(
                         items = state.featuredManga,
+                        currentPage = state.currentFeaturedMangaIndex,
                         modifier = Modifier.padding(top = 16.dp),
-                        onItemClick = { item -> onMangaClick(item.id) }
+                        onItemClick = { item -> onMangaClick(item.id) },
+                        onUserInteraction = onFeaturedInteraction
                     )
                 }
             }
