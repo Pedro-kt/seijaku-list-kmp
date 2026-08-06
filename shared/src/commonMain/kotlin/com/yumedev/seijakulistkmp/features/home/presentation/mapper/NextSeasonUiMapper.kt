@@ -5,21 +5,13 @@ import com.yumedev.seijakulistkmp.features.home.domain.model.NextSeasonAnime
 import com.yumedev.seijakulistkmp.features.home.presentation.model.AnimeCardItem
 
 suspend fun NextSeasonAnime.toAnimeCardItem(formatter: MediaStringFormatter): AnimeCardItem {
-    val formattedRating = averageScore?.let { score ->
-        val rating = score / 10.0
-        String.format("%.1f", rating)
-    }
-
-    val formattedFormat = formatter.formatMediaFormat(format)
-    val formattedEpisodes = formatter.formatEpisodes(episodes)
-
     return AnimeCardItem(
         id = id,
         title = title,
         coverImageUrl = coverImageUrl,
-        rating = formattedRating,
-        format = formattedFormat,
-        episodes = formattedEpisodes,
-        genres = genres
+        rating = formatter.formatRating(averageScore),
+        format = formatter.formatMediaFormat(format),
+        episodes = formatter.formatEpisodes(episodes),
+        genres = genres.take(2)
     )
 }

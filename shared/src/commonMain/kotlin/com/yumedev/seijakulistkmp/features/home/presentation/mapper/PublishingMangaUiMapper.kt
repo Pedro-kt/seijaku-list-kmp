@@ -5,23 +5,14 @@ import com.yumedev.seijakulistkmp.features.home.domain.model.PublishingManga
 import com.yumedev.seijakulistkmp.features.home.presentation.model.MangaCardItem
 
 suspend fun PublishingManga.toMangaCardItem(formatter: MediaStringFormatter): MangaCardItem {
-    val formattedRating = averageScore?.let { score ->
-        val rating = score / 10.0
-        String.format("%.1f", rating)
-    }
-
-    val formattedFormat = formatter.formatMediaFormat(format)
-    val formattedChapters = formatter.formatChapters(chapters)
-    val formattedVolumes = formatter.formatVolumes(volumes)
-
     return MangaCardItem(
         id = id,
         title = title,
         coverImageUrl = coverImageUrl,
-        rating = formattedRating,
-        format = formattedFormat,
-        chapters = formattedChapters,
-        volumes = formattedVolumes,
-        genres = genres
+        rating = formatter.formatRating(averageScore),
+        format = formatter.formatMediaFormat(format),
+        chapters = formatter.formatChapters(chapters),
+        volumes = formatter.formatVolumes(volumes),
+        genres = genres.take(2)
     )
 }

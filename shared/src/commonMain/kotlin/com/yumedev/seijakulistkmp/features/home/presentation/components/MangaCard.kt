@@ -98,8 +98,7 @@ fun MangaCard(
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                        val volumesOrChapters = item.volumes ?: item.chapters
-                        volumesOrChapters?.let { info ->
+                        item.volumesOrChapters?.let { info ->
                             if (item.format != null || item.rating != null) {
                                 Text(
                                     text = "·",
@@ -122,7 +121,7 @@ fun MangaCard(
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            item.genres.take(2).forEach { genre ->
+                            item.genres.forEach { genre ->
                                 Surface(
                                     shape = RoundedCornerShape(4.dp),
                                     color = MaterialTheme.colorScheme.primaryContainer

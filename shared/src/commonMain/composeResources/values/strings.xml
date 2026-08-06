@@ -19,6 +19,7 @@
     <string name="empty_list">No items found</string>
     <string name="notifications">Notifications</string>
     <string name="user_profile">User profile</string>
+    <string name="unknown">Unknown</string>
 
     <!-- Search Screen -->
     <string name="search_recent_searches">Recent searches</string>
@@ -103,9 +104,11 @@
     <string name="status_airing">Airing</string>
     <string name="status_finished">Finished</string>
     <string name="status_not_yet_aired">Not yet aired</string>
+    <string name="status_not_yet_released">Not yet released</string>
     <string name="status_cancelled">Cancelled</string>
     <string name="status_publishing">Publishing</string>
     <string name="status_completed">Completed</string>
+    <string name="status_hiatus">Hiatus</string>
 
     <!-- Media Formats -->
     <string name="format_tv">TV</string>
@@ -115,6 +118,9 @@
     <string name="format_ova">OVA</string>
     <string name="format_ona">ONA</string>
     <string name="format_music">Music</string>
+    <string name="format_manga">Manga</string>
+    <string name="format_light_novel">Light Novel</string>
+    <string name="format_one_shot">One Shot</string>
 
     <!-- Media Info -->
     <string name="episodes_suffix">ep</string>

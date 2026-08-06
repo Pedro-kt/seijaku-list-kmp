@@ -24,7 +24,8 @@ class HomeViewModel(
     private val getTopRatedMangaUseCase: GetTopRatedMangaUseCase,
     private val getRecentlyAddedMangaUseCase: GetRecentlyAddedMangaUseCase,
     private val getManhwaMangaUseCase: GetManhwaMangaUseCase,
-    private val mediaStringFormatter: MediaStringFormatter
+    private val mediaStringFormatter: MediaStringFormatter,
+    private val errorUiMapper: ErrorUiMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -55,7 +56,7 @@ class HomeViewModel(
                 when (resource) {
                     is Resource.Success -> {
                         val featuredItems = resource.data.map { dto ->
-                            dto.toFeaturedMediaItem()
+                            dto.toFeaturedMediaItem(mediaStringFormatter)
                         }
 
                         _state.update {
@@ -69,10 +70,11 @@ class HomeViewModel(
 
                     is Resource.Error -> {
                         val errorType = resource.exception?.let { ErrorMapper.mapToErrorType(it) }
+                        val errorUi = errorType?.let { errorUiMapper.mapFeaturedError(it) }
                         _state.update {
                             it.copy(
                                 isLoadingFeatured = false,
-                                featuredError = errorType
+                                featuredError = errorUi
                             )
                         }
                     }
@@ -176,7 +178,7 @@ class HomeViewModel(
             val result = getFeaturedMangaUseCase(page = 1, perPage = 5)
 
             result.onSuccess { mangaList ->
-                val featuredItems = mangaList.map { it.toFeaturedMediaItem() }
+                val featuredItems = mangaList.map { it.toFeaturedMediaItem(mediaStringFormatter) }
                 _state.update {
                     it.copy(
                         featuredManga = featuredItems,
@@ -186,10 +188,11 @@ class HomeViewModel(
                 }
             }.onFailure { error ->
                 val errorType = ErrorMapper.mapToErrorType(error)
+                val errorUi = errorUiMapper.mapFeaturedError(errorType)
                 _state.update {
                     it.copy(
                         isLoadingFeatured = false,
-                        featuredError = errorType
+                        featuredError = errorUi
                     )
                 }
             }

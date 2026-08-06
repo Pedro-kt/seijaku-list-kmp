@@ -1,7 +1,7 @@
 package com.yumedev.seijakulistkmp.features.home.presentation
 
-import com.yumedev.seijakulistkmp.core.error.ErrorType
 import com.yumedev.seijakulistkmp.features.home.presentation.model.AnimeCardItem
+import com.yumedev.seijakulistkmp.features.home.presentation.model.ErrorUiModel
 import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
 import com.yumedev.seijakulistkmp.features.home.presentation.model.MangaCardItem
 
@@ -9,7 +9,7 @@ data class HomeState(
     val featuredAnime: List<FeaturedMediaItem> = emptyList(),
     val featuredManga: List<FeaturedMediaItem> = emptyList(),
     val isLoadingFeatured: Boolean = false,
-    val featuredError: ErrorType? = null,
+    val featuredError: ErrorUiModel? = null,
 
     val airingNowAnime: List<AnimeCardItem> = emptyList(),
     val isLoadingAiringNow: Boolean = false,

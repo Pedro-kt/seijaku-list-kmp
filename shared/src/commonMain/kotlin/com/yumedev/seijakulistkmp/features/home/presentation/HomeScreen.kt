@@ -23,7 +23,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import com.yumedev.seijakulistkmp.core.error.ErrorType
 import com.yumedev.seijakulistkmp.features.home.presentation.components.AnimeSection
 import com.yumedev.seijakulistkmp.features.home.presentation.components.FeaturedCarousel
 import com.yumedev.seijakulistkmp.features.home.presentation.components.MangaSection
@@ -199,16 +198,8 @@ private fun AnimeTabContent(
                     }
                 }
                 state.featuredError != null -> {
-                    val (title, hint) = when (state.featuredError) {
-                        ErrorType.ServerUnavailable -> {
-                            stringResource(Res.string.error_server_unavailable) to
-                            stringResource(Res.string.error_server_unavailable_hint)
-                        }
-                        else -> {
-                            stringResource(Res.string.error_loading_featured) to
-                            stringResource(Res.string.error_loading_featured_hint)
-                        }
-                    }
+                    val title = state.featuredError.title
+                    val hint = state.featuredError.hint
 
                     AnimatedVisibility(
                         visible = true,
@@ -339,16 +330,8 @@ private fun MangaTabContent(
                     }
                 }
                 state.featuredError != null -> {
-                    val (title, hint) = when (state.featuredError) {
-                        ErrorType.ServerUnavailable -> {
-                            stringResource(Res.string.error_server_unavailable) to
-                            stringResource(Res.string.error_server_unavailable_hint)
-                        }
-                        else -> {
-                            stringResource(Res.string.error_loading_featured) to
-                            stringResource(Res.string.error_loading_featured_hint)
-                        }
-                    }
+                    val title = state.featuredError.title
+                    val hint = state.featuredError.hint
 
                     AnimatedVisibility(
                         visible = true,

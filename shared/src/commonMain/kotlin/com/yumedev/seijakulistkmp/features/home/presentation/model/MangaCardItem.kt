@@ -9,4 +9,7 @@ data class MangaCardItem(
     val chapters: String?,
     val volumes: String?,
     val genres: List<String>
-)
+) {
+    val volumesOrChapters: String?
+        get() = volumes ?: chapters
+}

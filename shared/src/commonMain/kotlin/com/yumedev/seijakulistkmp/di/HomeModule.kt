@@ -6,6 +6,7 @@ import com.yumedev.seijakulistkmp.features.home.data.repository.*
 import com.yumedev.seijakulistkmp.features.home.domain.repository.*
 import com.yumedev.seijakulistkmp.features.home.domain.usecase.*
 import com.yumedev.seijakulistkmp.features.home.presentation.HomeViewModel
+import com.yumedev.seijakulistkmp.features.home.presentation.mapper.ErrorUiMapper
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -13,6 +14,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val homeModule = module {
+    singleOf(::ErrorUiMapper)
+
     singleOf(::FeaturedDataSourceImpl) bind FeaturedDataSource::class
     singleOf(::FeaturedRepositoryImpl) bind FeaturedRepository::class
     factoryOf(::GetFeaturedAnimeUseCase)

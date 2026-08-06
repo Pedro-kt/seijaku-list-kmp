@@ -121,7 +121,7 @@ fun AnimeCard(
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            item.genres.take(2).forEach { genre ->
+                            item.genres.forEach { genre ->
                                 Surface(
                                     shape = RoundedCornerShape(4.dp),
                                     color = MaterialTheme.colorScheme.primaryContainer
