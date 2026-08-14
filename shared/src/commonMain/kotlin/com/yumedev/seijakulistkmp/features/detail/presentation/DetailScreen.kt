@@ -21,6 +21,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.core.error.ErrorType
 import com.yumedev.seijakulistkmp.core.utils.rememberShareHelper
 import com.yumedev.seijakulistkmp.core.utils.rememberUrlOpener
+import com.yumedev.seijakulistkmp.features.character.presentation.CharacterScreen
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaDetail
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
 import com.yumedev.seijakulistkmp.features.detail.presentation.components.*
@@ -74,7 +75,9 @@ data class DetailScreen(
                         shareHelper.shareText(shareText, mediaDetailUi.title)
                     },
                     onAddToListClick = { viewModel.addToList() },
-                    onCharacterClick = { /* TODO: Navigate to character detail */ },
+                    onCharacterClick = { characterId ->
+                        navigator.push(CharacterScreen(characterId))
+                    },
                     onSeeAllChaptersClick = { /* TODO: Navigate to chapters list */ },
                     onChapterClick = { /* TODO: Navigate to chapter/episode */ },
                     onImageClick = { /* TODO: Open image viewer */ },
