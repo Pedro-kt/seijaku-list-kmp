@@ -13,6 +13,7 @@ import com.yumedev.seijakulistkmp.features.detail.presentation.DetailScreen
 import com.yumedev.seijakulistkmp.features.home.presentation.HomeScreenContent
 import com.yumedev.seijakulistkmp.features.manga.presentation.MangaListScreenContent
 import com.yumedev.seijakulistkmp.features.profile.presentation.ProfileScreenContent
+import com.yumedev.seijakulistkmp.features.settings.presentation.SettingsScreen
 import com.yumedev.seijakulistkmp.features.search.presentation.SearchScreenContent
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -96,7 +97,9 @@ fun MainScreenContent() {
                         navigator.push(DetailScreen(mangaId, MediaType.MANGA))
                     }
                 )
-                BottomNavItem.Profile -> ProfileScreenContent()
+                BottomNavItem.Profile -> ProfileScreenContent(
+                    onSettingsClick = { navigator.push(SettingsScreen()) }
+                )
             }
         }
     }

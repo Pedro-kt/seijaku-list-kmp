@@ -129,6 +129,7 @@
 
     <!-- Profile -->
     <string name="profile_title">Perfil</string>
+    <string name="my_profile">Mi Perfil</string>
     <string name="settings">Configuración</string>
     <string name="logout">Cerrar sesión</string>
 

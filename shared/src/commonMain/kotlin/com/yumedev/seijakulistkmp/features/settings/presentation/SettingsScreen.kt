@@ -1,4 +1,4 @@
-package com.yumedev.seijakulistkmp.features.profile.presentation
+package com.yumedev.seijakulistkmp.features.settings.presentation
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -8,30 +8,25 @@ import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.yumedev.seijakulistkmp.features.settings.presentation.SettingsScreen
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowLeft
-import dev.seyfarth.tablericons.outlined.Settings
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
 
-/**
- * Profile screen - User profile and settings
- */
-class ProfileScreen : Screen {
+class SettingsScreen : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        ProfileScreenContent(
-            onSettingsClick = { navigator.push(SettingsScreen()) }
+        SettingsScreenContent(
+            onBackClick = { navigator.pop() }
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreenContent(
-    onSettingsClick: () -> Unit,
+fun SettingsScreenContent(
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -39,15 +34,15 @@ fun ProfileScreenContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(Res.string.my_profile),
+                        text = stringResource(Res.string.settings),
                         style = MaterialTheme.typography.titleMedium
                     )
                 },
-                actions = {
-                    IconButton(onClick = onSettingsClick) {
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
                         Icon(
-                            imageVector = TablerIcons.Outlined.Settings,
-                            contentDescription = stringResource(Res.string.settings)
+                            imageVector = TablerIcons.Outlined.ArrowLeft,
+                            contentDescription = "Back"
                         )
                     }
                 },
@@ -65,7 +60,7 @@ fun ProfileScreenContent(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = stringResource(Res.string.my_profile),
+                text = stringResource(Res.string.settings),
                 style = MaterialTheme.typography.headlineMedium
             )
         }
