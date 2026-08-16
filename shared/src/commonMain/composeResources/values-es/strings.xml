@@ -133,6 +133,29 @@
     <string name="settings">Configuración</string>
     <string name="logout">Cerrar sesión</string>
 
+    <!-- Settings -->
+    <string name="settings_appearance">APARIENCIA</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Oscuro</string>
+    <string name="settings_content">CONTENIDO</string>
+    <string name="settings_airing_notifications">Notificaciones de emisión</string>
+    <string name="settings_airing_notifications_desc">Aviso cuando sale un episodio de tu lista</string>
+    <string name="settings_sfw_mode">Modo seguro para el trabajo</string>
+    <string name="settings_sfw_mode_desc">Oculta contenido NSFW y anime para adultos</string>
+    <string name="settings_data">DATOS</string>
+    <string name="settings_sync_anilist">Sincronizar con AniList</string>
+    <string name="settings_sync_anilist_desc">Última vez: %1$s</string>
+    <string name="settings_download_list">Descargar mi lista</string>
+    <string name="settings_download_list_desc">Exporta un archivo XML</string>
+    <string name="settings_clear_cache">Borrar caché de imágenes</string>
+    <string name="settings_clear_cache_desc">%1$s en el dispositivo</string>
+    <string name="settings_about">Acerca de</string>
+    <string name="settings_about_desc">Licencias y datos de AniList API</string>
+    <string name="settings_account">CUENTA</string>
+    <string name="settings_version">%1$s - Seijaku List v%2$s (build %3$s)</string>
+
     <!-- Error Messages -->
     <string name="error_network">Error de red. Por favor, verifica tu conexión.</string>
     <string name="error_unknown">Ocurrió un error desconocido.</string>
