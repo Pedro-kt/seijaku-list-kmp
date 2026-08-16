@@ -68,6 +68,7 @@ private fun ExternalLinkChip(
 
     Surface(
         modifier = modifier
+            .height(40.dp)
             .clip(RoundedCornerShape(20.dp))
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(20.dp),
@@ -75,7 +76,9 @@ private fun ExternalLinkChip(
         tonalElevation = 0.dp
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(horizontal = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -92,7 +95,7 @@ private fun ExternalLinkChip(
                     imageVector = TablerIcons.Outlined.ExternalLink,
                     contentDescription = null,
                     tint = textColor,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             }
 
