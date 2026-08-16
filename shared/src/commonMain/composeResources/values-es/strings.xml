@@ -220,4 +220,19 @@
     <string name="list_priority_high">Alta</string>
     <string name="list_priority_medium">Media</string>
     <string name="list_priority_low">Baja</string>
+
+    <!-- Character Detail -->
+    <string name="character_favorites">Favoritos</string>
+    <string name="character_appearances">Apariciones</string>
+    <string name="character_ranking">Ranking</string>
+    <string name="character_age">Edad</string>
+    <string name="character_height">Altura</string>
+    <string name="character_birthday">Cumpleaños</string>
+    <string name="character_nickname">Apodo</string>
+    <string name="character_biography">Biografía</string>
+    <string name="character_appears_in">Aparece en</string>
+    <string name="character_voice_actor">Actor de voz</string>
+    <string name="character_main_role">Personaje principal</string>
+    <string name="character_supporting_role">Personaje secundario</string>
+    <string name="character_cm">cm</string>
 </resources>

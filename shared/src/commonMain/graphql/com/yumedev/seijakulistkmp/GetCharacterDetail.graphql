@@ -1,0 +1,78 @@
+query GetCharacterDetail($id: Int!) {
+    Character(id: $id) {
+        id
+        name {
+            full
+            native
+            alternative
+            alternativeSpoiler
+        }
+        image {
+            large
+            medium
+        }
+        description
+        gender
+        dateOfBirth {
+            year
+            month
+            day
+        }
+        age
+        bloodType
+        isFavourite
+        isFavouriteBlocked
+        siteUrl
+        favourites
+        modNotes
+        media(page: 1, perPage: 25, sort: POPULARITY_DESC) {
+            pageInfo {
+                total
+                perPage
+                currentPage
+                lastPage
+                hasNextPage
+            }
+            edges {
+                node {
+                    id
+                    title {
+                        romaji
+                        english
+                        native
+                    }
+                    coverImage {
+                        large
+                        medium
+                    }
+                    type
+                    format
+                    status
+                    averageScore
+                    popularity
+                    startDate {
+                        year
+                        month
+                        day
+                    }
+                }
+                characterRole
+                voiceActorRoles(sort: RELEVANCE) {
+                    voiceActor {
+                        id
+                        name {
+                            full
+                            native
+                        }
+                        image {
+                            large
+                            medium
+                        }
+                        language
+                    }
+                    roleNotes
+                }
+            }
+        }
+    }
+}

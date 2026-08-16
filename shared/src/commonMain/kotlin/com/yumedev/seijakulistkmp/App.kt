@@ -9,6 +9,7 @@ import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import com.yumedev.seijakulistkmp.di.animeModule
+import com.yumedev.seijakulistkmp.di.characterModule
 import com.yumedev.seijakulistkmp.di.coreModule
 import com.yumedev.seijakulistkmp.di.detailModule
 import com.yumedev.seijakulistkmp.di.homeModule
@@ -37,7 +38,8 @@ fun App() {
             animeModule,
             homeModule,
             searchModule,
-            detailModule
+            detailModule,
+            characterModule
         )
     }) {
         SeijakuTheme {

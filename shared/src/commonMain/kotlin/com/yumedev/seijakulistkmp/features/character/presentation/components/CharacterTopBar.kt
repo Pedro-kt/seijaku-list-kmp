@@ -1,4 +1,4 @@
-package com.yumedev.seijakulistkmp.features.detail.presentation.components
+package com.yumedev.seijakulistkmp.features.character.presentation.components
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -6,15 +6,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowLeft
-import dev.seyfarth.tablericons.outlined.Share
 import dev.seyfarth.tablericons.outlined.Star
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailTopBar(
+fun CharacterTopBar(
     onBackClick: () -> Unit,
     onFavoriteClick: () -> Unit,
-    onShareClick: () -> Unit,
     isFavorite: Boolean = false,
     title: String? = null,
     modifier: Modifier = Modifier
@@ -43,13 +41,8 @@ fun DetailTopBar(
                 Icon(
                     imageVector = TablerIcons.Outlined.Star,
                     contentDescription = "Favorite",
-                    tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                )
-            }
-            IconButton(onClick = onShareClick) {
-                Icon(
-                    imageVector = TablerIcons.Outlined.Share,
-                    contentDescription = "Share"
+                    tint = if (isFavorite) MaterialTheme.colorScheme.primary
+                           else MaterialTheme.colorScheme.onSurface
                 )
             }
         },

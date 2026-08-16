@@ -123,14 +123,14 @@ fun AnimeCard(
                         ) {
                             item.genres.forEach { genre ->
                                 Surface(
-                                    shape = RoundedCornerShape(4.dp),
+                                    shape = RoundedCornerShape(100.dp),
                                     color = MaterialTheme.colorScheme.primaryContainer
                                 ) {
                                     Text(
                                         text = genre,
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                                     )
                                 }
                             }
