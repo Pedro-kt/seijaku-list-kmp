@@ -3,6 +3,7 @@ package com.yumedev.seijakulistkmp.features.detail.presentation.components
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowLeft
 import dev.seyfarth.tablericons.outlined.Share
@@ -15,10 +16,20 @@ fun DetailTopBar(
     onFavoriteClick: () -> Unit,
     onShareClick: () -> Unit,
     isFavorite: Boolean = false,
+    title: String? = null,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
-        title = { },
+        title = {
+            if (title != null) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        },
         navigationIcon = {
             IconButton(onClick = onBackClick) {
                 Icon(

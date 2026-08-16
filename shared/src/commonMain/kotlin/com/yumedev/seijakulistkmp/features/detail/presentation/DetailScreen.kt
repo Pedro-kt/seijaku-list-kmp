@@ -107,7 +107,8 @@ private fun LoadingContent(onBack: () -> Unit) {
                 onBackClick = onBack,
                 onFavoriteClick = {},
                 onShareClick = {},
-                isFavorite = false
+                isFavorite = false,
+                title = null
             )
         }
     ) { paddingValues ->
@@ -276,7 +277,8 @@ private fun ErrorContent(
                 onBackClick = onBack,
                 onFavoriteClick = {},
                 onShareClick = {},
-                isFavorite = false
+                isFavorite = false,
+                title = null
             )
         }
     ) { paddingValues ->
@@ -366,6 +368,9 @@ fun DetailScreenContent(
     modifier: Modifier = Modifier
 ) {
     var showAddToListBottomSheet by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
+
+    val showTitleInTopBar = scrollState.value > 300
 
     Scaffold(
         topBar = {
@@ -373,7 +378,8 @@ fun DetailScreenContent(
                 onBackClick = onBackClick,
                 onFavoriteClick = onFavoriteClick,
                 onShareClick = onShareClick,
-                isFavorite = mediaDetail.isFavorite
+                isFavorite = mediaDetail.isFavorite,
+                title = if (showTitleInTopBar) mediaDetail.title else null
             )
         },
         modifier = modifier
@@ -382,7 +388,7 @@ fun DetailScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             DetailHeader(

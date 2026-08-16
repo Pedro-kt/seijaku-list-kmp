@@ -93,12 +93,17 @@ private fun CharacterScreenContent(
     onMediaClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scrollState = rememberScrollState()
+
+    val showTitleInTopBar = scrollState.value > 350
+
     Scaffold(
         topBar = {
             CharacterTopBar(
                 onBackClick = onBackClick,
                 onFavoriteClick = onFavoriteClick,
-                isFavorite = characterDetail.isFavorite
+                isFavorite = characterDetail.isFavorite,
+                title = if (showTitleInTopBar) characterDetail.name else null
             )
         },
         modifier = modifier
@@ -107,7 +112,7 @@ private fun CharacterScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             CharacterHeader(
@@ -152,7 +157,8 @@ private fun LoadingContent(onBack: () -> Unit) {
             CharacterTopBar(
                 onBackClick = onBack,
                 onFavoriteClick = {},
-                isFavorite = false
+                isFavorite = false,
+                title = null
             )
         }
     ) { paddingValues ->
@@ -292,7 +298,8 @@ private fun ErrorContent(
             CharacterTopBar(
                 onBackClick = onBack,
                 onFavoriteClick = {},
-                isFavorite = false
+                isFavorite = false,
+                title = null
             )
         }
     ) { paddingValues ->
