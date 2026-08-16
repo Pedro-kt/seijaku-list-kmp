@@ -226,4 +226,19 @@
     <string name="list_priority_high">High</string>
     <string name="list_priority_medium">Medium</string>
     <string name="list_priority_low">Low</string>
+
+    <!-- Character Detail -->
+    <string name="character_favorites">Favorites</string>
+    <string name="character_appearances">Appearances</string>
+    <string name="character_ranking">Ranking</string>
+    <string name="character_age">Age</string>
+    <string name="character_height">Height</string>
+    <string name="character_birthday">Birthday</string>
+    <string name="character_nickname">Nickname</string>
+    <string name="character_biography">Biography</string>
+    <string name="character_appears_in">Appears in</string>
+    <string name="character_voice_actor">Voice actor</string>
+    <string name="character_main_role">Main character</string>
+    <string name="character_supporting_role">Supporting character</string>
+    <string name="character_cm">cm</string>
 </resources>

@@ -41,7 +41,7 @@ data class DetailScreen(
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val viewModel = koinViewModel<DetailViewModel>()
+        val viewModel = koinViewModel<DetailViewModel>(key = "detail_${mediaId}_${mediaType.name}")
         val state by viewModel.state.collectAsState()
         val urlOpener = rememberUrlOpener()
         val shareHelper = rememberShareHelper()
