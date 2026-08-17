@@ -1,9 +1,11 @@
 package com.yumedev.seijakulistkmp.features.settings.presentation.model
 
+import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 
 data class SettingsUiState(
     val selectedTheme: ThemeMode = ThemeMode.SYSTEM,
+    val selectedLanguage: LanguageMode = LanguageMode.SYSTEM,
     val airingNotificationsEnabled: Boolean = false,
     val sfwModeEnabled: Boolean = false,
     val lastSyncTime: String? = null,

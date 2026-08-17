@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.settings.presentation.components.*
 import com.yumedev.seijakulistkmp.features.settings.presentation.model.SettingsUiState
@@ -33,6 +34,7 @@ class SettingsScreen : Screen {
             onBackClick = { navigator.pop() },
             state = state,
             onThemeSelected = viewModel::onThemeSelected,
+            onLanguageSelected = viewModel::onLanguageSelected,
             onAiringNotificationsToggle = viewModel::onAiringNotificationsToggle,
             onSfwModeToggle = viewModel::onSfwModeToggle,
             onSyncClick = viewModel::onSyncClick,
@@ -50,6 +52,7 @@ fun SettingsScreenContent(
     onBackClick: () -> Unit,
     state: SettingsUiState,
     onThemeSelected: (ThemeMode) -> Unit,
+    onLanguageSelected: (LanguageMode) -> Unit,
     onAiringNotificationsToggle: (Boolean) -> Unit,
     onSfwModeToggle: (Boolean) -> Unit,
     onSyncClick: () -> Unit,
@@ -93,7 +96,9 @@ fun SettingsScreenContent(
             item {
                 SettingsAppearanceSection(
                     selectedTheme = state.selectedTheme,
-                    onThemeSelected = onThemeSelected
+                    selectedLanguage = state.selectedLanguage,
+                    onThemeSelected = onThemeSelected,
+                    onLanguageSelected = onLanguageSelected
                 )
             }
 

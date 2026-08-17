@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
@@ -14,7 +15,9 @@ import seijakulistkmp.shared.generated.resources.*
 @Composable
 fun SettingsAppearanceSection(
     selectedTheme: ThemeMode,
+    selectedLanguage: LanguageMode,
     onThemeSelected: (ThemeMode) -> Unit,
+    onLanguageSelected: (LanguageMode) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -53,6 +56,33 @@ fun SettingsAppearanceSection(
                     label = stringResource(Res.string.settings_theme_dark),
                     selected = selectedTheme == ThemeMode.DARK,
                     onClick = { onThemeSelected(ThemeMode.DARK) }
+                )
+            }
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                text = stringResource(Res.string.settings_language),
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ThemeChip(
+                    label = stringResource(Res.string.settings_language_system),
+                    selected = selectedLanguage == LanguageMode.SYSTEM,
+                    onClick = { onLanguageSelected(LanguageMode.SYSTEM) }
+                )
+                ThemeChip(
+                    label = stringResource(Res.string.settings_language_english),
+                    selected = selectedLanguage == LanguageMode.ENGLISH,
+                    onClick = { onLanguageSelected(LanguageMode.ENGLISH) }
+                )
+                ThemeChip(
+                    label = stringResource(Res.string.settings_language_spanish),
+                    selected = selectedLanguage == LanguageMode.SPANISH,
+                    onClick = { onLanguageSelected(LanguageMode.SPANISH) }
                 )
             }
         }
