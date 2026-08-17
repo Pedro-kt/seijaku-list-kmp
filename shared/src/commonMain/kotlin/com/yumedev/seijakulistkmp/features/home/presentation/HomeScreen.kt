@@ -16,6 +16,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,7 +60,6 @@ fun HomeScreenContent(
     val animeScrollState = rememberLazyListState()
     val mangaScrollState = rememberLazyListState()
 
-    // Detect scroll based on current tab's scroll state
     val isScrolled by remember {
         derivedStateOf {
             val currentScrollState = if (selectedTabIndex == 0) animeScrollState else mangaScrollState
@@ -67,7 +67,6 @@ fun HomeScreenContent(
         }
     }
 
-    // Sync pager with tab selection
     LaunchedEffect(selectedTabIndex) {
         pagerState.animateScrollToPage(selectedTabIndex)
     }
@@ -146,6 +145,7 @@ fun HomeScreenContent(
                     0 -> AnimeTabContent(
                         scrollState = animeScrollState,
                         state = state,
+                        onRefresh = { viewModel.refreshAll() },
                         onFeaturedRetry = { viewModel.retryLoadFeaturedAnime() },
                         onFeaturedInteraction = { viewModel.onFeaturedAnimeInteraction() },
                         onAiringNowRetry = { viewModel.retryLoadAiringNow() },
@@ -156,6 +156,7 @@ fun HomeScreenContent(
                     1 -> MangaTabContent(
                         scrollState = mangaScrollState,
                         state = state,
+                        onRefresh = { viewModel.refreshAll() },
                         onFeaturedRetry = { viewModel.retryLoadFeaturedManga() },
                         onFeaturedInteraction = { viewModel.onFeaturedMangaInteraction() },
                         onPublishingRetry = { viewModel.retryLoadPublishingManga() },
@@ -175,6 +176,7 @@ fun HomeScreenContent(
 private fun AnimeTabContent(
     scrollState: LazyListState,
     state: HomeState,
+    onRefresh: () -> Unit,
     onFeaturedRetry: () -> Unit,
     onFeaturedInteraction: () -> Unit,
     onAiringNowRetry: () -> Unit,
@@ -182,11 +184,16 @@ private fun AnimeTabContent(
     onTopRatedRetry: () -> Unit,
     onAnimeClick: (Int) -> Unit
 ) {
-    LazyColumn(
-        state = scrollState,
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+    PullToRefreshBox(
+        isRefreshing = state.isRefreshing,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize()
     ) {
+        LazyColumn(
+            state = scrollState,
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
         item {
             when {
                 state.isLoadingFeatured -> {
@@ -299,7 +306,8 @@ private fun AnimeTabContent(
             )
         }
 
-        item { Spacer(modifier = Modifier.height(80.dp)) }
+            item { Spacer(modifier = Modifier.height(80.dp)) }
+        }
     }
 }
 
@@ -307,6 +315,7 @@ private fun AnimeTabContent(
 private fun MangaTabContent(
     scrollState: LazyListState,
     state: HomeState,
+    onRefresh: () -> Unit,
     onFeaturedRetry: () -> Unit,
     onFeaturedInteraction: () -> Unit,
     onPublishingRetry: () -> Unit,
@@ -316,11 +325,16 @@ private fun MangaTabContent(
     onManhwaRetry: () -> Unit,
     onMangaClick: (Int) -> Unit
 ) {
-    LazyColumn(
-        state = scrollState,
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+    PullToRefreshBox(
+        isRefreshing = state.isRefreshing,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize()
     ) {
+        LazyColumn(
+            state = scrollState,
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
         // Featured Manga Carousel
         item {
             when {
@@ -457,7 +471,8 @@ private fun MangaTabContent(
             )
         }
 
-        item { Spacer(modifier = Modifier.height(80.dp)) }
+            item { Spacer(modifier = Modifier.height(80.dp)) }
+        }
     }
 }
 

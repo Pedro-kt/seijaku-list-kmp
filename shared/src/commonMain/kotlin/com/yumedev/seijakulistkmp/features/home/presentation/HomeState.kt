@@ -43,5 +43,7 @@ data class HomeState(
 
     val manhwaManga: List<MangaCardItem> = emptyList(),
     val isLoadingManhwaManga: Boolean = false,
-    val manhwaMangaError: String? = null
+    val manhwaMangaError: String? = null,
+
+    val isRefreshing: Boolean = false
 )

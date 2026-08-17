@@ -384,6 +384,15 @@ class HomeViewModel(
         mangaAutoScrollJob?.cancel()
     }
 
+    fun refreshAll() {
+        viewModelScope.launch {
+            _state.update { it.copy(isRefreshing = true) }
+            loadAllSections()
+            delay(500)
+            _state.update { it.copy(isRefreshing = false) }
+        }
+    }
+
     fun retryLoadFeaturedAnime() = loadFeaturedAnime()
     fun retryLoadAiringNow() = loadAiringNow()
     fun retryLoadNextSeason() = loadNextSeason()
