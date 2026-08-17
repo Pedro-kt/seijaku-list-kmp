@@ -14,8 +14,11 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetMediaListU
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ImportFromMALUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.RemoveFromListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.UpdateListEntryUseCase
+import com.yumedev.seijakulistkmp.features.tracking.presentation.animelist.UserAnimeListViewModel
+import com.yumedev.seijakulistkmp.features.tracking.presentation.mangalist.UserMangaListViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -40,7 +43,6 @@ val trackingModule = module {
     factoryOf(::ImportFromMALUseCase)
     factoryOf(::CheckInListUseCase)
 
-    // Presentation Layer - ViewModels will be added later
-    // viewModelOf(::AnimeListViewModel)
-    // viewModelOf(::MangaListViewModel)
+    viewModelOf(::UserAnimeListViewModel)
+    viewModelOf(::UserMangaListViewModel)
 }
