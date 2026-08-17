@@ -59,6 +59,7 @@ fun ExpandedSearchContent(
             if (state.recentSearches.isNotEmpty()) {
                 item {
                     HorizontalDivider()
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
                 items(
