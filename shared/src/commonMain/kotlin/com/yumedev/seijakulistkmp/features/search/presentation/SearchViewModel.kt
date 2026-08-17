@@ -22,6 +22,8 @@ import com.yumedev.seijakulistkmp.features.search.data.RecentSearchRepository
 import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toSearchResultItems
 import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toCharacterResultItems
 import com.yumedev.seijakulistkmp.features.search.presentation.mapper.toTrendingAnimes
+import com.yumedev.seijakulistkmp.features.settings.domain.repository.SettingsRepository
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -43,7 +45,8 @@ import kotlinx.datetime.toInstant
 class SearchViewModel(
     private val apolloClient: ApolloClient,
     private val mediaStringFormatter: MediaStringFormatter,
-    private val recentSearchRepository: RecentSearchRepository
+    private val recentSearchRepository: RecentSearchRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SearchState())
@@ -67,11 +70,15 @@ class SearchViewModel(
             _state.update { it.copy(isLoadingTrending = true) }
 
             try {
+                val sfwModeEnabled = settingsRepository.getSfwMode().firstOrNull() ?: true
+                val isAdultFilter = if (sfwModeEnabled) false else null
+
                 val response = apolloClient
                     .query(
                         GetTrendingAnimeQuery(
                             page = Optional.present(1),
-                            perPage = Optional.present(4)
+                            perPage = Optional.present(4),
+                            isAdult = if (isAdultFilter != null) Optional.present(isAdultFilter) else Optional.absent()
                         )
                     )
                     .execute()
@@ -81,7 +88,11 @@ class SearchViewModel(
                     throw Exception(error.message ?: "GraphQL error")
                 }
 
-                val trendingAnimes = response.data?.Page?.media?.toTrendingAnimes() ?: emptyList()
+                val trendingAnimes = response.data?.Page?.media
+                    ?.filterNotNull()
+                    ?.filter { !(it.isAdult ?: false) } // SFW safety filter
+                    ?.let { it.toTrendingAnimes() }
+                    ?: emptyList()
 
                 _state.update {
                     it.copy(
@@ -186,6 +197,8 @@ class SearchViewModel(
                         val status = _state.value.filterStatus.toApiValue()
                         val format = _state.value.filterFormat.toApiValue()
                         val minScore = _state.value.filterMinScore
+                        val sfwModeEnabled = settingsRepository.getSfwMode().firstOrNull() ?: true
+                        val isAdultFilter = if (sfwModeEnabled) false else null
 
                         val response = apolloClient
                             .query(
@@ -195,7 +208,8 @@ class SearchViewModel(
                                     perPage = Optional.present(20),
                                     status = Optional.presentIfNotNull(status?.let { com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaStatus.valueOf(it) }),
                                     format = Optional.presentIfNotNull(format?.let { com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaFormat.valueOf(it) }),
-                                    averageScore_greater = Optional.presentIfNotNull(minScore)
+                                    averageScore_greater = Optional.presentIfNotNull(minScore),
+                                    isAdult = if (isAdultFilter != null) Optional.present(isAdultFilter) else Optional.absent()
                                 )
                             )
                             .execute()
@@ -205,7 +219,11 @@ class SearchViewModel(
                             throw Exception(error.message ?: "GraphQL error")
                         }
 
-                        val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+                        val results = response.data?.Page?.media
+                            ?.filterNotNull()
+                            ?.filter { !(it.isAdult ?: false) }
+                            ?.let { it.toSearchResultItems(mediaStringFormatter) }
+                            ?: emptyList()
 
                         _state.update {
                             it.copy(
@@ -220,6 +238,8 @@ class SearchViewModel(
                         val status = _state.value.filterStatus.toApiValue()
                         val format = _state.value.filterFormat.toApiValue()
                         val minScore = _state.value.filterMinScore
+                        val sfwModeEnabled = settingsRepository.getSfwMode().firstOrNull() ?: true
+                        val isAdultFilter = if (sfwModeEnabled) false else null
 
                         val response = apolloClient
                             .query(
@@ -229,7 +249,8 @@ class SearchViewModel(
                                     perPage = Optional.present(20),
                                     status = Optional.presentIfNotNull(status?.let { com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaStatus.valueOf(it) }),
                                     format = Optional.presentIfNotNull(format?.let { com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaFormat.valueOf(it) }),
-                                    averageScore_greater = Optional.presentIfNotNull(minScore)
+                                    averageScore_greater = Optional.presentIfNotNull(minScore),
+                                    isAdult = if (isAdultFilter != null) Optional.present(isAdultFilter) else Optional.absent()
                                 )
                             )
                             .execute()
@@ -239,7 +260,11 @@ class SearchViewModel(
                             throw Exception(error.message ?: "GraphQL error")
                         }
 
-                        val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+                        val results = response.data?.Page?.media
+                            ?.filterNotNull()
+                            ?.filter { !(it.isAdult ?: false) }
+                            ?.let { it.toSearchResultItems(mediaStringFormatter) }
+                            ?: emptyList()
 
                         _state.update {
                             it.copy(
@@ -297,13 +322,17 @@ class SearchViewModel(
             _state.update { it.copy(isSearching = true, searchError = null, hasSearched = true, searchQuery = moodName) }
 
             try {
+                val sfwModeEnabled = settingsRepository.getSfwMode().firstOrNull() ?: true
+                val isAdultFilter = if (sfwModeEnabled) false else null
+
                 val response = apolloClient
                     .query(
                         SearchAnimeByGenreQuery(
                             genres = Optional.present(genres),
                             page = Optional.present(1),
                             perPage = Optional.present(20),
-                            sort = Optional.present(listOf(MediaSort.TRENDING_DESC, MediaSort.POPULARITY_DESC))
+                            sort = Optional.present(listOf(MediaSort.TRENDING_DESC, MediaSort.POPULARITY_DESC)),
+                            isAdult = if (isAdultFilter != null) Optional.present(isAdultFilter) else Optional.absent()
                         )
                     )
                     .execute()
@@ -313,7 +342,11 @@ class SearchViewModel(
                     throw Exception(error.message ?: "GraphQL error")
                 }
 
-                val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+                val results = response.data?.Page?.media
+                    ?.filterNotNull()
+                    ?.filter { !(it.isAdult ?: false) }
+                    ?.let { it.toSearchResultItems(mediaStringFormatter) }
+                    ?: emptyList()
 
                 _state.update {
                     it.copy(
@@ -339,13 +372,17 @@ class SearchViewModel(
             _state.update { it.copy(isSearching = true, searchError = null, hasSearched = true, searchQuery = moodName) }
 
             try {
+                val sfwModeEnabled = settingsRepository.getSfwMode().firstOrNull() ?: true
+                val isAdultFilter = if (sfwModeEnabled) false else null
+
                 val response = apolloClient
                     .query(
                         SearchAnimeByEpisodesQuery(
                             minEpisodes = Optional.present(minEpisodes),
                             page = Optional.present(1),
                             perPage = Optional.present(20),
-                            sort = Optional.present(listOf(MediaSort.POPULARITY_DESC, MediaSort.SCORE_DESC))
+                            sort = Optional.present(listOf(MediaSort.POPULARITY_DESC, MediaSort.SCORE_DESC)),
+                            isAdult = if (isAdultFilter != null) Optional.present(isAdultFilter) else Optional.absent()
                         )
                     )
                     .execute()
@@ -355,7 +392,11 @@ class SearchViewModel(
                     throw Exception(error.message ?: "GraphQL error")
                 }
 
-                val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+                val results = response.data?.Page?.media
+                    ?.filterNotNull()
+                    ?.filter { !(it.isAdult ?: false) }
+                    ?.let { it.toSearchResultItems(mediaStringFormatter) }
+                    ?: emptyList()
 
                 _state.update {
                     it.copy(
@@ -413,6 +454,8 @@ class SearchViewModel(
 
             try {
                 val (season, year) = getCurrentSeason()
+                val sfwModeEnabled = settingsRepository.getSfwMode().firstOrNull() ?: true
+                val isAdultFilter = if (sfwModeEnabled) false else null
 
                 val response = apolloClient
                     .query(
@@ -420,7 +463,8 @@ class SearchViewModel(
                             season = Optional.present(season),
                             seasonYear = Optional.present(year),
                             page = Optional.present(1),
-                            perPage = Optional.present(20)
+                            perPage = Optional.present(20),
+                            isAdult = if (isAdultFilter != null) Optional.present(isAdultFilter) else Optional.absent()
                         )
                     )
                     .execute()
@@ -430,7 +474,11 @@ class SearchViewModel(
                     throw Exception(error.message ?: "GraphQL error")
                 }
 
-                val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+                val results = response.data?.Page?.media
+                    ?.filterNotNull()
+                    ?.filter { !(it.isAdult ?: false) }
+                    ?.let { it.toSearchResultItems(mediaStringFormatter) }
+                    ?: emptyList()
 
                 _state.update {
                     it.copy(
@@ -474,7 +522,11 @@ class SearchViewModel(
                     throw Exception(error.message ?: "GraphQL error")
                 }
 
-                val results = response.data?.Page?.airingSchedules?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+                val results = response.data?.Page?.airingSchedules
+                    ?.filterNotNull()
+                    ?.filter { !(it.media?.isAdult ?: false) }
+                    ?.let { it.toSearchResultItems(mediaStringFormatter) }
+                    ?: emptyList()
 
                 _state.update {
                     it.copy(
@@ -500,11 +552,15 @@ class SearchViewModel(
             _state.update { it.copy(isSearching = true, searchError = null, hasSearched = true, searchQuery = filterName) }
 
             try {
+                val sfwModeEnabled = settingsRepository.getSfwMode().firstOrNull() ?: true
+                val isAdultFilter = if (sfwModeEnabled) false else null
+
                 val response = apolloClient
                     .query(
                         GetTopRatedAnimeQuery(
                             page = Optional.present(1),
-                            perPage = Optional.present(100)
+                            perPage = Optional.present(100),
+                            isAdult = if (isAdultFilter != null) Optional.present(isAdultFilter) else Optional.absent()
                         )
                     )
                     .execute()
@@ -514,7 +570,11 @@ class SearchViewModel(
                     throw Exception(error.message ?: "GraphQL error")
                 }
 
-                val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+                val results = response.data?.Page?.media
+                    ?.filterNotNull()
+                    ?.filter { !(it.isAdult ?: false) }
+                    ?.let { it.toSearchResultItems(mediaStringFormatter) }
+                    ?: emptyList()
 
                 _state.update {
                     it.copy(
@@ -541,12 +601,15 @@ class SearchViewModel(
 
             try {
                 val randomPage = (1..10).random()
+                val sfwModeEnabled = settingsRepository.getSfwMode().firstOrNull() ?: true
+                val isAdultFilter = if (sfwModeEnabled) false else null
 
                 val response = apolloClient
                     .query(
                         GetRandomAnimeQuery(
                             page = Optional.present(randomPage),
-                            perPage = Optional.present(20)
+                            perPage = Optional.present(20),
+                            isAdult = if (isAdultFilter != null) Optional.present(isAdultFilter) else Optional.absent()
                         )
                     )
                     .execute()
@@ -556,7 +619,11 @@ class SearchViewModel(
                     throw Exception(error.message ?: "GraphQL error")
                 }
 
-                val results = response.data?.Page?.media?.toSearchResultItems(mediaStringFormatter) ?: emptyList()
+                val results = response.data?.Page?.media
+                    ?.filterNotNull()
+                    ?.filter { !(it.isAdult ?: false) }
+                    ?.let { it.toSearchResultItems(mediaStringFormatter) }
+                    ?: emptyList()
 
                 _state.update {
                     it.copy(

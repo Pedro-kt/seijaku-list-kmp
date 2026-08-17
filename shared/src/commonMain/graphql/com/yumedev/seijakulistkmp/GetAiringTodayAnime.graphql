@@ -23,6 +23,7 @@ query GetAiringTodayAnime($airingAtGreater: Int, $airingAtLesser: Int, $page: In
                 status
                 episodes
                 genres
+                isAdult
             }
         }
     }

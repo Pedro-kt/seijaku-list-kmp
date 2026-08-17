@@ -1,6 +1,6 @@
-query GetAiringNowAnime($page: Int, $perPage: Int) {
+query GetAiringNowAnime($page: Int, $perPage: Int, $isAdult: Boolean) {
     Page(page: $page, perPage: $perPage) {
-        media(type: ANIME, status: RELEASING, sort: POPULARITY_DESC) {
+        media(type: ANIME, status: RELEASING, sort: POPULARITY_DESC, isAdult: $isAdult) {
             id
             title {
                 romaji
@@ -17,6 +17,7 @@ query GetAiringNowAnime($page: Int, $perPage: Int) {
             format
             episodes
             genres
+            isAdult
         }
     }
 }

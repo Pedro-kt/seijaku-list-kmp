@@ -7,15 +7,20 @@ import com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaSeason
 import com.yumedev.seijakulistkmp.features.home.data.mapper.toNextSeasonAnime
 import com.yumedev.seijakulistkmp.features.home.domain.model.NextSeasonAnime
 import com.yumedev.seijakulistkmp.features.home.domain.repository.NextSeasonRepository
+import com.yumedev.seijakulistkmp.features.settings.domain.repository.SettingsRepository
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.*
 
 class NextSeasonRepositoryImpl(
-    private val apolloClient: ApolloClient
+    private val apolloClient: ApolloClient,
+    private val settingsRepository: SettingsRepository
 ) : NextSeasonRepository {
 
     override suspend fun getNextSeasonAnime(page: Int, perPage: Int): Result<List<NextSeasonAnime>> {
         return try {
             val (season, year) = getNextSeason()
+            val sfwModeEnabled = settingsRepository.getSfwMode().firstOrNull() ?: true
+            val isAdultFilter = if (sfwModeEnabled) false else null
 
             val response = apolloClient
                 .query(
@@ -23,7 +28,8 @@ class NextSeasonRepositoryImpl(
                         page = Optional.present(page),
                         perPage = Optional.present(perPage),
                         season = Optional.present(season),
-                        seasonYear = Optional.present(year)
+                        seasonYear = Optional.present(year),
+                        isAdult = if (isAdultFilter != null) Optional.present(isAdultFilter) else Optional.absent()
                     )
                 )
                 .execute()
@@ -31,7 +37,11 @@ class NextSeasonRepositoryImpl(
             if (response.hasErrors()) {
                 Result.failure(Exception(response.errors?.firstOrNull()?.message ?: "Unknown error"))
             } else {
-                val anime = response.data?.Page?.media?.mapNotNull { it?.toNextSeasonAnime() } ?: emptyList()
+                val anime = response.data?.Page?.media
+                    ?.filterNotNull()
+                    ?.filter { !(it.isAdult ?: false) }
+                    ?.mapNotNull { it.toNextSeasonAnime() }
+                    ?: emptyList()
                 Result.success(anime)
             }
         } catch (e: Exception) {

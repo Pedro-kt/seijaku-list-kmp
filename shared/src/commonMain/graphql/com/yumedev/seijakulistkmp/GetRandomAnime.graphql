@@ -1,6 +1,6 @@
-query GetRandomAnime($page: Int, $perPage: Int) {
+query GetRandomAnime($page: Int, $perPage: Int, $isAdult: Boolean) {
     Page(page: $page, perPage: $perPage) {
-        media(type: ANIME, sort: [POPULARITY_DESC], isAdult: false) {
+        media(type: ANIME, sort: [POPULARITY_DESC], isAdult: $isAdult) {
             id
             title {
                 romaji
@@ -18,6 +18,7 @@ query GetRandomAnime($page: Int, $perPage: Int) {
             status
             episodes
             genres
+            isAdult
         }
     }
 }

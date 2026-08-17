@@ -6,21 +6,37 @@ import com.yumedev.seijakulistkmp.data.remote.graphql.GetPopularMangaQuery
 import com.yumedev.seijakulistkmp.features.home.data.mapper.toPopularManga
 import com.yumedev.seijakulistkmp.features.home.domain.model.PopularManga
 import com.yumedev.seijakulistkmp.features.home.domain.repository.PopularMangaRepository
+import com.yumedev.seijakulistkmp.features.settings.domain.repository.SettingsRepository
+import kotlinx.coroutines.flow.firstOrNull
 
 class PopularMangaRepositoryImpl(
-    private val apolloClient: ApolloClient
+    private val apolloClient: ApolloClient,
+    private val settingsRepository: SettingsRepository
 ) : PopularMangaRepository {
 
     override suspend fun getPopularManga(page: Int, perPage: Int): Result<List<PopularManga>> {
         return try {
+            val sfwModeEnabled = settingsRepository.getSfwMode().firstOrNull() ?: true
+            val isAdultFilter = if (sfwModeEnabled) false else null
+
             val response = apolloClient
-                .query(GetPopularMangaQuery(page = Optional.present(page), perPage = Optional.present(perPage)))
+                .query(
+                    GetPopularMangaQuery(
+                        page = Optional.present(page),
+                        perPage = Optional.present(perPage),
+                        isAdult = if (isAdultFilter != null) Optional.present(isAdultFilter) else Optional.absent()
+                    )
+                )
                 .execute()
 
             if (response.hasErrors()) {
                 Result.failure(Exception(response.errors?.firstOrNull()?.message ?: "Unknown error"))
             } else {
-                val manga = response.data?.Page?.media?.mapNotNull { it?.toPopularManga() } ?: emptyList()
+                val manga = response.data?.Page?.media
+                    ?.filterNotNull()
+                    ?.filter { !(it.isAdult ?: false) }
+                    ?.mapNotNull { it.toPopularManga() }
+                    ?: emptyList()
                 Result.success(manga)
             }
         } catch (e: Exception) {

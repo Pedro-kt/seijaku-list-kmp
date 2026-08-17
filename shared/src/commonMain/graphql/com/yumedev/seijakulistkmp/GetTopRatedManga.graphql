@@ -1,6 +1,6 @@
-query GetTopRatedManga($page: Int, $perPage: Int) {
+query GetTopRatedManga($page: Int, $perPage: Int, $isAdult: Boolean) {
     Page(page: $page, perPage: $perPage) {
-        media(type: MANGA, sort: SCORE_DESC) {
+        media(type: MANGA, sort: SCORE_DESC, isAdult: $isAdult) {
             id
             title {
                 romaji
@@ -19,6 +19,7 @@ query GetTopRatedManga($page: Int, $perPage: Int) {
             chapters
             volumes
             genres
+            isAdult
         }
     }
 }

@@ -1,6 +1,6 @@
-query GetFeaturedManga($page: Int, $perPage: Int) {
+query GetFeaturedManga($page: Int, $perPage: Int, $isAdult: Boolean) {
     Page(page: $page, perPage: $perPage) {
-        media(type: MANGA, sort: TRENDING_DESC) {
+        media(type: MANGA, sort: TRENDING_DESC, isAdult: $isAdult) {
             id
             title {
                 romaji
@@ -20,6 +20,7 @@ query GetFeaturedManga($page: Int, $perPage: Int) {
             chapters
             volumes
             genres
+            isAdult
         }
     }
 }

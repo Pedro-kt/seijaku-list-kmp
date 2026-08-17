@@ -13,7 +13,8 @@ val searchModule = module {
         SearchViewModel(
             apolloClient = get(),
             mediaStringFormatter = get(),
-            recentSearchRepository = get()
+            recentSearchRepository = get(),
+            settingsRepository = get()
         )
     }
 }

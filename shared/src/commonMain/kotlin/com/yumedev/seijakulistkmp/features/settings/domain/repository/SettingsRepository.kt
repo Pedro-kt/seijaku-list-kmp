@@ -10,4 +10,7 @@ interface SettingsRepository {
 
     fun getLanguageMode(): Flow<LanguageMode>
     suspend fun setLanguageMode(languageMode: LanguageMode)
+
+    fun getSfwMode(): Flow<Boolean>
+    suspend fun setSfwMode(enabled: Boolean)
 }

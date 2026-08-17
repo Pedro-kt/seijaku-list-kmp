@@ -1,4 +1,4 @@
-query SearchAnimeByEpisodes($minEpisodes: Int, $page: Int, $perPage: Int, $sort: [MediaSort]) {
+query SearchAnimeByEpisodes($minEpisodes: Int, $page: Int, $perPage: Int, $sort: [MediaSort], $isAdult: Boolean) {
     Page(page: $page, perPage: $perPage) {
         pageInfo {
             total
@@ -7,7 +7,7 @@ query SearchAnimeByEpisodes($minEpisodes: Int, $page: Int, $perPage: Int, $sort:
             hasNextPage
             perPage
         }
-        media(type: ANIME, episodes_greater: $minEpisodes, sort: $sort) {
+        media(type: ANIME, episodes_greater: $minEpisodes, sort: $sort, isAdult: $isAdult) {
             id
             title {
                 romaji
@@ -26,6 +26,7 @@ query SearchAnimeByEpisodes($minEpisodes: Int, $page: Int, $perPage: Int, $sort:
             episodes
             seasonYear
             genres
+            isAdult
         }
     }
 }

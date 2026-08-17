@@ -1,6 +1,6 @@
-query GetNextSeasonAnime($page: Int, $perPage: Int, $season: MediaSeason, $seasonYear: Int) {
+query GetNextSeasonAnime($page: Int, $perPage: Int, $season: MediaSeason, $seasonYear: Int, $isAdult: Boolean) {
     Page(page: $page, perPage: $perPage) {
-        media(type: ANIME, season: $season, seasonYear: $seasonYear, sort: POPULARITY_DESC) {
+        media(type: ANIME, season: $season, seasonYear: $seasonYear, sort: POPULARITY_DESC, isAdult: $isAdult) {
             id
             title {
                 romaji
@@ -17,6 +17,7 @@ query GetNextSeasonAnime($page: Int, $perPage: Int, $season: MediaSeason, $seaso
             format
             episodes
             genres
+            isAdult
         }
     }
 }

@@ -1,6 +1,6 @@
-query GetManhwaManga($page: Int, $perPage: Int, $countryOfOrigin: CountryCode) {
+query GetManhwaManga($page: Int, $perPage: Int, $countryOfOrigin: CountryCode, $isAdult: Boolean) {
     Page(page: $page, perPage: $perPage) {
-        media(type: MANGA, countryOfOrigin: $countryOfOrigin, sort: POPULARITY_DESC) {
+        media(type: MANGA, countryOfOrigin: $countryOfOrigin, sort: POPULARITY_DESC, isAdult: $isAdult) {
             id
             title {
                 romaji
@@ -19,6 +19,7 @@ query GetManhwaManga($page: Int, $perPage: Int, $countryOfOrigin: CountryCode) {
             volumes
             genres
             countryOfOrigin
+            isAdult
         }
     }
 }

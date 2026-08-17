@@ -6,19 +6,20 @@ import com.yumedev.seijakulistkmp.core.error.GraphQLErrorException
 import com.yumedev.seijakulistkmp.data.remote.graphql.GetFeaturedAnimeQuery
 
 interface FeaturedDataSource {
-    suspend fun getFeaturedAnime(page: Int, perPage: Int): GetFeaturedAnimeQuery.Data
+    suspend fun getFeaturedAnime(page: Int, perPage: Int, isAdult: Boolean?): GetFeaturedAnimeQuery.Data
 }
 
 class FeaturedDataSourceImpl(
     private val apolloClient: ApolloClient
 ) : FeaturedDataSource {
 
-    override suspend fun getFeaturedAnime(page: Int, perPage: Int): GetFeaturedAnimeQuery.Data {
+    override suspend fun getFeaturedAnime(page: Int, perPage: Int, isAdult: Boolean?): GetFeaturedAnimeQuery.Data {
         val response = apolloClient
             .query(
                 GetFeaturedAnimeQuery(
                     page = Optional.present(page),
-                    perPage = Optional.present(perPage)
+                    perPage = Optional.present(perPage),
+                    isAdult = if (isAdult != null) Optional.present(isAdult) else Optional.absent()
                 )
             )
             .execute()

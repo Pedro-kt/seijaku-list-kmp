@@ -44,8 +44,17 @@ class SettingsRepositoryImpl(
         settings.putString(KEY_LANGUAGE_MODE, languageMode.name)
     }
 
+    override fun getSfwMode(): Flow<Boolean> {
+        return flowSettings.getBooleanFlow(KEY_SFW_MODE, true)
+    }
+
+    override suspend fun setSfwMode(enabled: Boolean) {
+        settings.putBoolean(KEY_SFW_MODE, enabled)
+    }
+
     companion object {
         private const val KEY_THEME_MODE = "theme_mode"
         private const val KEY_LANGUAGE_MODE = "language_mode"
+        private const val KEY_SFW_MODE = "sfw_mode"
     }
 }

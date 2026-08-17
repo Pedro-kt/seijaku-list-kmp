@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetLanguageModeUseCase
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetSfwModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetLanguageModeUseCase
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetSfwModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetThemeModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.presentation.model.SettingsUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +21,9 @@ class SettingsViewModel(
     private val getThemeModeUseCase: GetThemeModeUseCase,
     private val setThemeModeUseCase: SetThemeModeUseCase,
     private val getLanguageModeUseCase: GetLanguageModeUseCase,
-    private val setLanguageModeUseCase: SetLanguageModeUseCase
+    private val setLanguageModeUseCase: SetLanguageModeUseCase,
+    private val getSfwModeUseCase: GetSfwModeUseCase,
+    private val setSfwModeUseCase: SetSfwModeUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsUiState())
@@ -28,6 +32,7 @@ class SettingsViewModel(
     init {
         observeThemeMode()
         observeLanguageMode()
+        observeSfwMode()
     }
 
     private fun observeThemeMode() {
@@ -42,6 +47,14 @@ class SettingsViewModel(
         viewModelScope.launch {
             getLanguageModeUseCase().collect { languageMode ->
                 _state.update { it.copy(selectedLanguage = languageMode) }
+            }
+        }
+    }
+
+    private fun observeSfwMode() {
+        viewModelScope.launch {
+            getSfwModeUseCase().collect { sfwEnabled ->
+                _state.update { it.copy(sfwModeEnabled = sfwEnabled) }
             }
         }
     }
@@ -64,8 +77,9 @@ class SettingsViewModel(
     }
 
     fun onSfwModeToggle(enabled: Boolean) {
-        _state.update { it.copy(sfwModeEnabled = enabled) }
-        // TODO: Implement persistence for SFW mode
+        viewModelScope.launch {
+            setSfwModeUseCase(enabled)
+        }
     }
 
     fun onSyncClick() {

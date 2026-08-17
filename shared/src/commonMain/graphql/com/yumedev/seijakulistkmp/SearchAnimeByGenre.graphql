@@ -1,4 +1,4 @@
-query SearchAnimeByGenre($genres: [String], $page: Int, $perPage: Int, $sort: [MediaSort]) {
+query SearchAnimeByGenre($genres: [String], $page: Int, $perPage: Int, $sort: [MediaSort], $isAdult: Boolean) {
     Page(page: $page, perPage: $perPage) {
         pageInfo {
             total
@@ -7,7 +7,7 @@ query SearchAnimeByGenre($genres: [String], $page: Int, $perPage: Int, $sort: [M
             hasNextPage
             perPage
         }
-        media(type: ANIME, genre_in: $genres, sort: $sort) {
+        media(type: ANIME, genre_in: $genres, sort: $sort, isAdult: $isAdult) {
             id
             title {
                 romaji
@@ -26,6 +26,7 @@ query SearchAnimeByGenre($genres: [String], $page: Int, $perPage: Int, $sort: [M
             episodes
             seasonYear
             genres
+            isAdult
         }
     }
 }

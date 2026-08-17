@@ -7,7 +7,7 @@ data class SettingsUiState(
     val selectedTheme: ThemeMode = ThemeMode.SYSTEM,
     val selectedLanguage: LanguageMode = LanguageMode.SYSTEM,
     val airingNotificationsEnabled: Boolean = false,
-    val sfwModeEnabled: Boolean = false,
+    val sfwModeEnabled: Boolean = true,
     val lastSyncTime: String? = null,
     val cacheSize: String = "0 MB",
     val username: String = "",

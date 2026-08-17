@@ -36,5 +36,9 @@ fun GetFeaturedAnimeQuery.Medium.toDto(): FeaturedAnimeDto {
 }
 
 fun GetFeaturedAnimeQuery.Data.toFeaturedAnimeList(): List<FeaturedAnimeDto> {
-    return Page?.media?.filterNotNull()?.map { it.toDto() } ?: emptyList()
+    return Page?.media
+        ?.filterNotNull()
+        ?.filter { !(it.isAdult ?: false) }
+        ?.map { it.toDto() }
+        ?: emptyList()
 }
