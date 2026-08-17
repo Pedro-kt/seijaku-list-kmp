@@ -177,7 +177,7 @@
     <string name="error_server_unavailable_hint">The server is experiencing issues. Please try again later</string>
 
     <!-- Detail Screen -->
-    <string name="detail">Detail</string>
+    <string name="detail">View detail</string>
     <string name="detail_add_to_list">Add to my list</string>
     <string name="detail_read_more">Read more</string>
     <string name="detail_read_less">Read less</string>

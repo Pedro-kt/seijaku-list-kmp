@@ -232,12 +232,6 @@ private fun FeaturedCarouselItem(
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        Icon(
-                            imageVector = TablerIcons.Outlined.ChevronRight,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
                     }
                 }
             }
