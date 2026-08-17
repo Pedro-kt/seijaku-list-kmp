@@ -12,7 +12,9 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
             animeModule,
             homeModule,
             searchModule,
-            detailModule
+            detailModule,
+            characterModule,
+            settingsModule
         )
     }
 }

@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.yumedev.seijakulistkmp.features.settings.presentation.model.ThemeMode
+import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
 

@@ -1,8 +1,6 @@
 package com.yumedev.seijakulistkmp.features.settings.presentation.model
 
-enum class ThemeMode {
-    SYSTEM, LIGHT, DARK
-}
+import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 
 data class SettingsUiState(
     val selectedTheme: ThemeMode = ThemeMode.SYSTEM,

@@ -6,44 +6,40 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.settings.presentation.components.*
 import com.yumedev.seijakulistkmp.features.settings.presentation.model.SettingsUiState
-import com.yumedev.seijakulistkmp.features.settings.presentation.model.ThemeMode
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowLeft
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 import seijakulistkmp.shared.generated.resources.*
 
 class SettingsScreen : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val viewModel = koinViewModel<SettingsViewModel>()
+        val state by viewModel.state.collectAsState()
+
         SettingsScreenContent(
             onBackClick = { navigator.pop() },
-            state = SettingsUiState(
-                selectedTheme = ThemeMode.DARK,
-                airingNotificationsEnabled = true,
-                sfwModeEnabled = false,
-                lastSyncTime = "hoy 09:12",
-                cacheSize = "184 MB",
-                username = "YumeDev",
-                userHandle = "@yumedev",
-                appVersion = "1.0",
-                buildNumber = "104"
-            ),
-            onThemeSelected = {},
-            onAiringNotificationsToggle = {},
-            onSfwModeToggle = {},
-            onSyncClick = {},
-            onDownloadListClick = {},
-            onClearCacheClick = {},
-            onAboutClick = {},
-            onLogoutClick = {}
+            state = state,
+            onThemeSelected = viewModel::onThemeSelected,
+            onAiringNotificationsToggle = viewModel::onAiringNotificationsToggle,
+            onSfwModeToggle = viewModel::onSfwModeToggle,
+            onSyncClick = viewModel::onSyncClick,
+            onDownloadListClick = viewModel::onDownloadListClick,
+            onClearCacheClick = viewModel::onClearCacheClick,
+            onAboutClick = viewModel::onAboutClick,
+            onLogoutClick = viewModel::onLogoutClick
         )
     }
 }
