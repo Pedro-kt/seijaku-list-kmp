@@ -25,7 +25,7 @@ fun MangaCard(
     modifier: Modifier = Modifier
 ) {
     Column (
-        modifier = modifier.width(140.dp)
+        modifier = modifier.width(120.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -34,15 +34,15 @@ fun MangaCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(16.dp))
+                    .height(170.dp)
+                    .clip(RoundedCornerShape(12.dp))
                     .clickable(onClick = onClick)
             ) {
                 item.coverImageUrl?.let { imageUrl ->
                     AsyncImage(
                         model = imageUrl,
                         contentDescription = item.title,
-                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(16.dp)),
+                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(12.dp)),
                         contentScale = ContentScale.Crop
                     )
                 }
@@ -51,34 +51,34 @@ fun MangaCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(90.dp)
+                    .height(75.dp)
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
                         text = item.title,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
 
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(3.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         item.rating?.let { rating ->
                             Icon(
                                 imageVector = TablerIcons.Filled.Star,
                                 contentDescription = null,
-                                modifier = Modifier.size(12.dp),
+                                modifier = Modifier.size(11.dp),
                                 tint = Color.Gray
                             )
                             Text(
                                 text = rating,
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -86,14 +86,14 @@ fun MangaCard(
                             if (item.rating != null) {
                                 Text(
                                     text = "·",
-                                    style = MaterialTheme.typography.bodySmall,
+                                    style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                                     fontWeight = FontWeight.Bold
                                 )
                             }
                             Text(
                                 text = format,
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                                 fontWeight = FontWeight.Bold
                             )
@@ -102,14 +102,14 @@ fun MangaCard(
                             if (item.format != null || item.rating != null) {
                                 Text(
                                     text = "·",
-                                    style = MaterialTheme.typography.bodySmall,
+                                    style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                                     fontWeight = FontWeight.Bold
                                 )
                             }
                             Text(
                                 text = info,
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                                 fontWeight = FontWeight.Bold
                             )
@@ -118,10 +118,10 @@ fun MangaCard(
 
                     if (item.genres.isNotEmpty()) {
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            item.genres.forEach { genre ->
+                            item.genres.take(2).forEach { genre ->
                                 Surface(
                                     shape = RoundedCornerShape(100.dp),
                                     color = MaterialTheme.colorScheme.primaryContainer
@@ -130,7 +130,9 @@ fun MangaCard(
                                         text = genre,
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }

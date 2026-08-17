@@ -283,7 +283,7 @@ private fun AnimeTabContent(
 
         item {
             AnimeSection(
-                title = stringResource(Res.string.seasonal),
+                title = stringResource(Res.string.upcoming_releases),
                 items = state.nextSeasonAnime,
                 onSeeMoreClick = { /* TODO: Navigate to Next Season list */ },
                 onItemClick = { item -> onAnimeClick(item.id) }
