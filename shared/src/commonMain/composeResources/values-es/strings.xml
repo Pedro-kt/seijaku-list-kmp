@@ -19,6 +19,11 @@
     <string name="empty_list">No se encontraron elementos</string>
     <string name="notifications">Notificaciones</string>
     <string name="user_profile">Perfil de usuario</string>
+    <string name="unknown">Desconocido</string>
+    <string name="all">Todos</string>
+    <string name="no_title">Sin título</string>
+    <string name="progress">Progreso</string>
+    <string name="filter_menu">Menú de filtros</string>
 
     <!-- Search Screen -->
     <string name="search_recent_searches">Búsquedas recientes</string>
@@ -222,16 +227,36 @@
     <string name="character_role_main">Principal</string>
     <string name="character_role_supporting">Secundario</string>
 
+    <!-- User Lists -->
+    <string name="my_lists">Mis Listas</string>
+    <string name="my_anime_list">Mi Lista de Anime</string>
+    <string name="my_anime_list_description">Ver y gestionar tu colección de anime</string>
+    <string name="my_manga_list">Mi Lista de Manga</string>
+    <string name="my_manga_list_description">Ver y gestionar tu colección de manga</string>
+    <string name="empty_anime_list">Tu lista de anime está vacía</string>
+    <string name="empty_manga_list">Tu lista de manga está vacía</string>
+    <string name="empty_list_hint_anime">Comienza a agregar anime para seguir tu progreso</string>
+    <string name="empty_list_hint_manga">Comienza a agregar manga para seguir tu progreso</string>
+    <string name="no_items_in_category">No hay elementos en esta categoría</string>
+    <string name="chapters_short">Cap</string>
+    <string name="volumes_short">Vol</string>
+
     <!-- Add to List Bottom Sheet -->
     <string name="list_edit_title">Editar</string>
     <string name="list_status">Estado</string>
     <string name="list_status_watching">Viendo</string>
+    <string name="list_status_watching_short">Viendo</string>
     <string name="list_status_reading">Leyendo</string>
+    <string name="list_status_reading_short">Leyendo</string>
     <string name="list_status_completed">Completado</string>
     <string name="list_status_paused">En pausa</string>
     <string name="list_status_dropped">Abandonado</string>
     <string name="list_status_plan_to_watch">Plan ver</string>
+    <string name="list_status_plan_to_watch_short">PV</string>
     <string name="list_status_plan_to_read">Plan leer</string>
+    <string name="list_status_plan_to_read_short">PL</string>
+    <string name="list_status_repeating">Reviendo</string>
+    <string name="list_status_rereading">Releyendo</string>
     <string name="list_episodes_watched">Episodios vistos</string>
     <string name="list_chapters_read">Capítulos vistos</string>
     <string name="list_decrease">Disminuir</string>
@@ -244,6 +269,7 @@
     <string name="list_rewatches">Reinicios</string>
     <string name="list_cancel">Cancelar</string>
     <string name="list_save">Guardar</string>
+    <string name="list_delete">Eliminar de la lista</string>
 
     <!-- List Priority -->
     <string name="list_priority">Prioridad</string>

@@ -20,6 +20,10 @@
     <string name="notifications">Notifications</string>
     <string name="user_profile">User profile</string>
     <string name="unknown">Unknown</string>
+    <string name="all">All</string>
+    <string name="no_title">No title</string>
+    <string name="progress">Progress</string>
+    <string name="filter_menu">Filter menu</string>
 
     <!-- Search Screen -->
     <string name="search_recent_searches">Recent searches</string>
@@ -228,16 +232,36 @@
     <string name="character_role_main">Main</string>
     <string name="character_role_supporting">Supporting</string>
 
+    <!-- User Lists -->
+    <string name="my_lists">My Lists</string>
+    <string name="my_anime_list">My Anime List</string>
+    <string name="my_anime_list_description">View and manage your anime collection</string>
+    <string name="my_manga_list">My Manga List</string>
+    <string name="my_manga_list_description">View and manage your manga collection</string>
+    <string name="empty_anime_list">Your anime list is empty</string>
+    <string name="empty_manga_list">Your manga list is empty</string>
+    <string name="empty_list_hint_anime">Start adding anime to track your progress</string>
+    <string name="empty_list_hint_manga">Start adding manga to track your progress</string>
+    <string name="no_items_in_category">No items in this category</string>
+    <string name="chapters_short">Ch</string>
+    <string name="volumes_short">Vol</string>
+
     <!-- Add to List Bottom Sheet -->
     <string name="list_edit_title">Edit</string>
     <string name="list_status">Status</string>
     <string name="list_status_watching">Watching</string>
+    <string name="list_status_watching_short">Watching</string>
     <string name="list_status_reading">Reading</string>
+    <string name="list_status_reading_short">Reading</string>
     <string name="list_status_completed">Completed</string>
     <string name="list_status_paused">Paused</string>
     <string name="list_status_dropped">Dropped</string>
     <string name="list_status_plan_to_watch">Plan to watch</string>
+    <string name="list_status_plan_to_watch_short">PTW</string>
     <string name="list_status_plan_to_read">Plan to read</string>
+    <string name="list_status_plan_to_read_short">PTR</string>
+    <string name="list_status_repeating">Rewatching</string>
+    <string name="list_status_rereading">Rereading</string>
     <string name="list_episodes_watched">Episodes watched</string>
     <string name="list_chapters_read">Chapters read</string>
     <string name="list_decrease">Decrease</string>
@@ -250,6 +274,7 @@
     <string name="list_rewatches">Rewatches</string>
     <string name="list_cancel">Cancel</string>
     <string name="list_save">Save</string>
+    <string name="list_delete">Delete from list</string>
 
     <!-- List Priority -->
     <string name="list_priority">Priority</string>
