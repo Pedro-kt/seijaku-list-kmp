@@ -14,29 +14,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
-import com.yumedev.seijakulistkmp.features.detail.presentation.utils.AddToListHelper
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.CalendarEvent
 import dev.seyfarth.tablericons.outlined.Minus
 import dev.seyfarth.tablericons.outlined.Plus
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
-
-enum class ListStatus {
-    WATCHING,
-    READING,
-    COMPLETED,
-    PAUSED,
-    DROPPED,
-    PLAN_TO_WATCH,
-    PLAN_TO_READ
-}
-
-enum class ListPriority {
-    HIGH,
-    MEDIUM,
-    LOW
-}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -48,24 +33,24 @@ fun AddToListBottomSheet(
     totalChapters: Int?,
     currentProgress: Int = 0,
     currentScore: Float? = null,
-    currentStatus: ListStatus? = null,
+    currentStatus: MediaListStatus? = null,
     currentNote: String = "",
     currentStartDate: String? = null,
     currentRewatches: Int = 0,
-    currentPriority: ListPriority = ListPriority.MEDIUM,
+    currentPriority: MediaListPriority = MediaListPriority.MEDIUM,
     onDismiss: () -> Unit,
     onSave: (
-        status: ListStatus,
+        status: MediaListStatus,
         progress: Int,
         score: Float?,
         note: String,
         startDate: String?,
         rewatches: Int,
-        priority: ListPriority
+        priority: MediaListPriority
     ) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedStatus by remember { mutableStateOf(currentStatus ?: AddToListHelper.getDefaultStatus(mediaType, mediaStatus)) }
+    var selectedStatus by remember { mutableStateOf(currentStatus ?: getDefaultStatus(mediaType, mediaStatus)) }
     var progress by remember { mutableStateOf(currentProgress) }
     var score by remember { mutableStateOf(currentScore) }
     var note by remember { mutableStateOf(currentNote) }
@@ -76,7 +61,7 @@ fun AddToListBottomSheet(
     val isAnime = mediaType == MediaType.ANIME
     val maxProgress = if (isAnime) totalEpisodes else totalChapters
 
-    val isPlanToWatch = selectedStatus == ListStatus.PLAN_TO_WATCH || selectedStatus == ListStatus.PLAN_TO_READ
+    val isPlanToWatch = selectedStatus == MediaListStatus.PLANNING
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -130,8 +115,8 @@ fun AddToListBottomSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    AddToListHelper.getStatusOptions(isAnime).forEach { status ->
-                        val isEnabled = AddToListHelper.isStatusEnabled(status, mediaStatus)
+                    getStatusOptions(mediaType).forEach { status ->
+                        val isEnabled = isStatusEnabled(status, mediaStatus)
                         FilterChip(
                             selected = selectedStatus == status,
                             onClick = { if (isEnabled) selectedStatus = status },
@@ -158,7 +143,7 @@ fun AddToListBottomSheet(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        ListPriority.entries.forEach { priorityOption ->
+                        MediaListPriority.entries.forEach { priorityOption ->
                             FilterChip(
                                 selected = priority == priorityOption,
                                 onClick = { priority = priorityOption },
@@ -437,23 +422,71 @@ fun AddToListBottomSheet(
 }
 
 @Composable
-private fun getStatusLabel(status: ListStatus, isAnime: Boolean): String {
+private fun getStatusLabel(status: MediaListStatus, isAnime: Boolean): String {
     return when (status) {
-        ListStatus.WATCHING -> stringResource(Res.string.list_status_watching)
-        ListStatus.READING -> stringResource(Res.string.list_status_reading)
-        ListStatus.COMPLETED -> stringResource(Res.string.list_status_completed)
-        ListStatus.PAUSED -> stringResource(Res.string.list_status_paused)
-        ListStatus.DROPPED -> stringResource(Res.string.list_status_dropped)
-        ListStatus.PLAN_TO_WATCH -> stringResource(Res.string.list_status_plan_to_watch)
-        ListStatus.PLAN_TO_READ -> stringResource(Res.string.list_status_plan_to_read)
+        MediaListStatus.CURRENT -> if (isAnime) {
+            stringResource(Res.string.list_status_watching)
+        } else {
+            stringResource(Res.string.list_status_reading)
+        }
+        MediaListStatus.COMPLETED -> stringResource(Res.string.list_status_completed)
+        MediaListStatus.PLANNING -> if (isAnime) {
+            stringResource(Res.string.list_status_plan_to_watch)
+        } else {
+            stringResource(Res.string.list_status_plan_to_read)
+        }
+        MediaListStatus.PAUSED -> stringResource(Res.string.list_status_paused)
+        MediaListStatus.DROPPED -> stringResource(Res.string.list_status_dropped)
+        MediaListStatus.REPEATING -> if (isAnime) {
+            stringResource(Res.string.list_status_repeating)
+        } else {
+            stringResource(Res.string.list_status_rereading)
+        }
     }
 }
 
 @Composable
-private fun getPriorityLabel(priority: ListPriority): String {
+private fun getPriorityLabel(priority: MediaListPriority): String {
     return when (priority) {
-        ListPriority.HIGH -> stringResource(Res.string.list_priority_high)
-        ListPriority.MEDIUM -> stringResource(Res.string.list_priority_medium)
-        ListPriority.LOW -> stringResource(Res.string.list_priority_low)
+        MediaListPriority.HIGH -> stringResource(Res.string.list_priority_high)
+        MediaListPriority.MEDIUM -> stringResource(Res.string.list_priority_medium)
+        MediaListPriority.LOW -> stringResource(Res.string.list_priority_low)
+    }
+}
+
+private fun getDefaultStatus(mediaType: MediaType, mediaStatus: String?): MediaListStatus {
+    return when {
+        mediaStatus == "RELEASING" || mediaStatus == "PUBLISHING" -> MediaListStatus.CURRENT
+        mediaStatus == "FINISHED" -> MediaListStatus.COMPLETED
+        else -> MediaListStatus.PLANNING
+    }
+}
+
+private fun getStatusOptions(mediaType: MediaType): List<MediaListStatus> {
+    return if (mediaType == MediaType.ANIME) {
+        listOf(
+            MediaListStatus.CURRENT,
+            MediaListStatus.COMPLETED,
+            MediaListStatus.PLANNING,
+            MediaListStatus.PAUSED,
+            MediaListStatus.DROPPED,
+            MediaListStatus.REPEATING
+        )
+    } else {
+        listOf(
+            MediaListStatus.CURRENT,
+            MediaListStatus.COMPLETED,
+            MediaListStatus.PLANNING,
+            MediaListStatus.PAUSED,
+            MediaListStatus.DROPPED,
+            MediaListStatus.REPEATING
+        )
+    }
+}
+
+private fun isStatusEnabled(status: MediaListStatus, mediaStatus: String?): Boolean {
+    return when (mediaStatus) {
+        "NOT_YET_RELEASED" -> status == MediaListStatus.PLANNING
+        else -> true
     }
 }

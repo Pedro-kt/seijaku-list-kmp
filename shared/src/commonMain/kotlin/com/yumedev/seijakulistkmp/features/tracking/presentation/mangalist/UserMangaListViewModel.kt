@@ -41,6 +41,8 @@ class UserMangaListViewModel(
             is UserMangaListEvent.SortBy -> sortBy(event.sortOption, event.ascending)
             is UserMangaListEvent.Search -> search(event.query)
             is UserMangaListEvent.RemoveEntry -> removeEntry(event.mediaId)
+            is UserMangaListEvent.IncrementProgress -> incrementProgress(event.mediaId)
+            is UserMangaListEvent.EditEntry -> editEntry(event.entry)
             is UserMangaListEvent.ExportToMAL -> exportToMAL()
             is UserMangaListEvent.Refresh -> refresh()
             UserMangaListEvent.ClearError -> clearError()
@@ -156,6 +158,26 @@ class UserMangaListViewModel(
         loadStats()
     }
 
+    private fun incrementProgress(mediaId: Int) {
+        viewModelScope.launch {
+            val entry = _uiState.value.entries.find { it.mediaId == mediaId } ?: return@launch
+            val maxProgress = entry.mediaInfo?.totalChapters
+
+            if (maxProgress == null || entry.progress < maxProgress) {
+                val newProgress = entry.progress + 1
+                updateListEntryUseCase(
+                    mediaId = mediaId,
+                    mediaType = MediaType.MANGA,
+                    progress = newProgress
+                )
+            }
+        }
+    }
+
+    private fun editEntry(entry: MediaListEntry) {
+        // TODO: Show edit bottom sheet
+    }
+
     private fun clearError() {
         _uiState.update { it.copy(error = null) }
     }
@@ -215,6 +237,8 @@ sealed class UserMangaListEvent {
     data class SortBy(val sortOption: MediaListSortOption, val ascending: Boolean) : UserMangaListEvent()
     data class Search(val query: String) : UserMangaListEvent()
     data class RemoveEntry(val mediaId: Int) : UserMangaListEvent()
+    data class IncrementProgress(val mediaId: Int) : UserMangaListEvent()
+    data class EditEntry(val entry: MediaListEntry) : UserMangaListEvent()
     data object ExportToMAL : UserMangaListEvent()
     data object Refresh : UserMangaListEvent()
     data object ClearError : UserMangaListEvent()

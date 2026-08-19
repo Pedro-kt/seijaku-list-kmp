@@ -41,6 +41,8 @@ class UserAnimeListViewModel(
             is UserAnimeListEvent.SortBy -> sortBy(event.sortOption, event.ascending)
             is UserAnimeListEvent.Search -> search(event.query)
             is UserAnimeListEvent.RemoveEntry -> removeEntry(event.mediaId)
+            is UserAnimeListEvent.IncrementProgress -> incrementProgress(event.mediaId)
+            is UserAnimeListEvent.EditEntry -> editEntry(event.entry)
             is UserAnimeListEvent.ExportToMAL -> exportToMAL()
             is UserAnimeListEvent.Refresh -> refresh()
             UserAnimeListEvent.ClearError -> clearError()
@@ -156,6 +158,26 @@ class UserAnimeListViewModel(
         loadStats()
     }
 
+    private fun incrementProgress(mediaId: Int) {
+        viewModelScope.launch {
+            val entry = _uiState.value.entries.find { it.mediaId == mediaId } ?: return@launch
+            val maxProgress = entry.mediaInfo?.totalEpisodes
+
+            if (maxProgress == null || entry.progress < maxProgress) {
+                val newProgress = entry.progress + 1
+                updateListEntryUseCase(
+                    mediaId = mediaId,
+                    mediaType = MediaType.ANIME,
+                    progress = newProgress
+                )
+            }
+        }
+    }
+
+    private fun editEntry(entry: MediaListEntry) {
+        // TODO: Show edit bottom sheet
+    }
+
     private fun clearError() {
         _uiState.update { it.copy(error = null) }
     }
@@ -215,6 +237,8 @@ sealed class UserAnimeListEvent {
     data class SortBy(val sortOption: MediaListSortOption, val ascending: Boolean) : UserAnimeListEvent()
     data class Search(val query: String) : UserAnimeListEvent()
     data class RemoveEntry(val mediaId: Int) : UserAnimeListEvent()
+    data class IncrementProgress(val mediaId: Int) : UserAnimeListEvent()
+    data class EditEntry(val entry: MediaListEntry) : UserAnimeListEvent()
     data object ExportToMAL : UserAnimeListEvent()
     data object Refresh : UserAnimeListEvent()
     data object ClearError : UserAnimeListEvent()

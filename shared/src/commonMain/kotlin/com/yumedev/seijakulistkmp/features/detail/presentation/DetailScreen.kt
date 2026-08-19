@@ -28,6 +28,8 @@ import com.yumedev.seijakulistkmp.features.detail.presentation.components.*
 import com.yumedev.seijakulistkmp.features.detail.presentation.mapper.toUiModel
 import com.yumedev.seijakulistkmp.features.detail.presentation.model.DetailStrings
 import com.yumedev.seijakulistkmp.features.detail.presentation.model.MediaDetailUiModel
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AlertCircle
 import org.jetbrains.compose.resources.stringResource
@@ -74,7 +76,10 @@ data class DetailScreen(
                         }
                         shareHelper.shareText(shareText, mediaDetailUi.title)
                     },
-                    onAddToListClick = { viewModel.addToList() },
+                    onAddToListClick = { viewModel.toggleFavorite() },
+                    onSaveToList = { status, progress, score, note, startDate, rewatches, priority ->
+                        viewModel.saveToList(status, progress, score, note, startDate, rewatches, priority)
+                    },
                     onCharacterClick = { characterId ->
                         navigator.push(CharacterScreen(characterId))
                     },
@@ -359,6 +364,7 @@ fun DetailScreenContent(
     onFavoriteClick: () -> Unit,
     onShareClick: () -> Unit,
     onAddToListClick: () -> Unit,
+    onSaveToList: (MediaListStatus, Int, Float?, String, String?, Int, MediaListPriority) -> Unit,
     onCharacterClick: (Int) -> Unit,
     onSeeAllChaptersClick: () -> Unit,
     onChapterClick: (Int) -> Unit,
@@ -464,8 +470,7 @@ fun DetailScreenContent(
             totalChapters = mediaDetail.totalChapters,
             onDismiss = { showAddToListBottomSheet = false },
             onSave = { status, progress, score, note, startDate, rewatches, priority ->
-                // TODO: Save to backend/database
-                onAddToListClick()
+                onSaveToList(status, progress, score, note, startDate, rewatches, priority)
             }
         )
     }
