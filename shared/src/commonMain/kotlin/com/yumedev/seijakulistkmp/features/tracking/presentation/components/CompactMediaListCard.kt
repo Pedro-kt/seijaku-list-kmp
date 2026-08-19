@@ -91,16 +91,23 @@ fun CompactMediaListCard(
                     )
 
                     Box {
-                        IconButton(
+                        Surface(
                             onClick = { showMenu = true },
-                            modifier = Modifier.size(24.dp)
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                            modifier = Modifier.size(28.dp)
                         ) {
-                            Icon(
-                                imageVector = TablerIcons.Outlined.DotsVertical,
-                                contentDescription = stringResource(Res.string.filter_menu),
-                                modifier = Modifier.size(20.dp),
-                                tint = Color.White
-                            )
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = TablerIcons.Outlined.DotsVertical,
+                                    contentDescription = stringResource(Res.string.filter_menu),
+                                    modifier = Modifier.size(18.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
                         }
 
                         DropdownMenu(
@@ -257,7 +264,7 @@ private fun StatusChip(
     Surface(
         modifier = modifier,
         shape = CircleShape,
-        color = statusColor.copy(alpha = 0.2f)
+        color = Color.Black.copy(alpha = 0.8f)
     ) {
         Text(
             text = statusText,
