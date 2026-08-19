@@ -270,6 +270,10 @@
     <string name="list_cancel">Cancelar</string>
     <string name="list_save">Guardar</string>
     <string name="list_delete">Eliminar de la lista</string>
+    <string name="list_delete_confirm_title">¿Eliminar entrada?</string>
+    <string name="list_delete_confirm_message">¿Estás seguro de que quieres eliminar esto de tu lista? Esta acción no se puede deshacer.</string>
+    <string name="list_delete_confirm">Eliminar</string>
+    <string name="list_deleted_success">Eliminado de la lista</string>
 
     <!-- List Priority -->
     <string name="list_priority">Prioridad</string>

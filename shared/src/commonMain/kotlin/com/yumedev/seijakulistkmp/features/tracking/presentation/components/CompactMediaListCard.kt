@@ -35,6 +35,8 @@ fun CompactMediaListCard(
     modifier: Modifier = Modifier
 ) {
     var showMenu by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -122,7 +124,7 @@ fun CompactMediaListCard(
                                 text = { Text(stringResource(Res.string.list_delete)) },
                                 onClick = {
                                     showMenu = false
-                                    onDeleteClick()
+                                    showDeleteDialog = true
                                 },
                                 leadingIcon = {
                                     Icon(
@@ -183,6 +185,36 @@ fun CompactMediaListCard(
                 }
             }
         }
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = {
+                Text(text = stringResource(Res.string.list_delete_confirm_title))
+            },
+            text = {
+                Text(text = stringResource(Res.string.list_delete_confirm_message))
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        onDeleteClick()
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text(stringResource(Res.string.list_delete_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text(stringResource(Res.string.list_cancel))
+                }
+            }
+        )
     }
 }
 

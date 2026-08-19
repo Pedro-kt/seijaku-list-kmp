@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCard
@@ -40,6 +41,8 @@ fun UserMangaListScreenContent(
     uiState: UserMangaListUiState,
     onEvent: (UserMangaListEvent) -> Unit
 ) {
+    val toastManager = rememberToastManager()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -62,25 +65,20 @@ fun UserMangaListScreenContent(
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
             StatusFilterChips(
                 stats = uiState.stats,
                 selectedStatus = uiState.selectedStatus,
                 onStatusSelected = { status ->
                     onEvent(UserMangaListEvent.FilterByStatus(status))
-                },
-                modifier = Modifier.padding(top = paddingValues.calculateTopPadding())
+                }
             )
 
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = paddingValues.calculateStartPadding(layoutDirection = androidx.compose.ui.unit.LayoutDirection.Ltr),
-                        end = paddingValues.calculateEndPadding(layoutDirection = androidx.compose.ui.unit.LayoutDirection.Ltr),
-                        bottom = paddingValues.calculateBottomPadding()
-                    )
+                modifier = Modifier.fillMaxSize()
             ) {
                 when {
                     uiState.isLoading && uiState.entries.isEmpty() -> {
@@ -108,10 +106,12 @@ fun UserMangaListScreenContent(
         }
     }
 
-    // Handle error snackbar
-    if (uiState.error != null) {
-        LaunchedEffect(uiState.error) {
-            // Show snackbar or handle error
+    val deleteSuccessMessage = stringResource(Res.string.list_deleted_success)
+
+    LaunchedEffect(uiState.successMessage) {
+        uiState.successMessage?.let {
+            toastManager.showToast(deleteSuccessMessage)
+            onEvent(UserMangaListEvent.ClearSuccessMessage)
         }
     }
 }

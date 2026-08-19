@@ -46,6 +46,7 @@ class UserAnimeListViewModel(
             is UserAnimeListEvent.ExportToMAL -> exportToMAL()
             is UserAnimeListEvent.Refresh -> refresh()
             UserAnimeListEvent.ClearError -> clearError()
+            UserAnimeListEvent.ClearSuccessMessage -> clearSuccessMessage()
             UserAnimeListEvent.DismissExportDialog -> dismissExportDialog()
         }
     }
@@ -113,7 +114,12 @@ class UserAnimeListViewModel(
 
             when (val result = removeFromListUseCase(mediaId, MediaType.ANIME)) {
                 is Result.Success -> {
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            successMessage = "list_deleted_success"
+                        )
+                    }
                 }
                 is Result.Failure -> {
                     _uiState.update {
@@ -182,6 +188,10 @@ class UserAnimeListViewModel(
         _uiState.update { it.copy(error = null) }
     }
 
+    private fun clearSuccessMessage() {
+        _uiState.update { it.copy(successMessage = null) }
+    }
+
     private fun dismissExportDialog() {
         _uiState.update {
             it.copy(
@@ -229,7 +239,8 @@ data class UserAnimeListUiState(
     val isExporting: Boolean = false,
     val exportSuccess: Boolean = false,
     val exportedXml: String? = null,
-    val error: String? = null
+    val error: String? = null,
+    val successMessage: String? = null
 )
 
 sealed class UserAnimeListEvent {
@@ -242,5 +253,6 @@ sealed class UserAnimeListEvent {
     data object ExportToMAL : UserAnimeListEvent()
     data object Refresh : UserAnimeListEvent()
     data object ClearError : UserAnimeListEvent()
+    data object ClearSuccessMessage : UserAnimeListEvent()
     data object DismissExportDialog : UserAnimeListEvent()
 }
