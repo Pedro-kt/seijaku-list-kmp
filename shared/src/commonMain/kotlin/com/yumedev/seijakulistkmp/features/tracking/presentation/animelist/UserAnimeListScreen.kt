@@ -106,10 +106,16 @@ fun UserAnimeListScreenContent(
     }
 
     val deleteSuccessMessage = stringResource(Res.string.list_deleted_success)
+    val statusUpdatedMessage = stringResource(Res.string.list_status_updated)
 
     LaunchedEffect(uiState.successMessage) {
-        uiState.successMessage?.let {
-            toastManager.showToast(deleteSuccessMessage)
+        uiState.successMessage?.let { messageKey ->
+            val message = when (messageKey) {
+                "list_deleted_success" -> deleteSuccessMessage
+                "list_status_updated" -> statusUpdatedMessage
+                else -> messageKey
+            }
+            toastManager.showToast(message)
             onEvent(UserAnimeListEvent.ClearSuccessMessage)
         }
     }
@@ -278,6 +284,9 @@ private fun AnimeListContent(
                 },
                 onEditClick = {
                     onEvent(UserAnimeListEvent.EditEntry(entry))
+                },
+                onStatusChange = { newStatus ->
+                    onEvent(UserAnimeListEvent.ChangeStatus(entry.mediaId, newStatus))
                 },
                 onDeleteClick = {
                     onEvent(UserAnimeListEvent.RemoveEntry(entry.mediaId))

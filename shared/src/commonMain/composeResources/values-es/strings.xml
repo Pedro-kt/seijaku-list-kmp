@@ -274,6 +274,9 @@
     <string name="list_delete_confirm_message">¿Estás seguro de que quieres eliminar esto de tu lista? Esta acción no se puede deshacer.</string>
     <string name="list_delete_confirm">Eliminar</string>
     <string name="list_deleted_success">Eliminado de la lista</string>
+    <string name="list_change_status">Cambiar estado</string>
+    <string name="list_change_status_title">Cambiar estado</string>
+    <string name="list_status_updated">Estado actualizado</string>
 
     <!-- List Priority -->
     <string name="list_priority">Prioridad</string>

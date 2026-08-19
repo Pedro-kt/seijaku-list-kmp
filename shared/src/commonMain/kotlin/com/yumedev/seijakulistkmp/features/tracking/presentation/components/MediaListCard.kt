@@ -9,6 +9,7 @@ fun MediaListCard(
     entry: MediaListEntry,
     onIncrementProgress: () -> Unit,
     onEditClick: () -> Unit,
+    onStatusChange: (com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus) -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
     cardType: MediaListCardType = MediaListCardType.Compact
@@ -18,6 +19,7 @@ fun MediaListCard(
             entry = entry,
             onIncrementProgress = onIncrementProgress,
             onEditClick = onEditClick,
+            onStatusChange = onStatusChange,
             onDeleteClick = onDeleteClick,
             modifier = modifier
         )

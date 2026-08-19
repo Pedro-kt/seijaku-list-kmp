@@ -42,6 +42,7 @@ class UserMangaListViewModel(
             is UserMangaListEvent.Search -> search(event.query)
             is UserMangaListEvent.RemoveEntry -> removeEntry(event.mediaId)
             is UserMangaListEvent.IncrementProgress -> incrementProgress(event.mediaId)
+            is UserMangaListEvent.ChangeStatus -> changeStatus(event.mediaId, event.newStatus)
             is UserMangaListEvent.EditEntry -> editEntry(event.entry)
             is UserMangaListEvent.ExportToMAL -> exportToMAL()
             is UserMangaListEvent.Refresh -> refresh()
@@ -180,6 +181,27 @@ class UserMangaListViewModel(
         }
     }
 
+    private fun changeStatus(mediaId: Int, newStatus: MediaListStatus) {
+        viewModelScope.launch {
+            when (val result = updateListEntryUseCase(
+                mediaId = mediaId,
+                mediaType = MediaType.MANGA,
+                status = newStatus
+            )) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(successMessage = "list_status_updated")
+                    }
+                }
+                is Result.Failure -> {
+                    _uiState.update {
+                        it.copy(error = result.exception.message ?: "Failed to update status")
+                    }
+                }
+            }
+        }
+    }
+
     private fun editEntry(entry: MediaListEntry) {
         // TODO: Show edit bottom sheet
     }
@@ -249,6 +271,7 @@ sealed class UserMangaListEvent {
     data class Search(val query: String) : UserMangaListEvent()
     data class RemoveEntry(val mediaId: Int) : UserMangaListEvent()
     data class IncrementProgress(val mediaId: Int) : UserMangaListEvent()
+    data class ChangeStatus(val mediaId: Int, val newStatus: MediaListStatus) : UserMangaListEvent()
     data class EditEntry(val entry: MediaListEntry) : UserMangaListEvent()
     data object ExportToMAL : UserMangaListEvent()
     data object Refresh : UserMangaListEvent()

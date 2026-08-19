@@ -279,6 +279,9 @@
     <string name="list_delete_confirm_message">Are you sure you want to remove this from your list? This action cannot be undone.</string>
     <string name="list_delete_confirm">Delete</string>
     <string name="list_deleted_success">Removed from list</string>
+    <string name="list_change_status">Change status</string>
+    <string name="list_change_status_title">Change status</string>
+    <string name="list_status_updated">Status updated</string>
 
     <!-- List Priority -->
     <string name="list_priority">Priority</string>

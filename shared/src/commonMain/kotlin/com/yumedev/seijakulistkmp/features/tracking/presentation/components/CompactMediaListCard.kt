@@ -22,6 +22,7 @@ import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.DotsVertical
 import dev.seyfarth.tablericons.outlined.Edit
 import dev.seyfarth.tablericons.outlined.Plus
+import dev.seyfarth.tablericons.outlined.Refresh
 import dev.seyfarth.tablericons.outlined.Trash
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
@@ -31,11 +32,13 @@ fun CompactMediaListCard(
     entry: MediaListEntry,
     onIncrementProgress: () -> Unit,
     onEditClick: () -> Unit,
+    onStatusChange: (MediaListStatus) -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showChangeStatusSheet by remember { mutableStateOf(false) }
 
     Card(
         modifier = modifier
@@ -123,6 +126,19 @@ fun CompactMediaListCard(
                                 leadingIcon = {
                                     Icon(
                                         imageVector = TablerIcons.Outlined.Edit,
+                                        contentDescription = null
+                                    )
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(Res.string.list_change_status)) },
+                                onClick = {
+                                    showMenu = false
+                                    showChangeStatusSheet = true
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = TablerIcons.Outlined.Refresh,
                                         contentDescription = null
                                     )
                                 }
@@ -220,6 +236,17 @@ fun CompactMediaListCard(
                 TextButton(onClick = { showDeleteDialog = false }) {
                     Text(stringResource(Res.string.list_cancel))
                 }
+            }
+        )
+    }
+
+    if (showChangeStatusSheet) {
+        ChangeStatusBottomSheet(
+            currentStatus = entry.status,
+            mediaType = entry.mediaType,
+            onDismiss = { showChangeStatusSheet = false },
+            onStatusSelected = { newStatus ->
+                onStatusChange(newStatus)
             }
         )
     }
