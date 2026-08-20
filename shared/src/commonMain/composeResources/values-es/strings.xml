@@ -254,9 +254,9 @@
     <string name="list_status_completed">Completado</string>
     <string name="list_status_paused">En pausa</string>
     <string name="list_status_dropped">Abandonado</string>
-    <string name="list_status_plan_to_watch">Plan ver</string>
+    <string name="list_status_plan_to_watch">Planeado</string>
     <string name="list_status_plan_to_watch_short">Planeado</string>
-    <string name="list_status_plan_to_read">Plan leer</string>
+    <string name="list_status_plan_to_read">Planeado</string>
     <string name="list_status_plan_to_read_short">Planeado</string>
     <string name="list_status_repeating">Reviendo</string>
     <string name="list_status_rereading">Releyendo</string>
