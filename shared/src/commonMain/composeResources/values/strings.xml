@@ -260,9 +260,9 @@
     <string name="list_status_paused">Paused</string>
     <string name="list_status_dropped">Dropped</string>
     <string name="list_status_plan_to_watch">Plan to watch</string>
-    <string name="list_status_plan_to_watch_short">PTW</string>
+    <string name="list_status_plan_to_watch_short">Planning</string>
     <string name="list_status_plan_to_read">Plan to read</string>
-    <string name="list_status_plan_to_read_short">PTR</string>
+    <string name="list_status_plan_to_read_short">Planning</string>
     <string name="list_status_repeating">Rewatching</string>
     <string name="list_status_rereading">Rereading</string>
     <string name="list_episodes_watched">Episodes watched</string>
