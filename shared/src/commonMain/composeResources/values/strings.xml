@@ -285,6 +285,7 @@
     <string name="list_change_status">Change status</string>
     <string name="list_change_status_title">Change status</string>
     <string name="list_status_updated">Status updated</string>
+    <string name="list_updated_success">Entry updated successfully</string>
 
     <!-- List Sorting -->
     <string name="list_sort_title">Sort by</string>

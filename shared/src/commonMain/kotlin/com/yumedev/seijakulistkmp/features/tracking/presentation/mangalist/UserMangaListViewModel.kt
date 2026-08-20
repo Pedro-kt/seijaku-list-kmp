@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.core.domain.model.Result
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListSortOption
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStats
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
@@ -48,6 +49,16 @@ class UserMangaListViewModel(
             is UserMangaListEvent.IncrementProgress -> incrementProgress(event.mediaId)
             is UserMangaListEvent.ChangeStatus -> changeStatus(event.mediaId, event.newStatus)
             is UserMangaListEvent.EditEntry -> editEntry(event.entry)
+            UserMangaListEvent.HideEditBottomSheet -> hideEditBottomSheet()
+            is UserMangaListEvent.SaveEditedEntry -> saveEditedEntry(
+                event.status,
+                event.progress,
+                event.score,
+                event.note,
+                event.startDate,
+                event.rewatches,
+                event.priority
+            )
             is UserMangaListEvent.ExportToMAL -> exportToMAL()
             is UserMangaListEvent.Refresh -> refresh()
             UserMangaListEvent.ClearError -> clearError()
@@ -238,7 +249,64 @@ class UserMangaListViewModel(
     }
 
     private fun editEntry(entry: MediaListEntry) {
-        // TODO: Show edit bottom sheet
+        _uiState.update {
+            it.copy(
+                isEditBottomSheetVisible = true,
+                editingEntry = entry
+            )
+        }
+    }
+
+    private fun hideEditBottomSheet() {
+        _uiState.update {
+            it.copy(
+                isEditBottomSheetVisible = false,
+                editingEntry = null
+            )
+        }
+    }
+
+    private fun saveEditedEntry(
+        status: MediaListStatus,
+        progress: Int,
+        score: Float?,
+        note: String,
+        startDate: String?,
+        rewatches: Int,
+        priority: MediaListPriority
+    ) {
+        viewModelScope.launch {
+            val editingEntry = _uiState.value.editingEntry ?: return@launch
+
+            when (val result = updateListEntryUseCase(
+                mediaId = editingEntry.mediaId,
+                mediaType = MediaType.MANGA,
+                status = status,
+                progress = progress,
+                score = score,
+                notes = note.ifBlank { null },
+                startDate = startDate,
+                repeatCount = rewatches,
+                priority = priority
+            )) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            isEditBottomSheetVisible = false,
+                            editingEntry = null,
+                            successMessage = "list_updated_success"
+                        )
+                    }
+                }
+                is Result.Failure -> {
+                    _uiState.update {
+                        it.copy(
+                            error = result.exception.message ?: "Failed to update entry"
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun clearError() {
@@ -294,6 +362,8 @@ data class UserMangaListUiState(
     val searchQuery: String = "",
     val isSearchVisible: Boolean = false,
     val isSortBottomSheetVisible: Boolean = false,
+    val isEditBottomSheetVisible: Boolean = false,
+    val editingEntry: MediaListEntry? = null,
     val isLoading: Boolean = true,
     val isExporting: Boolean = false,
     val exportSuccess: Boolean = false,
@@ -314,6 +384,16 @@ sealed class UserMangaListEvent {
     data class IncrementProgress(val mediaId: Int) : UserMangaListEvent()
     data class ChangeStatus(val mediaId: Int, val newStatus: MediaListStatus) : UserMangaListEvent()
     data class EditEntry(val entry: MediaListEntry) : UserMangaListEvent()
+    data object HideEditBottomSheet : UserMangaListEvent()
+    data class SaveEditedEntry(
+        val status: MediaListStatus,
+        val progress: Int,
+        val score: Float?,
+        val note: String,
+        val startDate: String?,
+        val rewatches: Int,
+        val priority: MediaListPriority
+    ) : UserMangaListEvent()
     data object ExportToMAL : UserMangaListEvent()
     data object Refresh : UserMangaListEvent()
     data object ClearError : UserMangaListEvent()

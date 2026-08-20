@@ -280,6 +280,7 @@
     <string name="list_change_status">Cambiar estado</string>
     <string name="list_change_status_title">Cambiar estado</string>
     <string name="list_status_updated">Estado actualizado</string>
+    <string name="list_updated_success">Entrada actualizada exitosamente</string>
 
     <!-- List Sorting -->
     <string name="list_sort_title">Ordenar por</string>

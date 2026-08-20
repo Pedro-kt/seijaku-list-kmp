@@ -464,7 +464,10 @@ fun DetailScreenContent(
     if (showAddToListBottomSheet) {
         AddToListBottomSheet(
             mediaTitle = mediaDetail.title,
-            mediaType = mediaDetail.type,
+            mediaType = when (mediaDetail.type) {
+                MediaType.ANIME -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.ANIME
+                MediaType.MANGA -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA
+            },
             mediaStatus = mediaDetail.status,
             totalEpisodes = mediaDetail.totalEpisodes,
             totalChapters = mediaDetail.totalChapters,

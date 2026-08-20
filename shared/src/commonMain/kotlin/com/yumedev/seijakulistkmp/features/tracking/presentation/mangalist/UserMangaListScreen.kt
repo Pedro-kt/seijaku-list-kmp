@@ -14,7 +14,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
+import com.yumedev.seijakulistkmp.features.detail.presentation.components.AddToListBottomSheet
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.AnimatedSearchBar
@@ -134,12 +136,14 @@ fun UserMangaListScreenContent(
 
     val deleteSuccessMessage = stringResource(Res.string.list_deleted_success)
     val statusUpdatedMessage = stringResource(Res.string.list_status_updated)
+    val listUpdatedMessage = stringResource(Res.string.list_updated_success)
 
     LaunchedEffect(uiState.successMessage) {
         uiState.successMessage?.let { messageKey ->
             val message = when (messageKey) {
                 "list_deleted_success" -> deleteSuccessMessage
                 "list_status_updated" -> statusUpdatedMessage
+                "list_updated_success" -> listUpdatedMessage
                 else -> messageKey
             }
             toastManager.showToast(message)
@@ -156,6 +160,39 @@ fun UserMangaListScreenContent(
             },
             onDismiss = { onEvent(UserMangaListEvent.HideSortBottomSheet) }
         )
+    }
+
+    uiState.editingEntry?.let { entry ->
+        if (uiState.isEditBottomSheetVisible) {
+            AddToListBottomSheet(
+                mediaTitle = entry.mediaInfo?.title ?: "",
+                mediaType = MediaType.MANGA,
+                mediaStatus = null,
+                totalEpisodes = null,
+                totalChapters = entry.mediaInfo?.totalChapters,
+                currentProgress = entry.progress,
+                currentScore = entry.score,
+                currentStatus = entry.status,
+                currentNote = entry.notes ?: "",
+                currentStartDate = entry.startDate,
+                currentRewatches = entry.repeatCount,
+                currentPriority = entry.priority,
+                onDismiss = { onEvent(UserMangaListEvent.HideEditBottomSheet) },
+                onSave = { status, progress, score, note, startDate, rewatches, priority ->
+                    onEvent(
+                        UserMangaListEvent.SaveEditedEntry(
+                            status = status,
+                            progress = progress,
+                            score = score,
+                            note = note,
+                            startDate = startDate,
+                            rewatches = rewatches,
+                            priority = priority
+                        )
+                    )
+                }
+            )
+        }
     }
 }
 
