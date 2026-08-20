@@ -40,6 +40,8 @@ class UserMangaListViewModel(
             is UserMangaListEvent.FilterByStatus -> filterByStatus(event.status)
             is UserMangaListEvent.SortBy -> sortBy(event.sortOption, event.ascending)
             is UserMangaListEvent.Search -> search(event.query)
+            UserMangaListEvent.ToggleSearch -> toggleSearch()
+            UserMangaListEvent.HideSearch -> hideSearch()
             is UserMangaListEvent.RemoveEntry -> removeEntry(event.mediaId)
             is UserMangaListEvent.IncrementProgress -> incrementProgress(event.mediaId)
             is UserMangaListEvent.ChangeStatus -> changeStatus(event.mediaId, event.newStatus)
@@ -69,7 +71,9 @@ class UserMangaListViewModel(
                         it.copy(
                             entries = sorted,
                             filteredEntries = filtered,
-                            isLoading = false
+                            isLoading = false,
+                            isSearchVisible = if (sorted.isEmpty()) false else it.isSearchVisible,
+                            searchQuery = if (sorted.isEmpty()) "" else it.searchQuery
                         )
                     }
                 }
@@ -105,6 +109,26 @@ class UserMangaListViewModel(
             it.copy(
                 searchQuery = query,
                 filteredEntries = filterEntries(it.entries, query)
+            )
+        }
+    }
+
+    private fun toggleSearch() {
+        _uiState.update {
+            it.copy(
+                isSearchVisible = !it.isSearchVisible,
+                searchQuery = if (!it.isSearchVisible) "" else it.searchQuery,
+                filteredEntries = if (!it.isSearchVisible) it.entries else filterEntries(it.entries, it.searchQuery)
+            )
+        }
+    }
+
+    private fun hideSearch() {
+        _uiState.update {
+            it.copy(
+                isSearchVisible = false,
+                searchQuery = "",
+                filteredEntries = it.entries
             )
         }
     }
@@ -257,6 +281,7 @@ data class UserMangaListUiState(
     val sortBy: MediaListSortOption = MediaListSortOption.UPDATED_AT,
     val ascending: Boolean = false,
     val searchQuery: String = "",
+    val isSearchVisible: Boolean = false,
     val isLoading: Boolean = true,
     val isExporting: Boolean = false,
     val exportSuccess: Boolean = false,
@@ -269,6 +294,8 @@ sealed class UserMangaListEvent {
     data class FilterByStatus(val status: MediaListStatus?) : UserMangaListEvent()
     data class SortBy(val sortOption: MediaListSortOption, val ascending: Boolean) : UserMangaListEvent()
     data class Search(val query: String) : UserMangaListEvent()
+    data object ToggleSearch : UserMangaListEvent()
+    data object HideSearch : UserMangaListEvent()
     data class RemoveEntry(val mediaId: Int) : UserMangaListEvent()
     data class IncrementProgress(val mediaId: Int) : UserMangaListEvent()
     data class ChangeStatus(val mediaId: Int, val newStatus: MediaListStatus) : UserMangaListEvent()

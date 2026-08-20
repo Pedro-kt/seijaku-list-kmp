@@ -1,5 +1,7 @@
 package com.yumedev.seijakulistkmp.features.tracking.presentation.animelist
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -8,11 +10,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
+import com.yumedev.seijakulistkmp.features.tracking.presentation.components.AnimatedSearchBar
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCard
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AdjustmentsHorizontal
@@ -41,13 +45,17 @@ fun UserAnimeListScreenContent(
     onEvent: (UserAnimeListEvent) -> Unit
 ) {
     val toastManager = rememberToastManager()
+    val focusManager = LocalFocusManager.current
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.my_anime_list)) },
                 actions = {
-                    IconButton(onClick = { /* TODO: Implement search */ }) {
+                    IconButton(
+                        onClick = { onEvent(UserAnimeListEvent.ToggleSearch) },
+                        enabled = uiState.entries.isNotEmpty()
+                    ) {
                         Icon(
                             imageVector = TablerIcons.Outlined.Search,
                             contentDescription = stringResource(Res.string.search)
@@ -68,6 +76,14 @@ fun UserAnimeListScreenContent(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            AnimatedSearchBar(
+                visible = uiState.isSearchVisible,
+                query = uiState.searchQuery,
+                onQueryChange = { onEvent(UserAnimeListEvent.Search(it)) },
+                onDismiss = { onEvent(UserAnimeListEvent.HideSearch) },
+                placeholderRes = Res.string.search_anime_placeholder
+            )
+
             StatusFilterChips(
                 stats = uiState.stats,
                 selectedStatus = uiState.selectedStatus,
@@ -77,7 +93,16 @@ fun UserAnimeListScreenContent(
             )
 
             Box(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        if (uiState.isSearchVisible) {
+                            focusManager.clearFocus()
+                        }
+                    }
             ) {
                 when {
                     uiState.isLoading && uiState.entries.isEmpty() -> {

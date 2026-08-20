@@ -40,6 +40,8 @@ class UserAnimeListViewModel(
             is UserAnimeListEvent.FilterByStatus -> filterByStatus(event.status)
             is UserAnimeListEvent.SortBy -> sortBy(event.sortOption, event.ascending)
             is UserAnimeListEvent.Search -> search(event.query)
+            UserAnimeListEvent.ToggleSearch -> toggleSearch()
+            UserAnimeListEvent.HideSearch -> hideSearch()
             is UserAnimeListEvent.RemoveEntry -> removeEntry(event.mediaId)
             is UserAnimeListEvent.IncrementProgress -> incrementProgress(event.mediaId)
             is UserAnimeListEvent.ChangeStatus -> changeStatus(event.mediaId, event.newStatus)
@@ -69,7 +71,9 @@ class UserAnimeListViewModel(
                         it.copy(
                             entries = sorted,
                             filteredEntries = filtered,
-                            isLoading = false
+                            isLoading = false,
+                            isSearchVisible = if (sorted.isEmpty()) false else it.isSearchVisible,
+                            searchQuery = if (sorted.isEmpty()) "" else it.searchQuery
                         )
                     }
                 }
@@ -105,6 +109,26 @@ class UserAnimeListViewModel(
             it.copy(
                 searchQuery = query,
                 filteredEntries = filterEntries(it.entries, query)
+            )
+        }
+    }
+
+    private fun toggleSearch() {
+        _uiState.update {
+            it.copy(
+                isSearchVisible = !it.isSearchVisible,
+                searchQuery = if (!it.isSearchVisible) "" else it.searchQuery,
+                filteredEntries = if (!it.isSearchVisible) it.entries else filterEntries(it.entries, it.searchQuery)
+            )
+        }
+    }
+
+    private fun hideSearch() {
+        _uiState.update {
+            it.copy(
+                isSearchVisible = false,
+                searchQuery = "",
+                filteredEntries = it.entries
             )
         }
     }
@@ -257,6 +281,7 @@ data class UserAnimeListUiState(
     val sortBy: MediaListSortOption = MediaListSortOption.UPDATED_AT,
     val ascending: Boolean = false,
     val searchQuery: String = "",
+    val isSearchVisible: Boolean = false,
     val isLoading: Boolean = true,
     val isExporting: Boolean = false,
     val exportSuccess: Boolean = false,
@@ -269,6 +294,8 @@ sealed class UserAnimeListEvent {
     data class FilterByStatus(val status: MediaListStatus?) : UserAnimeListEvent()
     data class SortBy(val sortOption: MediaListSortOption, val ascending: Boolean) : UserAnimeListEvent()
     data class Search(val query: String) : UserAnimeListEvent()
+    data object ToggleSearch : UserAnimeListEvent()
+    data object HideSearch : UserAnimeListEvent()
     data class RemoveEntry(val mediaId: Int) : UserAnimeListEvent()
     data class IncrementProgress(val mediaId: Int) : UserAnimeListEvent()
     data class ChangeStatus(val mediaId: Int, val newStatus: MediaListStatus) : UserAnimeListEvent()

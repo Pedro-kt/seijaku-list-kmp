@@ -16,6 +16,9 @@
     <string name="retry">Retry</string>
     <string name="search">Search</string>
     <string name="search_placeholder">Anime, manga, characters...</string>
+    <string name="search_anime_placeholder">Search anime</string>
+    <string name="search_manga_placeholder">Search manga</string>
+    <string name="clear_search">Clear search</string>
     <string name="empty_list">No items found</string>
     <string name="notifications">Notifications</string>
     <string name="user_profile">User profile</string>
