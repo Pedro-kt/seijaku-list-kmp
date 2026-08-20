@@ -286,6 +286,15 @@
     <string name="list_change_status_title">Change status</string>
     <string name="list_status_updated">Status updated</string>
 
+    <!-- List Sorting -->
+    <string name="list_sort_title">Sort by</string>
+    <string name="list_sort_by_title">Title</string>
+    <string name="list_sort_by_score">Score</string>
+    <string name="list_sort_by_progress">Progress</string>
+    <string name="list_sort_by_updated">Last updated</string>
+    <string name="list_sort_ascending">Ascending</string>
+    <string name="list_sort_descending">Descending</string>
+
     <!-- List Priority -->
     <string name="list_priority">Priority</string>
     <string name="list_priority_high">High</string>

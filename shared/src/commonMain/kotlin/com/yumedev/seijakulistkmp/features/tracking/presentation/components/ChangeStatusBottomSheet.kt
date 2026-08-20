@@ -2,8 +2,6 @@ package com.yumedev.seijakulistkmp.features.tracking.presentation.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,7 +26,7 @@ fun ChangeStatusBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 32.dp)
+                .wrapContentHeight()
         ) {
             Text(
                 text = stringResource(Res.string.list_change_status_title),
@@ -38,11 +36,12 @@ fun ChangeStatusBottomSheet(
 
             Divider()
 
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(vertical = 8.dp)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                items(getStatusOptions(mediaType)) { status ->
+                getStatusOptions(mediaType).forEach { status ->
                     StatusOption(
                         status = status,
                         mediaType = mediaType,
@@ -54,6 +53,8 @@ fun ChangeStatusBottomSheet(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
@@ -90,7 +91,7 @@ private fun StatusOption(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = 24.dp, vertical = 12.dp),
+            .padding(horizontal = 24.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

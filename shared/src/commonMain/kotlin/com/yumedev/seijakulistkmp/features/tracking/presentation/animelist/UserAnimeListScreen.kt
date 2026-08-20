@@ -17,6 +17,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.AnimatedSearchBar
+import com.yumedev.seijakulistkmp.features.tracking.presentation.components.SortBottomSheet
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCard
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AdjustmentsHorizontal
@@ -61,7 +62,7 @@ fun UserAnimeListScreenContent(
                             contentDescription = stringResource(Res.string.search)
                         )
                     }
-                    IconButton(onClick = { /* TODO: Implement filter/sort */ }) {
+                    IconButton(onClick = { onEvent(UserAnimeListEvent.ShowSortBottomSheet) }) {
                         Icon(
                             imageVector = TablerIcons.Outlined.AdjustmentsHorizontal,
                             contentDescription = stringResource(Res.string.filter_menu)
@@ -143,6 +144,17 @@ fun UserAnimeListScreenContent(
             toastManager.showToast(message)
             onEvent(UserAnimeListEvent.ClearSuccessMessage)
         }
+    }
+
+    if (uiState.isSortBottomSheetVisible) {
+        SortBottomSheet(
+            selectedSortOption = uiState.sortBy,
+            ascending = uiState.ascending,
+            onSortOptionSelected = { sortOption, ascending ->
+                onEvent(UserAnimeListEvent.SortBy(sortOption, ascending))
+            },
+            onDismiss = { onEvent(UserAnimeListEvent.HideSortBottomSheet) }
+        )
     }
 }
 

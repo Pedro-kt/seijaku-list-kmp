@@ -19,6 +19,7 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.AnimatedSearchBar
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCard
+import com.yumedev.seijakulistkmp.features.tracking.presentation.components.SortBottomSheet
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AdjustmentsHorizontal
 import dev.seyfarth.tablericons.outlined.Search
@@ -62,7 +63,7 @@ fun UserMangaListScreenContent(
                             contentDescription = stringResource(Res.string.search)
                         )
                     }
-                    IconButton(onClick = { /* TODO: Implement filter/sort */ }) {
+                    IconButton(onClick = { onEvent(UserMangaListEvent.ShowSortBottomSheet) }) {
                         Icon(
                             imageVector = TablerIcons.Outlined.AdjustmentsHorizontal,
                             contentDescription = stringResource(Res.string.filter_menu)
@@ -144,6 +145,17 @@ fun UserMangaListScreenContent(
             toastManager.showToast(message)
             onEvent(UserMangaListEvent.ClearSuccessMessage)
         }
+    }
+
+    if (uiState.isSortBottomSheetVisible) {
+        SortBottomSheet(
+            selectedSortOption = uiState.sortBy,
+            ascending = uiState.ascending,
+            onSortOptionSelected = { sortOption, ascending ->
+                onEvent(UserMangaListEvent.SortBy(sortOption, ascending))
+            },
+            onDismiss = { onEvent(UserMangaListEvent.HideSortBottomSheet) }
+        )
     }
 }
 

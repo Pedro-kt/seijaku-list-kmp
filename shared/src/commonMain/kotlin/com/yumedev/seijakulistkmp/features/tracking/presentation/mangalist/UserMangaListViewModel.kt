@@ -42,6 +42,8 @@ class UserMangaListViewModel(
             is UserMangaListEvent.Search -> search(event.query)
             UserMangaListEvent.ToggleSearch -> toggleSearch()
             UserMangaListEvent.HideSearch -> hideSearch()
+            UserMangaListEvent.ShowSortBottomSheet -> showSortBottomSheet()
+            UserMangaListEvent.HideSortBottomSheet -> hideSortBottomSheet()
             is UserMangaListEvent.RemoveEntry -> removeEntry(event.mediaId)
             is UserMangaListEvent.IncrementProgress -> incrementProgress(event.mediaId)
             is UserMangaListEvent.ChangeStatus -> changeStatus(event.mediaId, event.newStatus)
@@ -99,7 +101,8 @@ class UserMangaListViewModel(
                 sortBy = sortOption,
                 ascending = ascending,
                 entries = sortEntries(it.entries, sortOption, ascending),
-                filteredEntries = sortEntries(it.filteredEntries, sortOption, ascending)
+                filteredEntries = sortEntries(it.filteredEntries, sortOption, ascending),
+                isSortBottomSheetVisible = false
             )
         }
     }
@@ -131,6 +134,14 @@ class UserMangaListViewModel(
                 filteredEntries = it.entries
             )
         }
+    }
+
+    private fun showSortBottomSheet() {
+        _uiState.update { it.copy(isSortBottomSheetVisible = true) }
+    }
+
+    private fun hideSortBottomSheet() {
+        _uiState.update { it.copy(isSortBottomSheetVisible = false) }
     }
 
     private fun removeEntry(mediaId: Int) {
@@ -282,6 +293,7 @@ data class UserMangaListUiState(
     val ascending: Boolean = false,
     val searchQuery: String = "",
     val isSearchVisible: Boolean = false,
+    val isSortBottomSheetVisible: Boolean = false,
     val isLoading: Boolean = true,
     val isExporting: Boolean = false,
     val exportSuccess: Boolean = false,
@@ -296,6 +308,8 @@ sealed class UserMangaListEvent {
     data class Search(val query: String) : UserMangaListEvent()
     data object ToggleSearch : UserMangaListEvent()
     data object HideSearch : UserMangaListEvent()
+    data object ShowSortBottomSheet : UserMangaListEvent()
+    data object HideSortBottomSheet : UserMangaListEvent()
     data class RemoveEntry(val mediaId: Int) : UserMangaListEvent()
     data class IncrementProgress(val mediaId: Int) : UserMangaListEvent()
     data class ChangeStatus(val mediaId: Int, val newStatus: MediaListStatus) : UserMangaListEvent()
