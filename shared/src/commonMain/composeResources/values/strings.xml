@@ -176,6 +176,7 @@
 
     <!-- Error Messages -->
     <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_timeout">Connection timeout. The request took too long.</string>
     <string name="error_unknown">An unknown error occurred.</string>
     <string name="error_server">Server error. Please try again later.</string>
     <string name="error_loading_featured">Unable to load featured anime</string>

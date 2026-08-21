@@ -171,6 +171,7 @@
 
     <!-- Error Messages -->
     <string name="error_network">Error de red. Por favor, verifica tu conexión.</string>
+    <string name="error_timeout">Tiempo de espera agotado. La solicitud tardó demasiado.</string>
     <string name="error_unknown">Ocurrió un error desconocido.</string>
     <string name="error_server">Error del servidor. Por favor, intenta más tarde.</string>
     <string name="error_loading_featured">No se pudo cargar el anime destacado</string>

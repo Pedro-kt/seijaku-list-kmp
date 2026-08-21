@@ -18,7 +18,10 @@ object ErrorMapper {
 
     private fun checkExceptionType(exception: Throwable): ErrorType? {
         return when (exception) {
-            is ApolloNetworkException -> ErrorType.NetworkError
+            is ApolloNetworkException -> {
+                val specificError = checkCauseChain(exception)
+                specificError ?: checkMessage(exception.message)
+            }
             is ApolloHttpException -> {
                 when (exception.statusCode) {
                     403 -> ErrorType.ServerUnavailable
@@ -37,9 +40,40 @@ object ErrorMapper {
         }
     }
 
+    private fun checkCauseChain(exception: Throwable): ErrorType? {
+        var cause: Throwable? = exception.cause
+        while (cause != null) {
+            val className = cause::class.simpleName ?: ""
+            val message = cause.message?.lowercase() ?: ""
+
+            when {
+                isTimeoutError(className, message) -> return ErrorType.TimeoutError
+                isConnectionError(className, message) -> return ErrorType.NetworkError
+            }
+
+            cause = cause.cause
+        }
+        return null
+    }
+
+    private fun isTimeoutError(className: String, message: String): Boolean {
+        return className.contains("TimeoutException", ignoreCase = true) ||
+                message.contains("timeout") ||
+                message.contains("timed out")
+    }
+
+    private fun isConnectionError(className: String, message: String): Boolean {
+        return className.contains("UnknownHostException", ignoreCase = true) ||
+                className.contains("ConnectException", ignoreCase = true) ||
+                message.contains("no internet") ||
+                message.contains("no network") ||
+                message.contains("unable to resolve host")
+    }
+
     private fun checkMessage(message: String?): ErrorType {
         val msg = message?.lowercase() ?: ""
         return when {
+            msg.contains("timeout") || msg.contains("timed out") -> ErrorType.TimeoutError
             msg.contains("temporarily disabled") ||
             msg.contains("temporarily unavailable") -> ErrorType.ServerUnavailable
             msg.contains("network") || msg.contains("connection") -> ErrorType.NetworkError
