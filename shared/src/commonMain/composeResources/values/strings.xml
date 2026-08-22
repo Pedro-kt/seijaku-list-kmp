@@ -167,6 +167,13 @@
     <string name="settings_sync_anilist_desc">Last time: %1$s</string>
     <string name="settings_download_list">Download my list</string>
     <string name="settings_download_list_desc">Export an XML file</string>
+    <string name="settings_export_anime">Export anime list</string>
+    <string name="settings_export_anime_desc">Export to animelist.xml (MAL format)</string>
+    <string name="settings_export_manga">Export manga list</string>
+    <string name="settings_export_manga_desc">Export to mangalist.xml (MAL format)</string>
+    <string name="settings_export_anime_success">Anime list exported successfully</string>
+    <string name="settings_export_manga_success">Manga list exported successfully</string>
+    <string name="settings_export_error">Error: %1$s</string>
     <string name="settings_clear_cache">Clear image cache</string>
     <string name="settings_clear_cache_desc">%1$s on device</string>
     <string name="settings_about">About</string>

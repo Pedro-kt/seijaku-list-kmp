@@ -20,6 +20,8 @@ fun SettingsDataSection(
     cacheSize: String,
     onSyncClick: () -> Unit,
     onDownloadListClick: () -> Unit,
+    onExportAnimeClick: () -> Unit,
+    onExportMangaClick: () -> Unit,
     onClearCacheClick: () -> Unit,
     onAboutClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -53,6 +55,24 @@ fun SettingsDataSection(
             title = stringResource(Res.string.settings_download_list),
             description = stringResource(Res.string.settings_download_list_desc),
             onClick = onDownloadListClick
+        )
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+
+        SettingsNavigationItem(
+            icon = TablerIcons.Outlined.FileDownload,
+            title = stringResource(Res.string.settings_export_anime),
+            description = stringResource(Res.string.settings_export_anime_desc),
+            onClick = onExportAnimeClick
+        )
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+
+        SettingsNavigationItem(
+            icon = TablerIcons.Outlined.FileDownload,
+            title = stringResource(Res.string.settings_export_manga),
+            description = stringResource(Res.string.settings_export_manga_desc),
+            onClick = onExportMangaClick
         )
 
         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))

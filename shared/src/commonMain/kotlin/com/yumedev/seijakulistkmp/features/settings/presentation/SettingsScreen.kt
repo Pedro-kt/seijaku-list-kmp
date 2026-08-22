@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.yumedev.seijakulistkmp.core.utils.rememberFileExporter
+import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.settings.presentation.components.*
@@ -29,6 +31,12 @@ class SettingsScreen : Screen {
         val navigator = LocalNavigator.currentOrThrow
         val viewModel = koinViewModel<SettingsViewModel>()
         val state by viewModel.state.collectAsState()
+        val fileExporter = rememberFileExporter()
+        val toastManager = rememberToastManager()
+
+        val exportAnimeSuccessMessage = stringResource(Res.string.settings_export_anime_success)
+        val exportMangaSuccessMessage = stringResource(Res.string.settings_export_manga_success)
+        val exportErrorMessage = stringResource(Res.string.settings_export_error)
 
         SettingsScreenContent(
             onBackClick = { navigator.pop() },
@@ -39,6 +47,44 @@ class SettingsScreen : Screen {
             onSfwModeToggle = viewModel::onSfwModeToggle,
             onSyncClick = viewModel::onSyncClick,
             onDownloadListClick = viewModel::onDownloadListClick,
+            onExportAnimeClick = {
+                viewModel.onExportAnimeClick(
+                    onExport = { content, fileName ->
+                        fileExporter.exportXmlFile(
+                            content = content,
+                            fileName = fileName,
+                            onSuccess = {
+                                toastManager.showToast(exportAnimeSuccessMessage)
+                            },
+                            onError = { error ->
+                                toastManager.showToast(exportErrorMessage.replace("%1\$s", error))
+                            }
+                        )
+                    },
+                    onError = { error ->
+                        toastManager.showToast(exportErrorMessage.replace("%1\$s", error))
+                    }
+                )
+            },
+            onExportMangaClick = {
+                viewModel.onExportMangaClick(
+                    onExport = { content, fileName ->
+                        fileExporter.exportXmlFile(
+                            content = content,
+                            fileName = fileName,
+                            onSuccess = {
+                                toastManager.showToast(exportMangaSuccessMessage)
+                            },
+                            onError = { error ->
+                                toastManager.showToast(exportErrorMessage.replace("%1\$s", error))
+                            }
+                        )
+                    },
+                    onError = { error ->
+                        toastManager.showToast(exportErrorMessage.replace("%1\$s", error))
+                    }
+                )
+            },
             onClearCacheClick = viewModel::onClearCacheClick,
             onAboutClick = viewModel::onAboutClick,
             onLogoutClick = viewModel::onLogoutClick
@@ -57,6 +103,8 @@ fun SettingsScreenContent(
     onSfwModeToggle: (Boolean) -> Unit,
     onSyncClick: () -> Unit,
     onDownloadListClick: () -> Unit,
+    onExportAnimeClick: () -> Unit,
+    onExportMangaClick: () -> Unit,
     onClearCacheClick: () -> Unit,
     onAboutClick: () -> Unit,
     onLogoutClick: () -> Unit,
@@ -117,6 +165,8 @@ fun SettingsScreenContent(
                     cacheSize = state.cacheSize,
                     onSyncClick = onSyncClick,
                     onDownloadListClick = onDownloadListClick,
+                    onExportAnimeClick = onExportAnimeClick,
+                    onExportMangaClick = onExportMangaClick,
                     onClearCacheClick = onClearCacheClick,
                     onAboutClick = onAboutClick
                 )
