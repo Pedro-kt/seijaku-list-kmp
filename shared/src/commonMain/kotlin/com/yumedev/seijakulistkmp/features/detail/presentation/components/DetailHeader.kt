@@ -31,6 +31,7 @@ fun DetailHeader(
     rankingText: String?,
     popularityText: String?,
     nextAiringText: String?,
+    isInList: Boolean,
     onAddToListClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -180,7 +181,11 @@ fun DetailHeader(
             )
         ) {
             Text(
-                text = stringResource(Res.string.detail_add_to_list),
+                text = if (isInList) {
+                    stringResource(Res.string.detail_edit_entry)
+                } else {
+                    stringResource(Res.string.detail_add_to_list)
+                },
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )

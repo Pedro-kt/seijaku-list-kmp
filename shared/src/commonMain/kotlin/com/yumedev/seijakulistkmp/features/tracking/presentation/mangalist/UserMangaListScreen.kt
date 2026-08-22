@@ -14,7 +14,11 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import com.yumedev.seijakulistkmp.core.domain.model.MediaType
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.yumedev.seijakulistkmp.core.domain.model.MediaType as CoreMediaType
+import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
+import com.yumedev.seijakulistkmp.features.detail.presentation.DetailScreen
 import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
 import com.yumedev.seijakulistkmp.features.detail.presentation.components.AddToListBottomSheet
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry
@@ -34,10 +38,14 @@ class UserMangaListScreen : Screen {
     override fun Content() {
         val viewModel = koinViewModel<UserMangaListViewModel>()
         val uiState by viewModel.uiState.collectAsState()
+        val navigator = LocalNavigator.currentOrThrow
 
         UserMangaListScreenContent(
             uiState = uiState,
-            onEvent = viewModel::onEvent
+            onEvent = viewModel::onEvent,
+            onNavigateToDetail = { mediaId ->
+                navigator.push(DetailScreen(mediaId, MediaType.MANGA))
+            }
         )
     }
 }
@@ -46,7 +54,8 @@ class UserMangaListScreen : Screen {
 @Composable
 fun UserMangaListScreenContent(
     uiState: UserMangaListUiState,
-    onEvent: (UserMangaListEvent) -> Unit
+    onEvent: (UserMangaListEvent) -> Unit,
+    onNavigateToDetail: (Int) -> Unit
 ) {
     val toastManager = rememberToastManager()
     val focusManager = LocalFocusManager.current
@@ -126,7 +135,8 @@ fun UserMangaListScreenContent(
                     else -> {
                         MangaListContent(
                             entries = uiState.filteredEntries,
-                            onEvent = onEvent
+                            onEvent = onEvent,
+                            onNavigateToDetail = onNavigateToDetail
                         )
                     }
                 }
@@ -166,7 +176,7 @@ fun UserMangaListScreenContent(
         if (uiState.isEditBottomSheetVisible) {
             AddToListBottomSheet(
                 mediaTitle = entry.mediaInfo?.title ?: "",
-                mediaType = MediaType.MANGA,
+                mediaType = CoreMediaType.MANGA,
                 mediaStatus = null,
                 totalEpisodes = null,
                 totalChapters = entry.mediaInfo?.totalChapters,
@@ -344,7 +354,8 @@ private fun EmptyState(
 @Composable
 private fun MangaListContent(
     entries: List<MediaListEntry>,
-    onEvent: (UserMangaListEvent) -> Unit
+    onEvent: (UserMangaListEvent) -> Unit,
+    onNavigateToDetail: (Int) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -365,6 +376,9 @@ private fun MangaListContent(
                 },
                 onDeleteClick = {
                     onEvent(UserMangaListEvent.RemoveEntry(entry.mediaId))
+                },
+                onClick = {
+                    onNavigateToDetail(entry.mediaId)
                 }
             )
         }

@@ -1,13 +1,13 @@
 package com.yumedev.seijakulistkmp.features.anime.presentation.list
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
+import com.yumedev.seijakulistkmp.features.detail.presentation.DetailScreen
 import com.yumedev.seijakulistkmp.features.tracking.presentation.animelist.UserAnimeListScreenContent
 import com.yumedev.seijakulistkmp.features.tracking.presentation.animelist.UserAnimeListViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -23,9 +23,13 @@ class AnimeListScreen : Screen {
 fun AnimeListScreenContent() {
     val viewModel = koinViewModel<UserAnimeListViewModel>()
     val uiState by viewModel.uiState.collectAsState()
+    val navigator = LocalNavigator.currentOrThrow
 
     UserAnimeListScreenContent(
         uiState = uiState,
-        onEvent = viewModel::onEvent
+        onEvent = viewModel::onEvent,
+        onNavigateToDetail = { mediaId ->
+            navigator.push(DetailScreen(mediaId, MediaType.ANIME))
+        }
     )
 }

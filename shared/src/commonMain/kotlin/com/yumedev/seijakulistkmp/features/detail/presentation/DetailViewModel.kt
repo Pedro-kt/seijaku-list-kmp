@@ -13,10 +13,14 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriori
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.AddToListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.CheckInListUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListEntryUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.UpdateListEntryUseCase
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -25,11 +29,14 @@ class DetailViewModel(
     private val getMangaDetailUseCase: GetMangaDetailUseCase,
     private val addToListUseCase: AddToListUseCase,
     private val updateListEntryUseCase: UpdateListEntryUseCase,
-    private val checkInListUseCase: CheckInListUseCase
+    private val checkInListUseCase: CheckInListUseCase,
+    private val getListEntryUseCase: GetListEntryUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DetailState())
     val state: StateFlow<DetailState> = _state.asStateFlow()
+
+    private var observeListEntryJob: Job? = null
 
     fun loadMediaDetail(id: Int, type: MediaType) {
         viewModelScope.launch {
@@ -50,6 +57,8 @@ class DetailViewModel(
                         error = null
                     )
                 }
+
+                observeListEntry(id, type)
             }.onFailure { exception ->
                 val errorType = ErrorMapper.mapToErrorType(exception)
                 _state.update {
@@ -60,6 +69,20 @@ class DetailViewModel(
                 }
             }
         }
+    }
+
+    private fun observeListEntry(id: Int, type: MediaType) {
+        observeListEntryJob?.cancel()
+        observeListEntryJob = getListEntryUseCase.observe(id, type.toCore())
+            .onEach { entry ->
+                _state.update { currentState ->
+                    currentState.copy(
+                        listEntry = entry,
+                        mediaDetail = currentState.mediaDetail?.copy(isInList = entry != null)
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun retry(id: Int, type: MediaType) {
@@ -145,6 +168,37 @@ class DetailViewModel(
                     // TODO: Handle error
                 }
             }
+        }
+    }
+
+    fun incrementProgress() {
+        viewModelScope.launch {
+            val currentDetail = _state.value.mediaDetail ?: return@launch
+            val currentEntry = _state.value.listEntry ?: return@launch
+            val mediaType = currentDetail.type.toCore()
+
+            val total = when (mediaType) {
+                com.yumedev.seijakulistkmp.core.domain.model.MediaType.ANIME -> currentDetail.episodes
+                com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA -> currentDetail.chapters
+            }
+
+            val newProgress = currentEntry.progress + 1
+            val maxProgress = total ?: Int.MAX_VALUE
+
+            if (newProgress > maxProgress) return@launch
+
+            val newStatus = if (total != null && newProgress == total) {
+                MediaListStatus.COMPLETED
+            } else {
+                currentEntry.status
+            }
+
+            updateListEntryUseCase(
+                mediaId = currentDetail.id,
+                mediaType = mediaType,
+                progress = newProgress,
+                status = newStatus
+            )
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.yumedev.seijakulistkmp.features.tracking.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,6 +35,7 @@ fun CompactMediaListCard(
     onEditClick: () -> Unit,
     onStatusChange: (MediaListStatus) -> Unit,
     onDeleteClick: () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -43,7 +45,8 @@ fun CompactMediaListCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(140.dp),
+            .height(140.dp)
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant

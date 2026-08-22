@@ -182,6 +182,11 @@
     <!-- Detail Screen -->
     <string name="detail">Ver detalle</string>
     <string name="detail_add_to_list">Añadir a mi lista</string>
+    <string name="detail_edit_entry">Editar entrada</string>
+    <string name="detail_progress">Progreso</string>
+    <string name="detail_increment_progress">Incrementar progreso</string>
+    <string name="detail_completed">Completado</string>
+    <string name="detail_started">Comenzado</string>
     <string name="detail_read_more">Leer más</string>
     <string name="detail_read_less">Leer menos</string>
     <string name="detail_see_all_chapters">Ver capítulos (%1$d)</string>

@@ -187,6 +187,11 @@
     <!-- Detail Screen -->
     <string name="detail">View detail</string>
     <string name="detail_add_to_list">Add to my list</string>
+    <string name="detail_edit_entry">Edit entry</string>
+    <string name="detail_progress">Progress</string>
+    <string name="detail_increment_progress">Increment progress</string>
+    <string name="detail_completed">Completed</string>
+    <string name="detail_started">Started</string>
     <string name="detail_read_more">Read more</string>
     <string name="detail_read_less">Read less</string>
     <string name="detail_see_all_chapters">See chapters (%1$d)</string>

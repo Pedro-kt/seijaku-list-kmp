@@ -66,6 +66,7 @@ data class DetailScreen(
 
                 DetailScreenContent(
                     mediaDetail = mediaDetailUi,
+                    listEntry = state.listEntry,
                     onBackClick = { navigator.pop() },
                     onFavoriteClick = { viewModel.toggleFavorite() },
                     onShareClick = {
@@ -81,6 +82,7 @@ data class DetailScreen(
                     onSaveToList = { status, progress, score, note, startDate, rewatches, priority ->
                         viewModel.saveToList(status, progress, score, note, startDate, rewatches, priority)
                     },
+                    onIncrementProgress = { viewModel.incrementProgress() },
                     onCharacterClick = { characterId ->
                         navigator.push(CharacterScreen(characterId))
                     },
@@ -356,11 +358,13 @@ private fun rememberMediaDetailUiModel(mediaDetail: MediaDetail): MediaDetailUiM
 @Composable
 fun DetailScreenContent(
     mediaDetail: MediaDetailUiModel,
+    listEntry: com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry?,
     onBackClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onShareClick: () -> Unit,
     onAddToListClick: () -> Unit,
     onSaveToList: (MediaListStatus, Int, Float?, String, String?, Int, MediaListPriority) -> Unit,
+    onIncrementProgress: () -> Unit,
     onCharacterClick: (Int) -> Unit,
     onSeeAllChaptersClick: () -> Unit,
     onChapterClick: (Int) -> Unit,
@@ -405,8 +409,23 @@ fun DetailScreenContent(
                 rankingText = mediaDetail.rankingText,
                 popularityText = mediaDetail.popularityText,
                 nextAiringText = mediaDetail.nextAiringText,
+                isInList = mediaDetail.isInList,
                 onAddToListClick = { showAddToListBottomSheet = true }
             )
+
+            listEntry?.let { entry ->
+                MediaProgressCard(
+                    entry = entry,
+                    mediaType = when (mediaDetail.type) {
+                        MediaType.ANIME -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.ANIME
+                        MediaType.MANGA -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA
+                    },
+                    totalEpisodes = mediaDetail.totalEpisodes,
+                    totalChapters = mediaDetail.totalChapters,
+                    onIncrementProgress = onIncrementProgress,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
 
             DetailSynopsis(
                 synopsis = mediaDetail.description

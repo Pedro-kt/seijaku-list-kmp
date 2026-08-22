@@ -9,6 +9,7 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.repository.MediaListR
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.AddToListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.CheckInListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ExportToMALUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListEntryUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListStatsUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetMediaListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ImportFromMALUseCase
@@ -38,6 +39,7 @@ val trackingModule = module {
     factoryOf(::UpdateListEntryUseCase)
     factoryOf(::RemoveFromListUseCase)
     factoryOf(::GetMediaListUseCase)
+    factoryOf(::GetListEntryUseCase)
     factoryOf(::GetListStatsUseCase)
     factoryOf(::ExportToMALUseCase)
     factoryOf(::ImportFromMALUseCase)

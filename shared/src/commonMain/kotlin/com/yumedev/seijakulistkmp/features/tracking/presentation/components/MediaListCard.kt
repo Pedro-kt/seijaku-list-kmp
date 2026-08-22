@@ -11,6 +11,7 @@ fun MediaListCard(
     onEditClick: () -> Unit,
     onStatusChange: (com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus) -> Unit,
     onDeleteClick: () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     cardType: MediaListCardType = MediaListCardType.Compact
 ) {
@@ -21,6 +22,7 @@ fun MediaListCard(
             onEditClick = onEditClick,
             onStatusChange = onStatusChange,
             onDeleteClick = onDeleteClick,
+            onClick = onClick,
             modifier = modifier
         )
         // Future card types will be handled here:
