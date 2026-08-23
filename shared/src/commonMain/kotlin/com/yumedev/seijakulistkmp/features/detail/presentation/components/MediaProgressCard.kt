@@ -1,5 +1,6 @@
 package com.yumedev.seijakulistkmp.features.detail.presentation.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,7 +17,7 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.CalendarEvent
-import dev.seyfarth.tablericons.outlined.Plus
+import dev.seyfarth.tablericons.outlined.Edit
 import dev.seyfarth.tablericons.filled.Star
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
@@ -28,6 +29,7 @@ fun MediaProgressCard(
     totalEpisodes: Int?,
     totalChapters: Int?,
     onIncrementProgress: () -> Unit,
+    onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -69,7 +71,17 @@ fun MediaProgressCard(
                     MediaType.ANIME -> totalEpisodes
                     MediaType.MANGA -> totalChapters
                 },
+                mediaType = mediaType
+            )
+
+            ActionButtons(
                 mediaType = mediaType,
+                progress = entry.progress,
+                total = when (mediaType) {
+                    MediaType.ANIME -> totalEpisodes
+                    MediaType.MANGA -> totalChapters
+                },
+                onEditClick = onEditClick,
                 onIncrementProgress = onIncrementProgress
             )
 
@@ -144,17 +156,17 @@ private fun ScoreIndicator(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = TablerIcons.Filled.Star,
-            contentDescription = null,
-            modifier = Modifier.size(18.dp),
-            tint = Color(0xFFFFC107)
+        Text(
+            text = "${stringResource(Res.string.list_your_score)}:",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = String.format("%.1f", score),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -164,7 +176,6 @@ private fun ProgressSection(
     progress: Int,
     total: Int?,
     mediaType: MediaType,
-    onIncrementProgress: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -176,44 +187,32 @@ private fun ProgressSection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = stringResource(Res.string.detail_progress),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = if (total != null) "$progress / $total" else "$progress",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = if (mediaType == MediaType.ANIME) {
-                        stringResource(Res.string.detail_episodes)
+            Text(
+                text = if (total != null) "$progress / $total ${
+                    if (mediaType == MediaType.ANIME) {
+                        stringResource(Res.string.episodes_suffix)
                     } else {
-                        stringResource(Res.string.detail_chapters)
-                    },
-                    style = MaterialTheme.typography.bodySmall,
+                        stringResource(Res.string.chapters_short)
+                    }
+                }" else "$progress ${
+                    if (mediaType == MediaType.ANIME) {
+                        stringResource(Res.string.episodes_suffix)
+                    } else {
+                        stringResource(Res.string.chapters_short)
+                    }
+                }",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            if (total != null && total > 0) {
+                val percentage = ((progress.toFloat() / total.toFloat()) * 100).toInt()
+                Text(
+                    text = "$percentage%",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            val canIncrement = total == null || progress < total
-
-            FilledTonalButton(
-                onClick = onIncrementProgress,
-                enabled = canIncrement,
-                modifier = Modifier.size(56.dp),
-                shape = CircleShape,
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Icon(
-                    imageVector = TablerIcons.Outlined.Plus,
-                    contentDescription = stringResource(Res.string.detail_increment_progress),
-                    modifier = Modifier.size(24.dp)
                 )
             }
         }
@@ -228,13 +227,66 @@ private fun ProgressSection(
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
+        }
+    }
+}
 
-            val percentage = ((progress.toFloat() / total.toFloat()) * 100).toInt()
+@Composable
+private fun ActionButtons(
+    mediaType: MediaType,
+    progress: Int,
+    total: Int?,
+    onEditClick: () -> Unit,
+    onIncrementProgress: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val canIncrement = total == null || progress < total
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        OutlinedButton(
+            onClick = onEditClick,
+            modifier = Modifier.height(48.dp),
+            shape = RoundedCornerShape(50),
+            border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.outline),
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
+        ) {
+            Icon(
+                imageVector = TablerIcons.Outlined.Edit,
+                contentDescription = stringResource(Res.string.list_edit_title),
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "$percentage% ${stringResource(Res.string.detail_completed)}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.align(Alignment.End)
+                text = stringResource(Res.string.list_edit_title),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        Button(
+            onClick = onIncrementProgress,
+            enabled = canIncrement,
+            modifier = Modifier
+                .weight(1f)
+                .height(48.dp),
+            shape = RoundedCornerShape(50)
+        ) {
+            Text(
+                text = "+1 ${
+                    if (mediaType == MediaType.ANIME) {
+                        stringResource(Res.string.episodes_suffix)
+                    } else {
+                        stringResource(Res.string.chapters_short)
+                    }
+                }",
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold
             )
         }
     }

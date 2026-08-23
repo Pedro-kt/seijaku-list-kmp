@@ -423,6 +423,7 @@ fun DetailScreenContent(
                     totalEpisodes = mediaDetail.totalEpisodes,
                     totalChapters = mediaDetail.totalChapters,
                     onIncrementProgress = onIncrementProgress,
+                    onEditClick = { showAddToListBottomSheet = true },
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }
