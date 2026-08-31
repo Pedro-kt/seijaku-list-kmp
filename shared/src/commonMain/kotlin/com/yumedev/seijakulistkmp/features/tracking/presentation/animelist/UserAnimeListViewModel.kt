@@ -14,6 +14,7 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListStatsU
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetMediaListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.RemoveFromListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.UpdateListEntryUseCase
+import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCardType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -45,6 +46,7 @@ class UserAnimeListViewModel(
             UserAnimeListEvent.HideSearch -> hideSearch()
             UserAnimeListEvent.ShowSortBottomSheet -> showSortBottomSheet()
             UserAnimeListEvent.HideSortBottomSheet -> hideSortBottomSheet()
+            UserAnimeListEvent.ToggleCardType -> toggleCardType()
             is UserAnimeListEvent.RemoveEntry -> removeEntry(event.mediaId)
             is UserAnimeListEvent.IncrementProgress -> incrementProgress(event.mediaId)
             is UserAnimeListEvent.ChangeStatus -> changeStatus(event.mediaId, event.newStatus)
@@ -153,6 +155,17 @@ class UserAnimeListViewModel(
 
     private fun hideSortBottomSheet() {
         _uiState.update { it.copy(isSortBottomSheetVisible = false) }
+    }
+
+    private fun toggleCardType() {
+        _uiState.update {
+            it.copy(
+                cardType = when (it.cardType) {
+                    MediaListCardType.Compact -> MediaListCardType.Grid
+                    MediaListCardType.Grid -> MediaListCardType.Compact
+                }
+            )
+        }
     }
 
     private fun removeEntry(mediaId: Int) {
@@ -364,6 +377,7 @@ data class UserAnimeListUiState(
     val isSortBottomSheetVisible: Boolean = false,
     val isEditBottomSheetVisible: Boolean = false,
     val editingEntry: MediaListEntry? = null,
+    val cardType: MediaListCardType = MediaListCardType.Compact,
     val isLoading: Boolean = true,
     val isExporting: Boolean = false,
     val exportSuccess: Boolean = false,
@@ -380,6 +394,7 @@ sealed class UserAnimeListEvent {
     data object HideSearch : UserAnimeListEvent()
     data object ShowSortBottomSheet : UserAnimeListEvent()
     data object HideSortBottomSheet : UserAnimeListEvent()
+    data object ToggleCardType : UserAnimeListEvent()
     data class RemoveEntry(val mediaId: Int) : UserAnimeListEvent()
     data class IncrementProgress(val mediaId: Int) : UserAnimeListEvent()
     data class ChangeStatus(val mediaId: Int, val newStatus: MediaListStatus) : UserAnimeListEvent()

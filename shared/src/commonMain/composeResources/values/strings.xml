@@ -261,6 +261,9 @@
     <string name="no_items_in_category">No items in this category</string>
     <string name="chapters_short">Ch</string>
     <string name="volumes_short">Vol</string>
+    <string name="list_view_compact">Compact view</string>
+    <string name="list_view_grid">Grid view</string>
+    <string name="list_change_view">Change view</string>
 
     <!-- Add to List Bottom Sheet -->
     <string name="list_edit_title">Edit</string>

@@ -5,6 +5,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,10 +26,13 @@ import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
 import com.yumedev.seijakulistkmp.features.detail.presentation.components.AddToListBottomSheet
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.AnimatedSearchBar
+import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCardType
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.SortBottomSheet
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCard
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AdjustmentsHorizontal
+import dev.seyfarth.tablericons.outlined.LayoutGrid
+import dev.seyfarth.tablericons.outlined.LayoutList
 import dev.seyfarth.tablericons.outlined.Search
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -71,6 +77,18 @@ fun UserAnimeListScreenContent(
                         Icon(
                             imageVector = TablerIcons.Outlined.Search,
                             contentDescription = stringResource(Res.string.search)
+                        )
+                    }
+                    IconButton(
+                        onClick = { onEvent(UserAnimeListEvent.ToggleCardType) },
+                        enabled = uiState.entries.isNotEmpty()
+                    ) {
+                        Icon(
+                            imageVector = when (uiState.cardType) {
+                                MediaListCardType.Compact -> TablerIcons.Outlined.LayoutGrid
+                                MediaListCardType.Grid -> TablerIcons.Outlined.LayoutList
+                            },
+                            contentDescription = stringResource(Res.string.list_change_view)
                         )
                     }
                     IconButton(onClick = { onEvent(UserAnimeListEvent.ShowSortBottomSheet) }) {
@@ -134,6 +152,7 @@ fun UserAnimeListScreenContent(
                     else -> {
                         AnimeListContent(
                             entries = uiState.filteredEntries,
+                            cardType = uiState.cardType,
                             onEvent = onEvent,
                             onNavigateToDetail = onNavigateToDetail
                         )
@@ -353,33 +372,70 @@ private fun EmptyState(
 @Composable
 private fun AnimeListContent(
     entries: List<com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry>,
+    cardType: MediaListCardType,
     onEvent: (UserAnimeListEvent) -> Unit,
     onNavigateToDetail: (Int) -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(entries, key = { it.id }) { entry ->
-            MediaListCard(
-                entry = entry,
-                onIncrementProgress = {
-                    onEvent(UserAnimeListEvent.IncrementProgress(entry.mediaId))
-                },
-                onEditClick = {
-                    onEvent(UserAnimeListEvent.EditEntry(entry))
-                },
-                onStatusChange = { newStatus ->
-                    onEvent(UserAnimeListEvent.ChangeStatus(entry.mediaId, newStatus))
-                },
-                onDeleteClick = {
-                    onEvent(UserAnimeListEvent.RemoveEntry(entry.mediaId))
-                },
-                onClick = {
-                    onNavigateToDetail(entry.mediaId)
+    when (cardType) {
+        MediaListCardType.Compact -> {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 100.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(entries, key = { it.id }) { entry ->
+                    MediaListCard(
+                        entry = entry,
+                        cardType = cardType,
+                        onIncrementProgress = {
+                            onEvent(UserAnimeListEvent.IncrementProgress(entry.mediaId))
+                        },
+                        onEditClick = {
+                            onEvent(UserAnimeListEvent.EditEntry(entry))
+                        },
+                        onStatusChange = { newStatus ->
+                            onEvent(UserAnimeListEvent.ChangeStatus(entry.mediaId, newStatus))
+                        },
+                        onDeleteClick = {
+                            onEvent(UserAnimeListEvent.RemoveEntry(entry.mediaId))
+                        },
+                        onClick = {
+                            onNavigateToDetail(entry.mediaId)
+                        }
+                    )
                 }
-            )
+            }
+        }
+        MediaListCardType.Grid -> {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 100.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(entries, key = { it.id }) { entry ->
+                    MediaListCard(
+                        entry = entry,
+                        cardType = cardType,
+                        onIncrementProgress = {
+                            onEvent(UserAnimeListEvent.IncrementProgress(entry.mediaId))
+                        },
+                        onEditClick = {
+                            onEvent(UserAnimeListEvent.EditEntry(entry))
+                        },
+                        onStatusChange = { newStatus ->
+                            onEvent(UserAnimeListEvent.ChangeStatus(entry.mediaId, newStatus))
+                        },
+                        onDeleteClick = {
+                            onEvent(UserAnimeListEvent.RemoveEntry(entry.mediaId))
+                        },
+                        onClick = {
+                            onNavigateToDetail(entry.mediaId)
+                        }
+                    )
+                }
+            }
         }
     }
 }

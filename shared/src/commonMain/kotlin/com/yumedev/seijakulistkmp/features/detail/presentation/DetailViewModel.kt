@@ -162,7 +162,7 @@ class DetailViewModel(
 
             val mediaInfo = CachedMediaInfo(
                 title = currentDetail.title,
-                coverImage = currentDetail.bannerImageUrl ?: currentDetail.coverImageUrl,
+                coverImage = currentDetail.coverImageUrl ?: currentDetail.bannerImageUrl,
                 totalEpisodes = currentDetail.episodes,
                 totalChapters = currentDetail.chapters,
                 totalVolumes = null,

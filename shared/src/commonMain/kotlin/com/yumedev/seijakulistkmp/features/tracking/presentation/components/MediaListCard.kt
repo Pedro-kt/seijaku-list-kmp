@@ -25,8 +25,16 @@ fun MediaListCard(
             onClick = onClick,
             modifier = modifier
         )
+        is MediaListCardType.Grid -> GridMediaListCard(
+            entry = entry,
+            onIncrementProgress = onIncrementProgress,
+            onEditClick = onEditClick,
+            onStatusChange = onStatusChange,
+            onDeleteClick = onDeleteClick,
+            onClick = onClick,
+            modifier = modifier
+        )
         // Future card types will be handled here:
-        // is MediaListCardType.Grid -> GridMediaListCard(...)
         // is MediaListCardType.Detailed -> DetailedMediaListCard(...)
     }
 }
