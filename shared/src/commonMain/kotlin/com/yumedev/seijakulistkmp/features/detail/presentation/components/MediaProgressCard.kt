@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
+import com.yumedev.seijakulistkmp.features.tracking.domain.validator.MediaListValidator
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.CalendarEvent
 import dev.seyfarth.tablericons.outlined.Edit
@@ -26,6 +27,7 @@ import seijakulistkmp.shared.generated.resources.*
 fun MediaProgressCard(
     entry: MediaListEntry,
     mediaType: MediaType,
+    mediaStatus: String?,
     totalEpisodes: Int?,
     totalChapters: Int?,
     onIncrementProgress: () -> Unit,
@@ -76,6 +78,8 @@ fun MediaProgressCard(
 
             ActionButtons(
                 mediaType = mediaType,
+                mediaStatus = mediaStatus,
+                status = entry.status,
                 progress = entry.progress,
                 total = when (mediaType) {
                     MediaType.ANIME -> totalEpisodes
@@ -234,13 +238,20 @@ private fun ProgressSection(
 @Composable
 private fun ActionButtons(
     mediaType: MediaType,
+    mediaStatus: String?,
+    status: MediaListStatus,
     progress: Int,
     total: Int?,
     onEditClick: () -> Unit,
     onIncrementProgress: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val canIncrement = total == null || progress < total
+    val canIncrement = MediaListValidator.canIncrementProgress(
+        currentStatus = status,
+        currentProgress = progress,
+        total = total,
+        mediaStatus = mediaStatus
+    )
 
     Row(
         modifier = modifier.fillMaxWidth(),

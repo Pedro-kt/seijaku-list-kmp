@@ -29,7 +29,8 @@ interface MediaListRepository {
         finishDate: String? = null,
         notes: String? = null,
         repeatCount: Int? = null,
-        priority: MediaListPriority? = null
+        priority: MediaListPriority? = null,
+        mediaStatus: String? = null
     ): Result<MediaListEntry>
 
     suspend fun removeFromList(mediaId: Int, mediaType: MediaType): Result<Unit>

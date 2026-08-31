@@ -21,11 +21,12 @@ class UpdateListEntryUseCase(
         finishDate: String? = null,
         notes: String? = null,
         repeatCount: Int? = null,
-        priority: MediaListPriority? = null
+        priority: MediaListPriority? = null,
+        mediaStatus: String? = null
     ): Result<MediaListEntry> {
         return repository.updateEntry(
             mediaId, mediaType, status, progress, progressVolumes,
-            score, startDate, finishDate, notes, repeatCount, priority
+            score, startDate, finishDate, notes, repeatCount, priority, mediaStatus
         )
     }
 }

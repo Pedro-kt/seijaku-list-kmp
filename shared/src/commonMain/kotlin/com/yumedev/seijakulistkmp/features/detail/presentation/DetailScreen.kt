@@ -420,6 +420,7 @@ fun DetailScreenContent(
                         MediaType.ANIME -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.ANIME
                         MediaType.MANGA -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA
                     },
+                    mediaStatus = entry.mediaStatus ?: mediaDetail.status,
                     totalEpisodes = mediaDetail.totalEpisodes,
                     totalChapters = mediaDetail.totalChapters,
                     onIncrementProgress = onIncrementProgress,
@@ -484,9 +485,16 @@ fun DetailScreenContent(
                 MediaType.ANIME -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.ANIME
                 MediaType.MANGA -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA
             },
-            mediaStatus = mediaDetail.status,
+            mediaStatus = listEntry?.mediaStatus ?: mediaDetail.status,
             totalEpisodes = mediaDetail.totalEpisodes,
             totalChapters = mediaDetail.totalChapters,
+            currentProgress = listEntry?.progress ?: 0,
+            currentScore = listEntry?.score,
+            currentStatus = listEntry?.status,
+            currentNote = listEntry?.notes ?: "",
+            currentStartDate = listEntry?.startDate,
+            currentRewatches = listEntry?.repeatCount ?: 0,
+            currentPriority = listEntry?.priority ?: MediaListPriority.MEDIUM,
             onDismiss = { showAddToListBottomSheet = false },
             onSave = { status, progress, score, note, startDate, rewatches, priority ->
                 onSaveToList(status, progress, score, note, startDate, rewatches, priority)

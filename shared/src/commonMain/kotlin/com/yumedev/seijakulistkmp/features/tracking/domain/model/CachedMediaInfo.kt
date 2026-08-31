@@ -5,5 +5,6 @@ data class CachedMediaInfo(
     val coverImage: String?,
     val totalEpisodes: Int?,
     val totalChapters: Int?,
-    val totalVolumes: Int?
+    val totalVolumes: Int?,
+    val mediaStatus: String? = null
 )

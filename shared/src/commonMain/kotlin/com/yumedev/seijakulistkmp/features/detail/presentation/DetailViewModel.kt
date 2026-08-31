@@ -11,6 +11,7 @@ import com.yumedev.seijakulistkmp.features.detail.presentation.utils.toCore
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.CachedMediaInfo
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
+import com.yumedev.seijakulistkmp.features.tracking.domain.validator.MediaListValidator
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.AddToListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.CheckInListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListEntryUseCase
@@ -56,6 +57,19 @@ class DetailViewModel(
                         isLoading = false,
                         error = null
                     )
+                }
+
+                if (isInList) {
+                    val entryResult = getListEntryUseCase(id, type.toCore())
+                    entryResult.onSuccess { existingEntry ->
+                        if (existingEntry != null && existingEntry.mediaStatus != mediaDetail.status) {
+                            updateListEntryUseCase(
+                                mediaId = id,
+                                mediaType = type.toCore(),
+                                mediaStatus = mediaDetail.status
+                            )
+                        }
+                    }
                 }
 
                 observeListEntry(id, type)
@@ -112,12 +126,47 @@ class DetailViewModel(
             val currentDetail = _state.value.mediaDetail ?: return@launch
             val mediaType = currentDetail.type.toCore()
 
+            val currentListEntry = _state.value.listEntry
+            val isChangingStatus = currentListEntry != null && currentListEntry.status != status
+
+            if (isChangingStatus && !MediaListValidator.isStatusAllowed(status, currentDetail.status)) {
+                // TODO: Show error to user
+                return@launch
+            }
+
+            val total = when (mediaType) {
+                com.yumedev.seijakulistkmp.core.domain.model.MediaType.ANIME -> currentDetail.episodes
+                com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA -> currentDetail.chapters
+            }
+
+            val validation = MediaListValidator.validateStatusProgressConsistency(
+                newStatus = status,
+                newProgress = progress,
+                total = total,
+                mediaStatus = currentDetail.status
+            )
+            if (validation is MediaListValidator.ValidationResult.Invalid) {
+                // TODO: Show error to user using validation.error (use ValidationErrorMapper.toLocalizedMessage() in UI)
+                return@launch
+            }
+
+            if (!MediaListValidator.isScoreValid(score)) {
+                // TODO: Show error to user
+                return@launch
+            }
+
+            if (!MediaListValidator.isNoteLengthValid(note)) {
+                // TODO: Show error to user
+                return@launch
+            }
+
             val mediaInfo = CachedMediaInfo(
                 title = currentDetail.title,
                 coverImage = currentDetail.bannerImageUrl ?: currentDetail.coverImageUrl,
                 totalEpisodes = currentDetail.episodes,
                 totalChapters = currentDetail.chapters,
-                totalVolumes = null
+                totalVolumes = null,
+                mediaStatus = currentDetail.status
             )
 
             val result = if (currentDetail.isInList) {
@@ -182,13 +231,20 @@ class DetailViewModel(
                 com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA -> currentDetail.chapters
             }
 
+            if (!MediaListValidator.canIncrementProgress(
+                currentStatus = currentEntry.status,
+                currentProgress = currentEntry.progress,
+                total = total,
+                mediaStatus = currentDetail.status
+            )) {
+                // TODO: Show error to user (e.g., "Cannot increment progress while status is Planning")
+                return@launch
+            }
+
             val newProgress = currentEntry.progress + 1
-            val maxProgress = total ?: Int.MAX_VALUE
 
-            if (newProgress > maxProgress) return@launch
-
-            val newStatus = if (total != null && newProgress == total) {
-                MediaListStatus.COMPLETED
+            val newStatus = if (total != null && newProgress == total && currentDetail.status?.uppercase() == "FINISHED") {
+                MediaListValidator.getAutoStatusOnCompletion(currentEntry.status, currentDetail.status)
             } else {
                 currentEntry.status
             }

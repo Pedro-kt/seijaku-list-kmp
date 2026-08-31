@@ -21,5 +21,6 @@ data class MediaListEntry(
     // Sync fields
     val anilistEntryId: Int? = null,
     val isSynced: Boolean = false,
-    val needsSync: Boolean = false
+    val needsSync: Boolean = false,
+    val mediaStatus: String? = null
 )
