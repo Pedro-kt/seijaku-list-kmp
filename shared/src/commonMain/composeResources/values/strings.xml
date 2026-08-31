@@ -329,4 +329,11 @@
     <string name="character_main_role">Main character</string>
     <string name="character_supporting_role">Supporting character</string>
     <string name="character_cm">cm</string>
+
+    <!-- Validation Messages -->
+    <string name="validation_progress_not_zero_for_planning">Cannot set progress when status is Planning. Progress must be 0.</string>
+    <string name="validation_progress_not_complete_for_completed">Cannot mark as Completed without finishing all episodes/chapters.</string>
+    <string name="validation_progress_negative">Progress cannot be negative.</string>
+    <string name="validation_progress_exceeds_max_allowed">Cannot complete while anime/manga is still airing. Maximum progress is %1$d.</string>
+    <string name="validation_progress_exceeds_total">Progress cannot exceed total episodes/chapters.</string>
 </resources>

@@ -49,7 +49,8 @@ class MediaListRepositoryImpl(
             mediaCoverImage = mediaInfo.coverImage,
             mediaTotalEpisodes = mediaInfo.totalEpisodes,
             mediaTotalChapters = mediaInfo.totalChapters,
-            mediaTotalVolumes = mediaInfo.totalVolumes
+            mediaTotalVolumes = mediaInfo.totalVolumes,
+            mediaStatus = mediaInfo.mediaStatus
         )
 
         val id = mediaListDao.insertEntry(entity)
@@ -67,7 +68,8 @@ class MediaListRepositoryImpl(
         finishDate: String?,
         notes: String?,
         repeatCount: Int?,
-        priority: MediaListPriority?
+        priority: MediaListPriority?,
+        mediaStatus: String?
     ): Result<MediaListEntry> = resultOf {
         val existing = mediaListDao.getEntryByMedia(mediaId, mediaType.name)
             ?: throw IllegalStateException("Entry not found for mediaId: $mediaId")
@@ -82,6 +84,7 @@ class MediaListRepositoryImpl(
             notes = notes ?: existing.notes,
             repeatCount = repeatCount ?: existing.repeatCount,
             priority = priority?.value ?: existing.priority,
+            mediaStatus = mediaStatus ?: existing.mediaStatus,
             updatedAt = System.currentTimeMillis(),
             needsSync = true
         )

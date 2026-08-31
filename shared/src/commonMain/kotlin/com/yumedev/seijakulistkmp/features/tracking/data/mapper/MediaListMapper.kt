@@ -32,9 +32,11 @@ fun MediaListEntryEntity.toDomain(): MediaListEntry {
                 coverImage = mediaCoverImage,
                 totalEpisodes = mediaTotalEpisodes,
                 totalChapters = mediaTotalChapters,
-                totalVolumes = mediaTotalVolumes
+                totalVolumes = mediaTotalVolumes,
+                mediaStatus = mediaStatus
             )
-        } else null
+        } else null,
+        mediaStatus = mediaStatus
     )
 }
 
@@ -61,6 +63,7 @@ fun MediaListEntry.toEntity(): MediaListEntryEntity {
         mediaCoverImage = mediaInfo?.coverImage,
         mediaTotalEpisodes = mediaInfo?.totalEpisodes,
         mediaTotalChapters = mediaInfo?.totalChapters,
-        mediaTotalVolumes = mediaInfo?.totalVolumes
+        mediaTotalVolumes = mediaInfo?.totalVolumes,
+        mediaStatus = mediaStatus
     )
 }

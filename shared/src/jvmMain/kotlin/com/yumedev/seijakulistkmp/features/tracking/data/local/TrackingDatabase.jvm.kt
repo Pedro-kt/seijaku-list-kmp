@@ -10,6 +10,6 @@ actual object TrackingDatabaseBuilder {
         dbFile.parentFile?.mkdirs()
         return Room.databaseBuilder<TrackingDatabase>(
             name = dbFile.absolutePath
-        )
+        ).addMigrations(MIGRATION_1_2)
     }
 }

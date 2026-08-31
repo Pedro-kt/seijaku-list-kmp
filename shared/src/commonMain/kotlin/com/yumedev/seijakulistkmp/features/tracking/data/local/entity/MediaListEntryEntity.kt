@@ -79,5 +79,8 @@ data class MediaListEntryEntity(
     val mediaTotalChapters: Int? = null,
 
     @ColumnInfo(name = "media_total_volumes")
-    val mediaTotalVolumes: Int? = null
+    val mediaTotalVolumes: Int? = null,
+
+    @ColumnInfo(name = "media_status")
+    val mediaStatus: String? = null
 )

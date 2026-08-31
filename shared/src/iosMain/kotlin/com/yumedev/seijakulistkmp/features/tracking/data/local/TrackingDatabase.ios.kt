@@ -10,6 +10,6 @@ actual object TrackingDatabaseBuilder {
         return Room.databaseBuilder<TrackingDatabase>(
             name = dbFilePath,
             factory = { TrackingDatabase::class.instantiateImpl() }
-        )
+        ).addMigrations(MIGRATION_1_2)
     }
 }
