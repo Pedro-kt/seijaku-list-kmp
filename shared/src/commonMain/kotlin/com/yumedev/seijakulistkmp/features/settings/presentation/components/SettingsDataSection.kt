@@ -19,7 +19,6 @@ fun SettingsDataSection(
     lastSyncTime: String?,
     cacheSize: String,
     onSyncClick: () -> Unit,
-    onDownloadListClick: () -> Unit,
     onExportAnimeClick: () -> Unit,
     onExportMangaClick: () -> Unit,
     onClearCacheClick: () -> Unit,
@@ -46,15 +45,6 @@ fun SettingsDataSection(
                 stringResource(Res.string.settings_sync_anilist_desc, it)
             },
             onClick = onSyncClick
-        )
-
-        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
-
-        SettingsNavigationItem(
-            icon = TablerIcons.Outlined.Download,
-            title = stringResource(Res.string.settings_download_list),
-            description = stringResource(Res.string.settings_download_list_desc),
-            onClick = onDownloadListClick
         )
 
         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))

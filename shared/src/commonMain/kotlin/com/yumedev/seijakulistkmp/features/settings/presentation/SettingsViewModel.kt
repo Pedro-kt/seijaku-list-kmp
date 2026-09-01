@@ -89,10 +89,6 @@ class SettingsViewModel(
         // TODO: Implement AniList sync
     }
 
-    fun onDownloadListClick() {
-        // TODO: Implement list download
-    }
-
     fun onClearCacheClick() {
         // TODO: Implement cache clearing
     }

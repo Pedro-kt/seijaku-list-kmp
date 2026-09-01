@@ -11,7 +11,5 @@ data class SettingsUiState(
     val lastSyncTime: String? = null,
     val cacheSize: String = "0 MB",
     val username: String = "",
-    val userHandle: String = "",
-    val appVersion: String = "1.0",
-    val buildNumber: String = "104"
+    val userHandle: String = ""
 )
