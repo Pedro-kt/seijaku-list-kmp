@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.yumedev.seijakulistkmp.core.utils.rememberActivityRecreator
 import com.yumedev.seijakulistkmp.core.utils.rememberFileExporter
 import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
@@ -33,6 +34,7 @@ class SettingsScreen : Screen {
         val state by viewModel.state.collectAsState()
         val fileExporter = rememberFileExporter()
         val toastManager = rememberToastManager()
+        val activityRecreator = rememberActivityRecreator()
 
         val exportAnimeSuccessMessage = stringResource(Res.string.settings_export_anime_success)
         val exportMangaSuccessMessage = stringResource(Res.string.settings_export_manga_success)
@@ -42,7 +44,10 @@ class SettingsScreen : Screen {
             onBackClick = { navigator.pop() },
             state = state,
             onThemeSelected = viewModel::onThemeSelected,
-            onLanguageSelected = viewModel::onLanguageSelected,
+            onLanguageSelected = { languageMode ->
+                viewModel.onLanguageSelected(languageMode)
+                activityRecreator.recreate()
+            },
             onAiringNotificationsToggle = viewModel::onAiringNotificationsToggle,
             onSfwModeToggle = viewModel::onSfwModeToggle,
             onSyncClick = viewModel::onSyncClick,
