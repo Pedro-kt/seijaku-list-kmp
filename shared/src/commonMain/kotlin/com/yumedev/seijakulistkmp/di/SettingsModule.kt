@@ -4,9 +4,11 @@ import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.Settings
 import com.yumedev.seijakulistkmp.features.settings.data.repository.SettingsRepositoryImpl
 import com.yumedev.seijakulistkmp.features.settings.domain.repository.SettingsRepository
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetCardTypeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetLanguageModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetSfwModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeModeUseCase
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetCardTypeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetLanguageModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetSfwModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetThemeModeUseCase
@@ -28,6 +30,8 @@ val settingsModule = module {
     factoryOf(::SetLanguageModeUseCase)
     factoryOf(::GetSfwModeUseCase)
     factoryOf(::SetSfwModeUseCase)
+    factoryOf(::GetCardTypeUseCase)
+    factoryOf(::SetCardTypeUseCase)
 
     viewModelOf(::SettingsViewModel)
 }

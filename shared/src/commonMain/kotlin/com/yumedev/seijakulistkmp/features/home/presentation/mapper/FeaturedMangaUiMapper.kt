@@ -13,13 +13,14 @@ class FeaturedMangaUiMapper(
             title = manga.title,
             coverImageUrl = manga.bannerImageUrl ?: manga.coverImageUrl,
             rating = formatter.formatRating(manga.averageScore),
-            status = formatter.formatStatus(manga.status, isManga = true),
+            status = manga.status,
             metadata = formatter.buildMangaMetadata(
                 startYear = null,
                 format = manga.format,
                 chapters = manga.chapters,
                 volumes = manga.volumes
-            )
+            ),
+            isManga = true
         )
     }
 }

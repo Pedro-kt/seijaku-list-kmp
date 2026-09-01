@@ -102,7 +102,7 @@ fun GridMediaListCard(
                             Surface(
                                 onClick = { showMenu = true },
                                 shape = CircleShape,
-                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                                color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(24.dp)
                             ) {
                                 Box(
@@ -113,7 +113,7 @@ fun GridMediaListCard(
                                         imageVector = TablerIcons.Outlined.DotsVertical,
                                         contentDescription = stringResource(Res.string.filter_menu),
                                         modifier = Modifier.size(16.dp),
-                                        tint = MaterialTheme.colorScheme.onSurface
+                                        tint = MaterialTheme.colorScheme.onPrimary
                                     )
                                 }
                             }
@@ -290,7 +290,7 @@ private fun GridStatusChip(
         }
     }
 
-    val statusColor = when (status) {
+    val statusIndicatorColor = when (status) {
         MediaListStatus.CURRENT -> MaterialTheme.colorScheme.primary
         MediaListStatus.COMPLETED -> Color(0xFF4CAF50)
         MediaListStatus.PLANNING -> MaterialTheme.colorScheme.secondary
@@ -302,14 +302,24 @@ private fun GridStatusChip(
     Surface(
         modifier = modifier,
         shape = CircleShape,
-        color = Color.Black.copy(alpha = 0.8f)
+        color = MaterialTheme.colorScheme.primary
     ) {
-        Text(
-            text = statusText,
-            style = MaterialTheme.typography.labelSmall,
-            color = statusColor,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .background(statusIndicatorColor, CircleShape)
+            )
+            Text(
+                text = statusText,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
     }
 }
 

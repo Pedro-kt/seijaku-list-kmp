@@ -9,6 +9,8 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriori
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListSortOption
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStats
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetCardTypeUseCase
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetCardTypeUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ExportToMALUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListStatsUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetMediaListUseCase
@@ -26,7 +28,9 @@ class UserMangaListViewModel(
     private val getListStatsUseCase: GetListStatsUseCase,
     private val updateListEntryUseCase: UpdateListEntryUseCase,
     private val removeFromListUseCase: RemoveFromListUseCase,
-    private val exportToMALUseCase: ExportToMALUseCase
+    private val exportToMALUseCase: ExportToMALUseCase,
+    private val getCardTypeUseCase: GetCardTypeUseCase,
+    private val setCardTypeUseCase: SetCardTypeUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UserMangaListUiState())
@@ -35,6 +39,15 @@ class UserMangaListViewModel(
     init {
         loadMangaList()
         loadStats()
+        loadCardType()
+    }
+
+    private fun loadCardType() {
+        viewModelScope.launch {
+            getCardTypeUseCase().collect { cardType ->
+                _uiState.update { it.copy(cardType = cardType) }
+            }
+        }
     }
 
     fun onEvent(event: UserMangaListEvent) {
@@ -158,13 +171,12 @@ class UserMangaListViewModel(
     }
 
     private fun toggleCardType() {
-        _uiState.update {
-            it.copy(
-                cardType = when (it.cardType) {
-                    MediaListCardType.Compact -> MediaListCardType.Grid
-                    MediaListCardType.Grid -> MediaListCardType.Compact
-                }
-            )
+        viewModelScope.launch {
+            val newCardType = when (_uiState.value.cardType) {
+                MediaListCardType.Compact -> MediaListCardType.Grid
+                MediaListCardType.Grid -> MediaListCardType.Compact
+            }
+            setCardTypeUseCase(newCardType)
         }
     }
 

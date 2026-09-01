@@ -112,9 +112,11 @@
     <string name="status_airing">En emisión</string>
     <string name="status_finished">Finalizado</string>
     <string name="status_not_yet_aired">Próximamente</string>
+    <string name="status_not_yet_released">Aún no publicado</string>
     <string name="status_cancelled">Cancelado</string>
     <string name="status_publishing">Publicándose</string>
     <string name="status_completed">Completado</string>
+    <string name="status_hiatus">En pausa</string>
 
     <!-- Media Formats -->
     <string name="format_tv">TV</string>
@@ -124,6 +126,9 @@
     <string name="format_ova">OVA</string>
     <string name="format_ona">ONA</string>
     <string name="format_music">Música</string>
+    <string name="format_manga">Manga</string>
+    <string name="format_light_novel">Novela Ligera</string>
+    <string name="format_one_shot">One Shot</string>
 
     <!-- Media Info -->
     <string name="episodes_suffix">ep</string>

@@ -2,6 +2,7 @@ package com.yumedev.seijakulistkmp.features.settings.domain.repository
 
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
+import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCardType
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
@@ -13,4 +14,7 @@ interface SettingsRepository {
 
     fun getSfwMode(): Flow<Boolean>
     suspend fun setSfwMode(enabled: Boolean)
+
+    fun getCardType(): Flow<MediaListCardType>
+    suspend fun setCardType(cardType: MediaListCardType)
 }

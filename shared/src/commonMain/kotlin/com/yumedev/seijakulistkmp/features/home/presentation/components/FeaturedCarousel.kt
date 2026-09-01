@@ -28,6 +28,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.Res
 import seijakulistkmp.shared.generated.resources.detail
+import seijakulistkmp.shared.generated.resources.status_airing
+import seijakulistkmp.shared.generated.resources.status_publishing
+import seijakulistkmp.shared.generated.resources.status_finished
+import seijakulistkmp.shared.generated.resources.status_not_yet_released
+import seijakulistkmp.shared.generated.resources.status_not_yet_aired
+import seijakulistkmp.shared.generated.resources.status_cancelled
+import seijakulistkmp.shared.generated.resources.status_hiatus
 
 @Composable
 fun FeaturedCarousel(
@@ -142,18 +149,36 @@ private fun FeaturedCarouselItem(
                         )
                 )
 
-                item.status?.let { status ->
+                item.status?.let { rawStatus ->
+                    val statusText = when (rawStatus) {
+                        "RELEASING" -> if (item.isManga) {
+                            stringResource(Res.string.status_publishing)
+                        } else {
+                            stringResource(Res.string.status_airing)
+                        }
+                        "FINISHED" -> stringResource(Res.string.status_finished)
+                        "NOT_YET_RELEASED" -> if (item.isManga) {
+                            stringResource(Res.string.status_not_yet_released)
+                        } else {
+                            stringResource(Res.string.status_not_yet_aired)
+                        }
+                        "CANCELLED" -> stringResource(Res.string.status_cancelled)
+                        "HIATUS" -> stringResource(Res.string.status_hiatus)
+                        else -> rawStatus
+                    }
+
                     Surface(
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(12.dp),
                         shape = RoundedCornerShape(100.dp),
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                        color = MaterialTheme.colorScheme.primary
                     ) {
                         Text(
-                            text = status,
+                            text = statusText,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                             style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.sp
                         )
