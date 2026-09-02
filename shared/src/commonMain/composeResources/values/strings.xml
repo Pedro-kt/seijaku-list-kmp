@@ -339,4 +339,26 @@
     <string name="validation_progress_negative">Progress cannot be negative.</string>
     <string name="validation_progress_exceeds_max_allowed">Cannot complete while anime/manga is still airing. Maximum progress is %1$d.</string>
     <string name="validation_progress_exceeds_total">Progress cannot exceed total episodes/chapters.</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_under_development">Under Development</string>
+    <string name="profile_coming_soon_title">Your profile is coming soon!</string>
+    <string name="profile_coming_soon_description">We\'re working hard to bring you an amazing profile experience. Soon you\'ll be able to view your stats, achievements, and much more.</string>
+    <string name="profile_stay_tuned">Stay tuned for updates!</string>
+    <string name="profile_view_welcome">View Welcome Guide</string>
+
+    <!-- Welcome/Onboarding Screen -->
+    <string name="welcome_skip">Skip</string>
+    <string name="welcome_next">Next</string>
+    <string name="welcome_get_started">Get Started</string>
+    <string name="welcome_page1_title">Welcome to Seijaku List</string>
+    <string name="welcome_page1_description">Track your favorite anime and manga in one beautiful app</string>
+    <string name="welcome_page2_title">Use Offline, No Account Needed</string>
+    <string name="welcome_page2_description">Track your collection offline without creating an account. Export your lists anytime you need them</string>
+    <string name="welcome_page3_title">Standard XML Format</string>
+    <string name="welcome_page3_description">Your exports use standard XML files compatible with MAL and AniList trackers</string>
+    <string name="welcome_page4_title">Organize Your Collection</string>
+    <string name="welcome_page4_description">Keep track of what you\'re watching, planning, or have completed</string>
+    <string name="welcome_page5_title">Sync with AniList (Optional)</string>
+    <string name="welcome_page5_description">If you want, sync your lists with AniList and never lose your progress across devices</string>
 </resources>

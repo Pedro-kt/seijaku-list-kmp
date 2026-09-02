@@ -329,4 +329,26 @@
     <string name="character_main_role">Personaje principal</string>
     <string name="character_supporting_role">Personaje secundario</string>
     <string name="character_cm">cm</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_under_development">En Desarrollo</string>
+    <string name="profile_coming_soon_title">¡Tu perfil llegará pronto!</string>
+    <string name="profile_coming_soon_description">Estamos trabajando arduamente para traerte una experiencia de perfil increíble. Pronto podrás ver tus estadísticas, logros y mucho más.</string>
+    <string name="profile_stay_tuned">¡Mantente atento a las actualizaciones!</string>
+    <string name="profile_view_welcome">Ver Guía de Bienvenida</string>
+
+    <!-- Welcome/Onboarding Screen -->
+    <string name="welcome_skip">Omitir</string>
+    <string name="welcome_next">Siguiente</string>
+    <string name="welcome_get_started">Comenzar</string>
+    <string name="welcome_page1_title">Bienvenido a Seijaku List</string>
+    <string name="welcome_page1_description">Rastrea tus anime y manga favoritos en una hermosa aplicación</string>
+    <string name="welcome_page2_title">Usa Sin Conexión, Sin Cuenta</string>
+    <string name="welcome_page2_description">Rastrea tu colección offline sin crear cuenta. Exporta tus listas cuando las necesites</string>
+    <string name="welcome_page3_title">Formato XML Estándar</string>
+    <string name="welcome_page3_description">Tus exportaciones usan archivos XML estándar compatibles con rastreadores de MAL y AniList</string>
+    <string name="welcome_page4_title">Organiza tu Colección</string>
+    <string name="welcome_page4_description">Mantén un seguimiento de lo que estás viendo, planeando o has completado</string>
+    <string name="welcome_page5_title">Sincroniza con AniList (Opcional)</string>
+    <string name="welcome_page5_description">Si quieres, sincroniza tus listas con AniList y nunca pierdas tu progreso en todos tus dispositivos</string>
 </resources>

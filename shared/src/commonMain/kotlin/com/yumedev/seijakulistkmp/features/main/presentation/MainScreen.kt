@@ -15,6 +15,7 @@ import com.yumedev.seijakulistkmp.features.manga.presentation.MangaListScreenCon
 import com.yumedev.seijakulistkmp.features.profile.presentation.ProfileScreenContent
 import com.yumedev.seijakulistkmp.features.settings.presentation.SettingsScreen
 import com.yumedev.seijakulistkmp.features.search.presentation.SearchScreenContent
+import com.yumedev.seijakulistkmp.features.welcome.presentation.WelcomeScreen
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import dev.seyfarth.tablericons.TablerIcons
@@ -98,7 +99,8 @@ fun MainScreenContent() {
                     }
                 )
                 BottomNavItem.Profile -> ProfileScreenContent(
-                    onSettingsClick = { navigator.push(SettingsScreen()) }
+                    onSettingsClick = { navigator.push(SettingsScreen()) },
+                    onWelcomeClick = { navigator.push(WelcomeScreen()) }
                 )
             }
         }
