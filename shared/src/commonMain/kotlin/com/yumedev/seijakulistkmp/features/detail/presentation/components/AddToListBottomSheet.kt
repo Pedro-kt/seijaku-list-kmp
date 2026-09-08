@@ -542,7 +542,7 @@ fun AddToListBottomSheet(
                             fontWeight = FontWeight.SemiBold
                         )
                     }
-                }
+                                                                                                          }
             }
         }
     }
