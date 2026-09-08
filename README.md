@@ -1,43 +1,46 @@
-# Seijaku List KMP
-
-Aplicación multiplataforma para descubrir, seguir y gestionar tu colección de anime y manga usando la API de AniList.
-
 <img src="images/featured_graphics.png" width="100%" alt="Seijaku List Featured Graphics">
 
-## Plataformas
+# Seijaku List
+
+A multiplatform application for discovering, tracking, and managing your anime and manga collection using the AniList API.
+
+## Platforms
 
 - Android (API 26+)
 - iOS (iPhone & iPad)
 - Desktop (Windows, macOS, Linux)
 
-## Stack Tecnológico
+## Tech Stack
 
-- **Kotlin Multiplatform** - Lógica compartida
-- **Compose Multiplatform** - UI multiplataforma
-- **MVVM + Clean Architecture** - Patrón de arquitectura 
-- **Apollo GraphQL** - Integración con AniList API
-- **Room 3** - Base de datos local
-- **Koin** - Inyección de dependencias
-- **Voyager** - Navegación multiplataforma
+- **Kotlin Multiplatform** - Shared business logic
+- **Compose Multiplatform** - Multiplatform UI
+- **MVVM + Clean Architecture** - Architecture pattern
+- **Apollo GraphQL** - AniList API integration
+- **Room 3** - Local database
+- **Koin** - Dependency injection
+- **Voyager** - Multiplatform navigation
 
-## Ejecutar el Proyecto
+## Running the Project
 
 ### Android
+
 ```bash
 ./gradlew :androidApp:assembleDebug
 ```
 
 ### Desktop
+
 ```bash
 # Hot reload
 ./gradlew :desktopApp:hotRun --auto
 
-# Ejecución estándar
+# Standard execution
 ./gradlew :desktopApp:run
 ```
 
 ### iOS
-Abre el directorio `/iosApp` en Xcode y ejecuta desde ahí.
+
+Open the `/iosApp` directory in Xcode and run the project from there.
 
 ## Tests
 
@@ -48,20 +51,20 @@ Abre el directorio `/iosApp` en Xcode y ejecuta desde ahí.
 # Desktop
 ./gradlew :shared:jvmTest
 
-# iOS (requiere macOS)
+# iOS (requires macOS)
 ./gradlew :shared:iosSimulatorArm64Test
 ```
 
-## Compilar Shared Module
+## Build Shared Module
 
 ```bash
 ./gradlew :shared:build
 ```
 
-## Documentación
+## Documentation
 
-- [Wiki del Proyecto](../../wiki) - Guías detalladas y documentación
+- [Project Wiki](../../wiki) - Detailed guides and documentation
 
-## Licencia
+## License
 
-Este proyecto está bajo la licencia Apache 2.0 - ver el archivo [LICENSE](LICENSE) para más detalles.
+This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for more details.
