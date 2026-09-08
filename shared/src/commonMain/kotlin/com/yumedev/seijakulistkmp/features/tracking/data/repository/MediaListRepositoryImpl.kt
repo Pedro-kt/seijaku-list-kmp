@@ -8,12 +8,19 @@ import com.yumedev.seijakulistkmp.features.tracking.data.local.dao.MediaListDao
 import com.yumedev.seijakulistkmp.features.tracking.data.mapper.toDomain
 import com.yumedev.seijakulistkmp.features.tracking.data.mapper.toEntity
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.CachedMediaInfo
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ConflictReason
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ConflictResolution
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ErrorReason
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ImportConflict
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ImportError
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ImportResult
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListSortOption
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStats
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import com.yumedev.seijakulistkmp.features.tracking.domain.repository.MediaListRepository
+import com.yumedev.seijakulistkmp.features.tracking.domain.validator.MediaListValidator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -153,10 +160,104 @@ class MediaListRepositoryImpl(
         }
     }
 
-    override suspend fun importFromMAL(xmlContent: String, mediaType: MediaType): Result<Int> = resultOf {
-        val entries = malXmlMapper.parseMALXml(xmlContent, mediaType)
-        mediaListDao.insertEntries(entries)
-        entries.size
+    override suspend fun importFromMAL(xmlContent: String, mediaType: MediaType): Result<ImportResult> = resultOf {
+
+        val parsedEntries = try {
+            malXmlMapper.parseMALXml(xmlContent, mediaType)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw e
+        }
+
+        val successful = mutableListOf<MediaListEntry>()
+        val conflicts = mutableListOf<ImportConflict>()
+        val errors = mutableListOf<ImportError>()
+
+        parsedEntries.forEachIndexed { index, entity ->
+            try {
+                val existingEntry = mediaListDao.getEntryByMedia(entity.mediaId, entity.mediaType)
+
+                if (existingEntry != null) {
+                    val localEntry = existingEntry.toDomain()
+                    val importedEntry = entity.toDomain()
+
+                    val conflictReason = determineConflictReason(localEntry, importedEntry)
+
+                    conflicts.add(
+                        ImportConflict(
+                            mediaId = entity.mediaId,
+                            mediaType = MediaType.valueOf(entity.mediaType),
+                            localEntry = localEntry,
+                            importedEntry = importedEntry,
+                            conflictReason = conflictReason
+                        )
+                    )
+                } else {
+                    val domainEntry = entity.toDomain()
+                    val mediaTypeEnum = MediaType.valueOf(entity.mediaType)
+                    val total = if (mediaTypeEnum == MediaType.ANIME) {
+                        domainEntry.mediaInfo?.totalEpisodes
+                    } else {
+                        domainEntry.mediaInfo?.totalChapters
+                    }
+
+                    val validationResult = MediaListValidator.validateStatusProgressConsistency(
+                        newStatus = MediaListStatus.valueOf(entity.status),
+                        newProgress = domainEntry.progress,
+                        total = total,
+                        mediaStatus = entity.mediaStatus
+                    )
+
+                    when (validationResult) {
+                        is MediaListValidator.ValidationResult.Valid -> {
+                            mediaListDao.insertEntry(entity)
+                            successful.add(domainEntry)
+                        }
+                        is MediaListValidator.ValidationResult.Invalid -> {
+                            errors.add(
+                                ImportError(
+                                    mediaId = entity.mediaId,
+                                    mediaType = mediaTypeEnum,
+                                    reason = ErrorReason.VALIDATION_FAILED,
+                                    message = "Validation failed: ${validationResult.error}",
+                                    xmlEntryIndex = index
+                                )
+                            )
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                errors.add(
+                    ImportError(
+                        mediaId = entity.mediaId,
+                        mediaType = MediaType.valueOf(entity.mediaType),
+                        reason = ErrorReason.UNKNOWN,
+                        message = e.message ?: "Unknown error occurred",
+                        xmlEntryIndex = index
+                    )
+                )
+            }
+        }
+
+        ImportResult(
+            successful = successful,
+            conflicts = conflicts,
+            errors = errors,
+            totalProcessed = parsedEntries.size
+        )
+    }
+
+    private fun determineConflictReason(
+        localEntry: MediaListEntry,
+        importedEntry: MediaListEntry
+    ): ConflictReason {
+        return when {
+            localEntry.updatedAt > importedEntry.updatedAt -> ConflictReason.NEWER_LOCAL_UPDATE
+            importedEntry.updatedAt > localEntry.updatedAt -> ConflictReason.NEWER_IMPORT_UPDATE
+            localEntry.status != importedEntry.status -> ConflictReason.DIFFERENT_STATUS
+            localEntry.progress != importedEntry.progress -> ConflictReason.DIFFERENT_PROGRESS
+            else -> ConflictReason.ALREADY_EXISTS
+        }
     }
 
     override suspend fun exportToMAL(mediaType: MediaType): Result<String> = resultOf {
@@ -175,5 +276,59 @@ class MediaListRepositoryImpl(
 
     override suspend fun getAllEntries(): List<MediaListEntry> {
         return mediaListDao.getAllEntries().map { it.toDomain() }
+    }
+
+    override suspend fun resolveConflict(
+        conflict: ImportConflict,
+        resolution: ConflictResolution
+    ): Result<MediaListEntry> = resultOf {
+        val entryToSave = when (resolution) {
+            is ConflictResolution.KeepLocal -> {
+                conflict.localEntry.copy(
+                    updatedAt = System.currentTimeMillis(),
+                    needsSync = true
+                )
+            }
+            is ConflictResolution.UseImported -> {
+                conflict.localEntry.copy(
+                    status = conflict.importedEntry.status,
+                    progress = conflict.importedEntry.progress,
+                    progressVolumes = conflict.importedEntry.progressVolumes,
+                    score = conflict.importedEntry.score,
+                    startDate = conflict.importedEntry.startDate,
+                    finishDate = conflict.importedEntry.finishDate,
+                    notes = conflict.importedEntry.notes,
+                    repeatCount = conflict.importedEntry.repeatCount,
+                    priority = conflict.importedEntry.priority,
+                    updatedAt = System.currentTimeMillis(),
+                    needsSync = true
+                )
+            }
+            is ConflictResolution.MergeFields -> {
+                conflict.localEntry.copy(
+                    status = if (resolution.useLocalStatus) conflict.localEntry.status else conflict.importedEntry.status,
+                    progress = if (resolution.useLocalProgress) conflict.localEntry.progress else conflict.importedEntry.progress,
+                    score = if (resolution.useLocalScore) conflict.localEntry.score else conflict.importedEntry.score,
+                    notes = if (resolution.useLocalNotes) conflict.localEntry.notes else conflict.importedEntry.notes,
+                    startDate = if (resolution.useLocalDates) conflict.localEntry.startDate else conflict.importedEntry.startDate,
+                    finishDate = if (resolution.useLocalDates) conflict.localEntry.finishDate else conflict.importedEntry.finishDate,
+                    updatedAt = System.currentTimeMillis(),
+                    needsSync = true
+                )
+            }
+        }
+
+        val entity = entryToSave.toEntity()
+        mediaListDao.updateEntry(entity)
+        entryToSave
+    }
+
+    override suspend fun resolveAllConflicts(
+        conflicts: List<ImportConflict>,
+        resolution: ConflictResolution
+    ): Result<List<MediaListEntry>> = resultOf {
+        conflicts.map { conflict ->
+            resolveConflict(conflict, resolution).getOrThrow()
+        }
     }
 }

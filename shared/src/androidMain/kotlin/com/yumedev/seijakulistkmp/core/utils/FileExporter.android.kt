@@ -33,8 +33,19 @@ actual class FileExporter(private val context: Context) {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
 
+            val resInfoList = context.packageManager.queryIntentActivities(shareIntent, 0)
+            for (resolveInfo in resInfoList) {
+                val packageName = resolveInfo.activityInfo.packageName
+                context.grantUriPermission(
+                    packageName,
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            }
+
             val chooserIntent = Intent.createChooser(shareIntent, "Export $fileName").apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
             context.startActivity(chooserIntent)

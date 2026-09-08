@@ -1,6 +1,14 @@
 package com.yumedev.seijakulistkmp.di
 
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.yumedev.seijakulistkmp.features.profile.data.repository.ProfileRepositoryImpl
+import com.yumedev.seijakulistkmp.features.tracking.data.local.migrations.MIGRATION_2_3
+import com.yumedev.seijakulistkmp.features.profile.domain.repository.ProfileRepository
+import com.yumedev.seijakulistkmp.features.profile.domain.usecase.EnsureLocalProfileExistsUseCase
+import com.yumedev.seijakulistkmp.features.profile.domain.usecase.GetCurrentProfileUseCase
+import com.yumedev.seijakulistkmp.features.profile.domain.usecase.UpdateProfileStatisticsUseCase
+import com.yumedev.seijakulistkmp.features.profile.domain.usecase.UpdateProfileUseCase
+import com.yumedev.seijakulistkmp.features.profile.presentation.ProfileViewModel
 import com.yumedev.seijakulistkmp.features.tracking.data.export.MALXmlMapper
 import com.yumedev.seijakulistkmp.features.tracking.data.local.TrackingDatabase
 import com.yumedev.seijakulistkmp.features.tracking.data.local.TrackingDatabaseBuilder
@@ -14,6 +22,8 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListStatsU
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetMediaListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ImportFromMALUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.RemoveFromListUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ResolveAllImportConflictsUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ResolveImportConflictUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.UpdateListEntryUseCase
 import com.yumedev.seijakulistkmp.features.tracking.presentation.animelist.UserAnimeListViewModel
 import com.yumedev.seijakulistkmp.features.tracking.presentation.mangalist.UserMangaListViewModel
@@ -27,13 +37,21 @@ val trackingModule = module {
     single<TrackingDatabase> {
         TrackingDatabaseBuilder.create()
             .setDriver(BundledSQLiteDriver())
+            .addMigrations(MIGRATION_2_3)
             .build()
     }
 
     single { get<TrackingDatabase>().mediaListDao() }
+    single { get<TrackingDatabase>().userProfileDao() }
 
     singleOf(::MALXmlMapper)
     singleOf(::MediaListRepositoryImpl) bind MediaListRepository::class
+    singleOf(::ProfileRepositoryImpl) bind ProfileRepository::class
+
+    factoryOf(::GetCurrentProfileUseCase)
+    factoryOf(::UpdateProfileUseCase)
+    factoryOf(::UpdateProfileStatisticsUseCase)
+    factoryOf(::EnsureLocalProfileExistsUseCase)
 
     factoryOf(::AddToListUseCase)
     factoryOf(::UpdateListEntryUseCase)
@@ -44,7 +62,10 @@ val trackingModule = module {
     factoryOf(::ExportToMALUseCase)
     factoryOf(::ImportFromMALUseCase)
     factoryOf(::CheckInListUseCase)
+    factoryOf(::ResolveImportConflictUseCase)
+    factoryOf(::ResolveAllImportConflictsUseCase)
 
+    viewModelOf(::ProfileViewModel)
     viewModelOf(::UserAnimeListViewModel)
     viewModelOf(::UserMangaListViewModel)
 }

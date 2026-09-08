@@ -3,6 +3,9 @@ package com.yumedev.seijakulistkmp.features.tracking.domain.repository
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.core.domain.model.Result
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.CachedMediaInfo
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ConflictResolution
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ImportConflict
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ImportResult
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListSortOption
@@ -55,8 +58,18 @@ interface MediaListRepository {
 
     fun observeStats(mediaType: MediaType): Flow<MediaListStats>
 
-    suspend fun importFromMAL(xmlContent: String, mediaType: MediaType): Result<Int>
+    suspend fun importFromMAL(xmlContent: String, mediaType: MediaType): Result<ImportResult>
     suspend fun exportToMAL(mediaType: MediaType): Result<String>
+
+    suspend fun resolveConflict(
+        conflict: ImportConflict,
+        resolution: ConflictResolution
+    ): Result<MediaListEntry>
+
+    suspend fun resolveAllConflicts(
+        conflicts: List<ImportConflict>,
+        resolution: ConflictResolution
+    ): Result<List<MediaListEntry>>
 
     suspend fun syncWithAniList(): Result<Unit>
     suspend fun getUnsyncedEntries(): List<MediaListEntry>

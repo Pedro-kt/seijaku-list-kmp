@@ -19,6 +19,8 @@ fun SettingsDataSection(
     lastSyncTime: String?,
     cacheSize: String,
     onSyncClick: () -> Unit,
+    onImportAnimeClick: () -> Unit,
+    onImportMangaClick: () -> Unit,
     onExportAnimeClick: () -> Unit,
     onExportMangaClick: () -> Unit,
     onClearCacheClick: () -> Unit,
@@ -45,6 +47,24 @@ fun SettingsDataSection(
                 stringResource(Res.string.settings_sync_anilist_desc, it)
             },
             onClick = onSyncClick
+        )
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+
+        SettingsNavigationItem(
+            icon = TablerIcons.Outlined.FileUpload,
+            title = stringResource(Res.string.settings_import_anime),
+            description = stringResource(Res.string.settings_import_anime_desc),
+            onClick = onImportAnimeClick
+        )
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+
+        SettingsNavigationItem(
+            icon = TablerIcons.Outlined.FileUpload,
+            title = stringResource(Res.string.settings_import_manga),
+            description = stringResource(Res.string.settings_import_manga_desc),
+            onClick = onImportMangaClick
         )
 
         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))

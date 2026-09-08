@@ -16,11 +16,14 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.core.utils.rememberActivityRecreator
 import com.yumedev.seijakulistkmp.core.utils.rememberAppVersion
 import com.yumedev.seijakulistkmp.core.utils.rememberFileExporter
+import com.yumedev.seijakulistkmp.core.utils.rememberFilePicker
 import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.settings.presentation.components.*
 import com.yumedev.seijakulistkmp.features.settings.presentation.model.SettingsUiState
+import com.yumedev.seijakulistkmp.features.tracking.presentation.components.ConflictResolutionDialog
+import com.yumedev.seijakulistkmp.features.tracking.presentation.components.ImportResultDialog
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowLeft
 import org.jetbrains.compose.resources.stringResource
@@ -34,6 +37,7 @@ class SettingsScreen : Screen {
         val viewModel = koinViewModel<SettingsViewModel>()
         val state by viewModel.state.collectAsState()
         val fileExporter = rememberFileExporter()
+        val filePicker = rememberFilePicker()
         val toastManager = rememberToastManager()
         val activityRecreator = rememberActivityRecreator()
         val (appVersion, buildNumber) = rememberAppVersion()
@@ -41,6 +45,8 @@ class SettingsScreen : Screen {
         val exportAnimeSuccessMessage = stringResource(Res.string.settings_export_anime_success)
         val exportMangaSuccessMessage = stringResource(Res.string.settings_export_manga_success)
         val exportErrorMessage = stringResource(Res.string.settings_export_error)
+        val importSuccessMessage = stringResource(Res.string.settings_import_success)
+        val importErrorMessage = stringResource(Res.string.settings_import_error)
 
         SettingsScreenContent(
             onBackClick = { navigator.pop() },
@@ -55,6 +61,38 @@ class SettingsScreen : Screen {
             onAiringNotificationsToggle = viewModel::onAiringNotificationsToggle,
             onSfwModeToggle = viewModel::onSfwModeToggle,
             onSyncClick = viewModel::onSyncClick,
+            onImportAnimeClick = {
+                filePicker.pickXmlFile(
+                    onFileSelected = { xmlContent ->
+                        viewModel.onImportAnimeClick(
+                            xmlContent = xmlContent,
+                            onSuccess = { toastManager.showToast(importSuccessMessage) },
+                            onError = { error ->
+                                toastManager.showToast(importErrorMessage.replace("%1\$s", error))
+                            }
+                        )
+                    },
+                    onError = { error ->
+                        toastManager.showToast(importErrorMessage.replace("%1\$s", error))
+                    }
+                )
+            },
+            onImportMangaClick = {
+                filePicker.pickXmlFile(
+                    onFileSelected = { xmlContent ->
+                        viewModel.onImportMangaClick(
+                            xmlContent = xmlContent,
+                            onSuccess = { toastManager.showToast(importSuccessMessage) },
+                            onError = { error ->
+                                toastManager.showToast(importErrorMessage.replace("%1\$s", error))
+                            }
+                        )
+                    },
+                    onError = { error ->
+                        toastManager.showToast(importErrorMessage.replace("%1\$s", error))
+                    }
+                )
+            },
             onExportAnimeClick = {
                 viewModel.onExportAnimeClick(
                     onExport = { content, fileName ->
@@ -97,6 +135,22 @@ class SettingsScreen : Screen {
             onAboutClick = viewModel::onAboutClick,
             onLogoutClick = viewModel::onLogoutClick
         )
+
+        if (state.showImportResultDialog && state.importResult != null) {
+            ImportResultDialog(
+                importResult = state.importResult!!,
+                onDismiss = viewModel::dismissImportResultDialog,
+                onResolveConflicts = viewModel::showConflictResolutionDialog
+            )
+        }
+
+        if (state.showConflictDialog && state.currentConflicts.isNotEmpty()) {
+            ConflictResolutionDialog(
+                conflicts = state.currentConflicts,
+                onDismiss = viewModel::dismissConflictDialog,
+                onResolveAll = viewModel::resolveAllConflicts
+            )
+        }
     }
 }
 
@@ -112,6 +166,8 @@ fun SettingsScreenContent(
     onAiringNotificationsToggle: (Boolean) -> Unit,
     onSfwModeToggle: (Boolean) -> Unit,
     onSyncClick: () -> Unit,
+    onImportAnimeClick: () -> Unit,
+    onImportMangaClick: () -> Unit,
     onExportAnimeClick: () -> Unit,
     onExportMangaClick: () -> Unit,
     onClearCacheClick: () -> Unit,
@@ -173,6 +229,8 @@ fun SettingsScreenContent(
                     lastSyncTime = state.lastSyncTime,
                     cacheSize = state.cacheSize,
                     onSyncClick = onSyncClick,
+                    onImportAnimeClick = onImportAnimeClick,
+                    onImportMangaClick = onImportMangaClick,
                     onExportAnimeClick = onExportAnimeClick,
                     onExportMangaClick = onExportMangaClick,
                     onClearCacheClick = onClearCacheClick,

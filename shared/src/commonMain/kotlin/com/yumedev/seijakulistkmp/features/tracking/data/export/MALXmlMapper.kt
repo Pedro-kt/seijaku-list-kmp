@@ -3,12 +3,52 @@ package com.yumedev.seijakulistkmp.features.tracking.data.export
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.features.tracking.data.local.entity.MediaListEntryEntity
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
+import nl.adaptivity.xmlutil.serialization.XML
 
 class MALXmlMapper {
+    private val xml = XML {
+        autoPolymorphic = true
+        indentString = "  "
+    }
+
     fun parseMALXml(xmlContent: String, mediaType: MediaType): List<MediaListEntryEntity> {
-        // TODO: Implement XML parsing using kotlinx.serialization.xml or similar
-        // For now, return empty list
-        return emptyList()
+        require(xmlContent.isNotBlank()) { "XML content cannot be blank" }
+
+        return try {
+
+            val root = xml.decodeFromString(MALXmlRoot.serializer(), xmlContent)
+
+            validateXmlStructure(root, mediaType)
+
+            val entities = when (mediaType) {
+                MediaType.ANIME -> root.anime.map { it.toEntity() }
+                MediaType.MANGA -> root.manga.map { it.toEntity() }
+            }
+            entities
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw MALXmlParseException("Failed to parse MAL XML: ${e.message}", e)
+        }
+    }
+
+    private fun validateXmlStructure(root: MALXmlRoot, expectedMediaType: MediaType) {
+        val expectedExportType = if (expectedMediaType == MediaType.ANIME) 1 else 2
+
+        if (root.myinfo.userExportType != expectedExportType) {
+            throw MALXmlParseException(
+                "Invalid export type. Expected $expectedExportType for ${expectedMediaType.name}, " +
+                        "but got ${root.myinfo.userExportType}"
+            )
+        }
+
+        val entriesCount = when (expectedMediaType) {
+            MediaType.ANIME -> root.anime.size
+            MediaType.MANGA -> root.manga.size
+        }
+
+        if (entriesCount == 0) {
+            throw MALXmlParseException("No ${expectedMediaType.name.lowercase()} entries found in XML")
+        }
     }
 
     fun generateMALXml(entries: List<MediaListEntryEntity>, mediaType: MediaType): String {
@@ -102,3 +142,5 @@ class MALXmlMapper {
             .mapValues { it.value.size }
     }
 }
+
+class MALXmlParseException(message: String, cause: Throwable? = null) : Exception(message, cause)

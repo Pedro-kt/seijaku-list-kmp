@@ -11,10 +11,16 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStats
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetCardTypeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetCardTypeUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ConflictResolution
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ImportConflict
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ImportResult
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ExportToMALUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListStatsUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetMediaListUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ImportFromMALUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.RemoveFromListUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ResolveAllImportConflictsUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ResolveImportConflictUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.UpdateListEntryUseCase
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCardType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +35,9 @@ class UserAnimeListViewModel(
     private val updateListEntryUseCase: UpdateListEntryUseCase,
     private val removeFromListUseCase: RemoveFromListUseCase,
     private val exportToMALUseCase: ExportToMALUseCase,
+    private val importFromMALUseCase: ImportFromMALUseCase,
+    private val resolveImportConflictUseCase: ResolveImportConflictUseCase,
+    private val resolveAllImportConflictsUseCase: ResolveAllImportConflictsUseCase,
     private val getCardTypeUseCase: GetCardTypeUseCase,
     private val setCardTypeUseCase: SetCardTypeUseCase
 ) : ViewModel() {
@@ -75,6 +84,12 @@ class UserAnimeListViewModel(
                 event.priority
             )
             is UserAnimeListEvent.ExportToMAL -> exportToMAL()
+            is UserAnimeListEvent.ImportFromMAL -> importFromMAL(event.xmlContent)
+            UserAnimeListEvent.DismissImportResultDialog -> dismissImportResultDialog()
+            UserAnimeListEvent.ShowConflictResolutionDialog -> showConflictResolutionDialog()
+            UserAnimeListEvent.DismissConflictDialog -> dismissConflictDialog()
+            is UserAnimeListEvent.ResolveConflict -> resolveConflict(event.conflict, event.resolution)
+            is UserAnimeListEvent.ResolveAllConflicts -> resolveAllConflicts(event.resolution)
             is UserAnimeListEvent.Refresh -> refresh()
             UserAnimeListEvent.ClearError -> clearError()
             UserAnimeListEvent.ClearSuccessMessage -> clearSuccessMessage()
@@ -351,6 +366,106 @@ class UserAnimeListViewModel(
         }
     }
 
+    private fun importFromMAL(xmlContent: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isImporting = true, error = null) }
+
+            when (val result = importFromMALUseCase(xmlContent, MediaType.ANIME)) {
+                is Result.Success -> {
+                    val importResult = result.data
+                    _uiState.update {
+                        it.copy(
+                            isImporting = false,
+                            importResult = importResult,
+                            showImportResultDialog = true,
+                            currentConflicts = importResult.conflicts
+                        )
+                    }
+                }
+                is Result.Failure -> {
+                    _uiState.update {
+                        it.copy(
+                            isImporting = false,
+                            error = result.exception.message ?: "Failed to import XML"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun dismissImportResultDialog() {
+        _uiState.update {
+            it.copy(
+                showImportResultDialog = false,
+                importResult = null
+            )
+        }
+    }
+
+    private fun showConflictResolutionDialog() {
+        _uiState.update {
+            it.copy(
+                showImportResultDialog = false,
+                showConflictDialog = true
+            )
+        }
+    }
+
+    private fun dismissConflictDialog() {
+        _uiState.update {
+            it.copy(
+                showConflictDialog = false,
+                currentConflicts = emptyList()
+            )
+        }
+    }
+
+    private fun resolveConflict(conflict: ImportConflict, resolution: ConflictResolution) {
+        viewModelScope.launch {
+            when (val result = resolveImportConflictUseCase(conflict, resolution)) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            currentConflicts = it.currentConflicts.filter { c -> c != conflict },
+                            successMessage = "Conflict resolved"
+                        )
+                    }
+
+                    if (_uiState.value.currentConflicts.isEmpty()) {
+                        dismissConflictDialog()
+                    }
+                }
+                is Result.Failure -> {
+                    _uiState.update {
+                        it.copy(error = result.exception.message ?: "Failed to resolve conflict")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun resolveAllConflicts(resolution: ConflictResolution) {
+        viewModelScope.launch {
+            when (val result = resolveAllImportConflictsUseCase(_uiState.value.currentConflicts, resolution)) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            currentConflicts = emptyList(),
+                            showConflictDialog = false,
+                            successMessage = "${result.data.size} conflicts resolved"
+                        )
+                    }
+                }
+                is Result.Failure -> {
+                    _uiState.update {
+                        it.copy(error = result.exception.message ?: "Failed to resolve conflicts")
+                    }
+                }
+            }
+        }
+    }
+
     private fun sortEntries(
         entries: List<MediaListEntry>,
         sortBy: MediaListSortOption,
@@ -394,6 +509,11 @@ data class UserAnimeListUiState(
     val isExporting: Boolean = false,
     val exportSuccess: Boolean = false,
     val exportedXml: String? = null,
+    val isImporting: Boolean = false,
+    val importResult: ImportResult? = null,
+    val showImportResultDialog: Boolean = false,
+    val showConflictDialog: Boolean = false,
+    val currentConflicts: List<ImportConflict> = emptyList(),
     val error: String? = null,
     val successMessage: String? = null
 )
@@ -422,6 +542,12 @@ sealed class UserAnimeListEvent {
         val priority: MediaListPriority
     ) : UserAnimeListEvent()
     data object ExportToMAL : UserAnimeListEvent()
+    data class ImportFromMAL(val xmlContent: String) : UserAnimeListEvent()
+    data object DismissImportResultDialog : UserAnimeListEvent()
+    data object ShowConflictResolutionDialog : UserAnimeListEvent()
+    data object DismissConflictDialog : UserAnimeListEvent()
+    data class ResolveConflict(val conflict: ImportConflict, val resolution: ConflictResolution) : UserAnimeListEvent()
+    data class ResolveAllConflicts(val resolution: ConflictResolution) : UserAnimeListEvent()
     data object Refresh : UserAnimeListEvent()
     data object ClearError : UserAnimeListEvent()
     data object ClearSuccessMessage : UserAnimeListEvent()
