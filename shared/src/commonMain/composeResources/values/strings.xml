@@ -401,6 +401,7 @@
     <string name="profile_error_saving">Error saving profile</string>
     <string name="profile_error_updating_stats">Error updating statistics</string>
     <string name="profile_anilist_sync_unavailable">AniList sync not available yet</string>
+    <string name="profile_edit_subtitle">Update your profile information</string>
 
     <!-- Welcome/Onboarding Screen -->
     <string name="welcome_skip">Skip</string>

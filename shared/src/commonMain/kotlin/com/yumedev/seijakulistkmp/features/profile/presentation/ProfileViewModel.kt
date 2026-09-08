@@ -80,19 +80,16 @@ class ProfileViewModel(
     }
 
     fun onEditProfile() {
-        _uiState.update { it.copy(isEditing = true) }
+        _uiState.update { it.copy(showEditDialog = true) }
     }
 
-    fun onCancelEdit() {
-        _uiState.update { it.copy(isEditing = false) }
+    fun onDismissEditDialog() {
+        _uiState.update { it.copy(showEditDialog = false) }
     }
 
-    fun onSaveProfile(
-        name: String,
-        about: String?,
-        avatarUrl: String?,
-        bannerUrl: String?,
-    ) {
+    fun onSaveProfileInfo(name: String, about: String?) {
+        val currentProfile = _uiState.value.profile ?: return
+
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
@@ -100,15 +97,85 @@ class ProfileViewModel(
                 updateProfile(
                     name = name,
                     about = about,
-                    avatarUrl = avatarUrl,
-                    bannerUrl = bannerUrl,
+                    avatarUrl = currentProfile.avatar?.large,
+                    bannerUrl = currentProfile.banner,
                 )
             ) {
                 is Result.Success -> {
                     updateStatistics()
                     _uiState.update {
                         it.copy(
-                            isEditing = false,
+                            showEditDialog = false,
+                            isLoading = false,
+                            error = null,
+                        )
+                    }
+                }
+
+                is Result.Failure -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = ProfileError.SavingError,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun onUpdateAvatar(avatarUrl: String) {
+        val currentProfile = _uiState.value.profile ?: return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+
+            when (
+                updateProfile(
+                    name = currentProfile.name,
+                    about = currentProfile.about,
+                    avatarUrl = avatarUrl,
+                    bannerUrl = currentProfile.banner,
+                )
+            ) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = null,
+                        )
+                    }
+                }
+
+                is Result.Failure -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = ProfileError.SavingError,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun onUpdateBanner(bannerUrl: String) {
+        val currentProfile = _uiState.value.profile ?: return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+
+            when (
+                updateProfile(
+                    name = currentProfile.name,
+                    about = currentProfile.about,
+                    avatarUrl = currentProfile.avatar?.large,
+                    bannerUrl = bannerUrl,
+                )
+            ) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
                             isLoading = false,
                             error = null,
                         )

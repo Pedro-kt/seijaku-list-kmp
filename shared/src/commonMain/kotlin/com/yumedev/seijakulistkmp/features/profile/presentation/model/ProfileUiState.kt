@@ -10,5 +10,5 @@ data class ProfileUiState(
     val selectedTab: Int = 0,
     val isLoading: Boolean = false,
     val error: ProfileError? = null,
-    val isEditing: Boolean = false,
+    val showEditDialog: Boolean = false,
 )

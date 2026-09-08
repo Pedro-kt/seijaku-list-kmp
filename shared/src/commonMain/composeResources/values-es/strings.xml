@@ -391,6 +391,7 @@
     <string name="profile_error_saving">Error al guardar el perfil</string>
     <string name="profile_error_updating_stats">Error al actualizar estadísticas</string>
     <string name="profile_anilist_sync_unavailable">Sincronización con AniList no disponible aún</string>
+    <string name="profile_edit_subtitle">Actualiza la información de tu perfil</string>
 
     <!-- Welcome/Onboarding Screen -->
     <string name="welcome_skip">Omitir</string>

@@ -25,14 +25,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,6 +64,7 @@ import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Camera
 import dev.seyfarth.tablericons.outlined.Settings
 import dev.seyfarth.tablericons.outlined.User
+import dev.seyfarth.tablericons.outlined.InfoCircle
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
@@ -78,6 +82,7 @@ import seijakulistkmp.shared.generated.resources.profile_anilist_sync_unavailabl
 import seijakulistkmp.shared.generated.resources.profile_cancel_button
 import seijakulistkmp.shared.generated.resources.profile_distribution
 import seijakulistkmp.shared.generated.resources.profile_edit_button
+import seijakulistkmp.shared.generated.resources.profile_edit_subtitle
 import seijakulistkmp.shared.generated.resources.profile_edit_title
 import seijakulistkmp.shared.generated.resources.profile_error_loading
 import seijakulistkmp.shared.generated.resources.profile_error_saving
@@ -120,8 +125,10 @@ class ProfileScreen : Screen {
             uiState = uiState,
             onSettingsClick = { navigator.push(SettingsScreen()) },
             onEditProfile = viewModel::onEditProfile,
-            onSaveProfile = viewModel::onSaveProfile,
-            onCancelEdit = viewModel::onCancelEdit,
+            onDismissEditDialog = viewModel::onDismissEditDialog,
+            onSaveProfileInfo = viewModel::onSaveProfileInfo,
+            onUpdateAvatar = viewModel::onUpdateAvatar,
+            onUpdateBanner = viewModel::onUpdateBanner,
             onRefreshStatistics = viewModel::onRefreshStatistics,
             onTabChanged = viewModel::onTabChanged,
         )
@@ -134,8 +141,10 @@ fun ProfileScreenContent(
     uiState: ProfileUiState,
     onSettingsClick: () -> Unit,
     onEditProfile: () -> Unit,
-    onSaveProfile: (String, String?, String?, String?) -> Unit,
-    onCancelEdit: () -> Unit,
+    onDismissEditDialog: () -> Unit,
+    onSaveProfileInfo: (String, String?) -> Unit,
+    onUpdateAvatar: (String) -> Unit,
+    onUpdateBanner: (String) -> Unit,
     onRefreshStatistics: () -> Unit,
     onTabChanged: (Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -188,70 +197,56 @@ fun ProfileScreenContent(
             }
 
             uiState.profile != null -> {
-                if (uiState.isEditing) {
-                    EditProfileContent(
-                        profile = uiState.profile,
-                        onSave = onSaveProfile,
-                        onCancel = onCancelEdit,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues)
-                            .padding(16.dp),
-                    )
-                } else {
-                    val filePicker = rememberFilePicker()
-                    val imageManager = rememberImageManager()
+                val filePicker = rememberFilePicker()
+                val imageManager = rememberImageManager()
 
-                    ProfileContent(
+                ProfileContent(
+                    profile = uiState.profile,
+                    animeStats = uiState.animeStats,
+                    mangaStats = uiState.mangaStats,
+                    selectedTab = uiState.selectedTab,
+                    onEditProfile = onEditProfile,
+                    onTabChanged = onTabChanged,
+                    onAvatarClick = {
+                        filePicker.pickImage(
+                            onImageSelected = { uri ->
+                                imageManager.saveImage(
+                                    imageUri = uri,
+                                    destinationFileName = "avatar_${System.currentTimeMillis()}.jpg",
+                                    onSuccess = { path ->
+                                        onUpdateAvatar(path)
+                                    },
+                                    onError = { /* TODO: Handle error */ }
+                                )
+                            },
+                            onError = { /* TODO: Handle error */ }
+                        )
+                    },
+                    onBannerClick = {
+                        filePicker.pickImage(
+                            onImageSelected = { uri ->
+                                imageManager.saveImage(
+                                    imageUri = uri,
+                                    destinationFileName = "banner_${System.currentTimeMillis()}.jpg",
+                                    onSuccess = { path ->
+                                        onUpdateBanner(path)
+                                    },
+                                    onError = { /* TODO: Handle error */ }
+                                )
+                            },
+                            onError = { /* TODO: Handle error */ }
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                )
+
+                if (uiState.showEditDialog) {
+                    EditProfileBottomSheet(
                         profile = uiState.profile,
-                        animeStats = uiState.animeStats,
-                        mangaStats = uiState.mangaStats,
-                        selectedTab = uiState.selectedTab,
-                        onEditProfile = onEditProfile,
-                        onTabChanged = onTabChanged,
-                        onAvatarClick = {
-                            filePicker.pickImage(
-                                onImageSelected = { uri ->
-                                    imageManager.saveImage(
-                                        imageUri = uri,
-                                        destinationFileName = "avatar_${System.currentTimeMillis()}.jpg",
-                                        onSuccess = { path ->
-                                            onSaveProfile(
-                                                uiState.profile.name,
-                                                uiState.profile.about,
-                                                path,
-                                                uiState.profile.banner
-                                            )
-                                        },
-                                        onError = { /* TODO: Handle error */ }
-                                    )
-                                },
-                                onError = { /* TODO: Handle error */ }
-                            )
-                        },
-                        onBannerClick = {
-                            filePicker.pickImage(
-                                onImageSelected = { uri ->
-                                    imageManager.saveImage(
-                                        imageUri = uri,
-                                        destinationFileName = "banner_${System.currentTimeMillis()}.jpg",
-                                        onSuccess = { path ->
-                                            onSaveProfile(
-                                                uiState.profile.name,
-                                                uiState.profile.about,
-                                                uiState.profile.avatar?.large,
-                                                path
-                                            )
-                                        },
-                                        onError = { /* TODO: Handle error */ }
-                                    )
-                                },
-                                onError = { /* TODO: Handle error */ }
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
+                        onDismiss = onDismissEditDialog,
+                        onSave = onSaveProfileInfo,
                     )
                 }
             }
@@ -679,67 +674,114 @@ fun DistributionItem(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfileContent(
+fun EditProfileBottomSheet(
     profile: UserProfile,
-    onSave: (String, String?, String?, String?) -> Unit,
-    onCancel: () -> Unit,
-    modifier: Modifier = Modifier,
+    onDismiss: () -> Unit,
+    onSave: (String, String?) -> Unit,
 ) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var name by remember { mutableStateOf(profile.name) }
     var about by remember { mutableStateOf(profile.about ?: "") }
 
-    Column(
-        modifier = modifier.verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
     ) {
-        Text(
-            text = stringResource(Res.string.profile_edit_title),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-        )
-
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text(stringResource(Res.string.profile_name_label)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-        )
-
-        OutlinedTextField(
-            value = about,
-            onValueChange = { about = it },
-            label = { Text(stringResource(Res.string.profile_about_label)) },
-            modifier = Modifier.fillMaxWidth(),
-            minLines = 3,
-            maxLines = 5,
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 40.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            OutlinedButton(
-                onClick = onCancel,
-                modifier = Modifier.weight(1f),
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                Text(stringResource(Res.string.profile_cancel_button))
+                Text(
+                    text = stringResource(Res.string.profile_edit_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = stringResource(Res.string.profile_edit_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
 
-            Button(
-                onClick = {
-                    onSave(
-                        name,
-                        about.takeIf { it.isNotBlank() },
-                        null,
-                        null,
+            Spacer(modifier = Modifier.height(4.dp))
+
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text(stringResource(Res.string.profile_name_label)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = TablerIcons.Outlined.User,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
                     )
                 },
-                modifier = Modifier.weight(1f),
-                enabled = name.isNotBlank(),
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                ),
+            )
+
+            OutlinedTextField(
+                value = about,
+                onValueChange = { about = it },
+                label = { Text(stringResource(Res.string.profile_about_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                maxLines = 5,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                ),
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Text(stringResource(Res.string.profile_save_button))
+                OutlinedButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Text(
+                        text = stringResource(Res.string.profile_cancel_button),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                }
+
+                Button(
+                    onClick = {
+                        onSave(
+                            name,
+                            about.takeIf { it.isNotBlank() },
+                        )
+                    },
+                    modifier = Modifier.weight(1f),
+                    enabled = name.isNotBlank(),
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Text(
+                        text = stringResource(Res.string.profile_save_button),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                }
             }
         }
     }
