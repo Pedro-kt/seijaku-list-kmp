@@ -19,7 +19,10 @@ fun SettingsDataSection(
     lastSyncTime: String?,
     cacheSize: String,
     onSyncClick: () -> Unit,
-    onDownloadListClick: () -> Unit,
+    onImportAnimeClick: () -> Unit,
+    onImportMangaClick: () -> Unit,
+    onExportAnimeClick: () -> Unit,
+    onExportMangaClick: () -> Unit,
     onClearCacheClick: () -> Unit,
     onAboutClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -49,10 +52,37 @@ fun SettingsDataSection(
         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
 
         SettingsNavigationItem(
-            icon = TablerIcons.Outlined.Download,
-            title = stringResource(Res.string.settings_download_list),
-            description = stringResource(Res.string.settings_download_list_desc),
-            onClick = onDownloadListClick
+            icon = TablerIcons.Outlined.FileUpload,
+            title = stringResource(Res.string.settings_import_anime),
+            description = stringResource(Res.string.settings_import_anime_desc),
+            onClick = onImportAnimeClick
+        )
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+
+        SettingsNavigationItem(
+            icon = TablerIcons.Outlined.FileUpload,
+            title = stringResource(Res.string.settings_import_manga),
+            description = stringResource(Res.string.settings_import_manga_desc),
+            onClick = onImportMangaClick
+        )
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+
+        SettingsNavigationItem(
+            icon = TablerIcons.Outlined.FileDownload,
+            title = stringResource(Res.string.settings_export_anime),
+            description = stringResource(Res.string.settings_export_anime_desc),
+            onClick = onExportAnimeClick
+        )
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+
+        SettingsNavigationItem(
+            icon = TablerIcons.Outlined.FileDownload,
+            title = stringResource(Res.string.settings_export_manga),
+            description = stringResource(Res.string.settings_export_manga_desc),
+            onClick = onExportMangaClick
         )
 
         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))

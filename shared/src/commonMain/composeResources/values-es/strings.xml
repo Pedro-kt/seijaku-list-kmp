@@ -16,9 +16,17 @@
     <string name="retry">Reintentar</string>
     <string name="search">Buscar</string>
     <string name="search_placeholder">Anime, manga, personajes...</string>
+    <string name="search_anime_placeholder">Buscar anime</string>
+    <string name="search_manga_placeholder">Buscar manga</string>
+    <string name="clear_search">Limpiar búsqueda</string>
     <string name="empty_list">No se encontraron elementos</string>
     <string name="notifications">Notificaciones</string>
     <string name="user_profile">Perfil de usuario</string>
+    <string name="unknown">Desconocido</string>
+    <string name="all">Todos</string>
+    <string name="no_title">Sin título</string>
+    <string name="progress">Progreso</string>
+    <string name="filter_menu">Menú de filtros</string>
 
     <!-- Search Screen -->
     <string name="search_recent_searches">Búsquedas recientes</string>
@@ -104,9 +112,11 @@
     <string name="status_airing">En emisión</string>
     <string name="status_finished">Finalizado</string>
     <string name="status_not_yet_aired">Próximamente</string>
+    <string name="status_not_yet_released">Aún no publicado</string>
     <string name="status_cancelled">Cancelado</string>
     <string name="status_publishing">Publicándose</string>
     <string name="status_completed">Completado</string>
+    <string name="status_hiatus">En pausa</string>
 
     <!-- Media Formats -->
     <string name="format_tv">TV</string>
@@ -116,6 +126,9 @@
     <string name="format_ova">OVA</string>
     <string name="format_ona">ONA</string>
     <string name="format_music">Música</string>
+    <string name="format_manga">Manga</string>
+    <string name="format_light_novel">Novela Ligera</string>
+    <string name="format_one_shot">One Shot</string>
 
     <!-- Media Info -->
     <string name="episodes_suffix">ep</string>
@@ -154,6 +167,44 @@
     <string name="settings_sync_anilist_desc">Última vez: %1$s</string>
     <string name="settings_download_list">Descargar mi lista</string>
     <string name="settings_download_list_desc">Exporta un archivo XML</string>
+    <string name="settings_import_anime">Importar lista de anime</string>
+    <string name="settings_import_anime_desc">Importar desde archivo XML de MAL</string>
+    <string name="settings_import_manga">Importar lista de manga</string>
+    <string name="settings_import_manga_desc">Importar desde archivo XML de MAL</string>
+    <string name="settings_export_anime">Exportar lista de anime</string>
+    <string name="settings_export_anime_desc">Exportar a animelist.xml (formato MAL)</string>
+    <string name="settings_export_manga">Exportar lista de manga</string>
+    <string name="settings_export_manga_desc">Exportar a mangalist.xml (formato MAL)</string>
+    <string name="settings_import_success">Importación completada exitosamente</string>
+    <string name="settings_export_anime_success">Lista de anime exportada exitosamente</string>
+    <string name="settings_export_manga_success">Lista de manga exportada exitosamente</string>
+    <string name="settings_import_error">Importación fallida: %1$s</string>
+    <string name="settings_export_error">Exportación fallida: %1$s</string>
+
+    <!-- Import Result Dialog -->
+    <string name="import_result_title">Resultados de Importación</string>
+    <string name="import_result_summary">Resumen</string>
+    <string name="import_result_total_processed">Total procesado:</string>
+    <string name="import_result_successful">Exitosos:</string>
+    <string name="import_result_conflicts">Conflictos:</string>
+    <string name="import_result_errors">Errores:</string>
+    <string name="import_result_and_more">... y %1$d más</string>
+    <string name="import_result_resolve_conflicts">Resolver Conflictos</string>
+    <string name="import_result_ok">OK</string>
+    <string name="import_result_close">Cerrar</string>
+
+    <!-- Conflict Resolution Dialog -->
+    <string name="conflict_resolution_title">Resolver Conflictos de Importación</string>
+    <string name="conflict_resolution_conflicts_found">%1$d conflicto(s) encontrado(s)</string>
+    <string name="conflict_resolution_already_exist">Estas entradas ya existen en tu lista:</string>
+    <string name="conflict_resolution_choose_action">Elige cómo resolver todos los conflictos:</string>
+    <string name="conflict_resolution_use_imported">Usar Datos Importados</string>
+    <string name="conflict_resolution_keep_local">Mantener Datos Locales</string>
+    <string name="conflict_resolution_cancel">Cancelar</string>
+    <string name="conflict_resolution_local">Local</string>
+    <string name="conflict_resolution_imported">Importado</string>
+    <string name="conflict_resolution_progress">Progreso: %1$d</string>
+    <string name="conflict_resolution_status">Estado: %1$s</string>
     <string name="settings_clear_cache">Borrar caché de imágenes</string>
     <string name="settings_clear_cache_desc">%1$s en el dispositivo</string>
     <string name="settings_about">Acerca de</string>
@@ -163,6 +214,7 @@
 
     <!-- Error Messages -->
     <string name="error_network">Error de red. Por favor, verifica tu conexión.</string>
+    <string name="error_timeout">Tiempo de espera agotado. La solicitud tardó demasiado.</string>
     <string name="error_unknown">Ocurrió un error desconocido.</string>
     <string name="error_server">Error del servidor. Por favor, intenta más tarde.</string>
     <string name="error_loading_featured">No se pudo cargar el anime destacado</string>
@@ -173,6 +225,11 @@
     <!-- Detail Screen -->
     <string name="detail">Ver detalle</string>
     <string name="detail_add_to_list">Añadir a mi lista</string>
+    <string name="detail_edit_entry">Editar entrada</string>
+    <string name="detail_progress">Progreso</string>
+    <string name="detail_increment_progress">Incrementar progreso</string>
+    <string name="detail_completed">Completado</string>
+    <string name="detail_started">Comenzado</string>
     <string name="detail_read_more">Leer más</string>
     <string name="detail_read_less">Leer menos</string>
     <string name="detail_see_all_chapters">Ver capítulos (%1$d)</string>
@@ -222,16 +279,36 @@
     <string name="character_role_main">Principal</string>
     <string name="character_role_supporting">Secundario</string>
 
+    <!-- User Lists -->
+    <string name="my_lists">Mis Listas</string>
+    <string name="my_anime_list">Mi Lista de Anime</string>
+    <string name="my_anime_list_description">Ver y gestionar tu colección de anime</string>
+    <string name="my_manga_list">Mi Lista de Manga</string>
+    <string name="my_manga_list_description">Ver y gestionar tu colección de manga</string>
+    <string name="empty_anime_list">Tu lista de anime está vacía</string>
+    <string name="empty_manga_list">Tu lista de manga está vacía</string>
+    <string name="empty_list_hint_anime">Comienza a agregar anime para seguir tu progreso</string>
+    <string name="empty_list_hint_manga">Comienza a agregar manga para seguir tu progreso</string>
+    <string name="no_items_in_category">No hay elementos en esta categoría</string>
+    <string name="chapters_short">Cap</string>
+    <string name="volumes_short">Vol</string>
+
     <!-- Add to List Bottom Sheet -->
     <string name="list_edit_title">Editar</string>
     <string name="list_status">Estado</string>
     <string name="list_status_watching">Viendo</string>
+    <string name="list_status_watching_short">Viendo</string>
     <string name="list_status_reading">Leyendo</string>
+    <string name="list_status_reading_short">Leyendo</string>
     <string name="list_status_completed">Completado</string>
     <string name="list_status_paused">En pausa</string>
     <string name="list_status_dropped">Abandonado</string>
-    <string name="list_status_plan_to_watch">Plan ver</string>
-    <string name="list_status_plan_to_read">Plan leer</string>
+    <string name="list_status_plan_to_watch">Planeado</string>
+    <string name="list_status_plan_to_watch_short">Planeado</string>
+    <string name="list_status_plan_to_read">Planeado</string>
+    <string name="list_status_plan_to_read_short">Planeado</string>
+    <string name="list_status_repeating">Reviendo</string>
+    <string name="list_status_rereading">Releyendo</string>
     <string name="list_episodes_watched">Episodios vistos</string>
     <string name="list_chapters_read">Capítulos vistos</string>
     <string name="list_decrease">Disminuir</string>
@@ -244,6 +321,24 @@
     <string name="list_rewatches">Reinicios</string>
     <string name="list_cancel">Cancelar</string>
     <string name="list_save">Guardar</string>
+    <string name="list_delete">Eliminar de la lista</string>
+    <string name="list_delete_confirm_title">¿Eliminar entrada?</string>
+    <string name="list_delete_confirm_message">¿Estás seguro de que quieres eliminar esto de tu lista? Esta acción no se puede deshacer.</string>
+    <string name="list_delete_confirm">Eliminar</string>
+    <string name="list_deleted_success">Eliminado de la lista</string>
+    <string name="list_change_status">Cambiar estado</string>
+    <string name="list_change_status_title">Cambiar estado</string>
+    <string name="list_status_updated">Estado actualizado</string>
+    <string name="list_updated_success">Entrada actualizada exitosamente</string>
+
+    <!-- List Sorting -->
+    <string name="list_sort_title">Ordenar por</string>
+    <string name="list_sort_by_title">Título</string>
+    <string name="list_sort_by_score">Puntuación</string>
+    <string name="list_sort_by_progress">Progreso</string>
+    <string name="list_sort_by_updated">Última actualización</string>
+    <string name="list_sort_ascending">Ascendente</string>
+    <string name="list_sort_descending">Descendente</string>
 
     <!-- List Priority -->
     <string name="list_priority">Prioridad</string>
@@ -265,4 +360,51 @@
     <string name="character_main_role">Personaje principal</string>
     <string name="character_supporting_role">Personaje secundario</string>
     <string name="character_cm">cm</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_under_development">En Desarrollo</string>
+    <string name="profile_coming_soon_title">¡Tu perfil llegará pronto!</string>
+    <string name="profile_coming_soon_description">Estamos trabajando arduamente para traerte una experiencia de perfil increíble. Pronto podrás ver tus estadísticas, logros y mucho más.</string>
+    <string name="profile_stay_tuned">¡Mantente atento a las actualizaciones!</string>
+    <string name="profile_view_welcome">Ver Guía de Bienvenida</string>
+    <string name="profile_edit_button">Editar perfil</string>
+    <string name="profile_member_since">Miembro desde %1$s %2$d</string>
+    <string name="profile_local_badge">Perfil Local</string>
+    <string name="profile_tab_anime">Anime</string>
+    <string name="profile_tab_manga">Manga</string>
+
+    <!-- Profile Stats -->
+    <string name="profile_stats_total">Total</string>
+    <string name="profile_stats_score">Puntuación Media</string>
+    <string name="profile_stats_episodes">Episodios Vistos</string>
+    <string name="profile_stats_chapters">Capítulos Leídos</string>
+    <string name="profile_stats_time">Tiempo Total</string>
+    <string name="profile_stats_volumes">Volúmenes</string>
+    <string name="profile_distribution">Distribución</string>
+    <string name="profile_no_data">Sin datos</string>
+    <string name="profile_edit_title">Editar Perfil</string>
+    <string name="profile_name_label">Nombre</string>
+    <string name="profile_about_label">Acerca de</string>
+    <string name="profile_save_button">Guardar</string>
+    <string name="profile_cancel_button">Cancelar</string>
+    <string name="profile_error_loading">Error al cargar el perfil</string>
+    <string name="profile_error_saving">Error al guardar el perfil</string>
+    <string name="profile_error_updating_stats">Error al actualizar estadísticas</string>
+    <string name="profile_anilist_sync_unavailable">Sincronización con AniList no disponible aún</string>
+    <string name="profile_edit_subtitle">Actualiza la información de tu perfil</string>
+
+    <!-- Welcome/Onboarding Screen -->
+    <string name="welcome_skip">Omitir</string>
+    <string name="welcome_next">Siguiente</string>
+    <string name="welcome_get_started">Comenzar</string>
+    <string name="welcome_page1_title">Bienvenido a Seijaku List</string>
+    <string name="welcome_page1_description">Rastrea tus anime y manga favoritos en una hermosa aplicación</string>
+    <string name="welcome_page2_title">Usa Sin Conexión, Sin Cuenta</string>
+    <string name="welcome_page2_description">Rastrea tu colección offline sin crear cuenta. Exporta tus listas cuando las necesites</string>
+    <string name="welcome_page3_title">Formato XML Estándar</string>
+    <string name="welcome_page3_description">Tus exportaciones usan archivos XML estándar compatibles con rastreadores de MAL y AniList</string>
+    <string name="welcome_page4_title">Organiza tu Colección</string>
+    <string name="welcome_page4_description">Mantén un seguimiento de lo que estás viendo, planeando o has completado</string>
+    <string name="welcome_page5_title">Sincroniza con AniList (Opcional)</string>
+    <string name="welcome_page5_description">Si quieres, sincroniza tus listas con AniList y nunca pierdas tu progreso en todos tus dispositivos</string>
 </resources>

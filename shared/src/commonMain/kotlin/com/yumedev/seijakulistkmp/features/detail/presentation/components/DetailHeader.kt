@@ -31,6 +31,7 @@ fun DetailHeader(
     rankingText: String?,
     popularityText: String?,
     nextAiringText: String?,
+    isInList: Boolean,
     onAddToListClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -168,22 +169,24 @@ fun DetailHeader(
             }
         }
 
-        Button(
-            onClick = onAddToListClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            shape = RoundedCornerShape(24.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-        ) {
-            Text(
-                text = stringResource(Res.string.detail_add_to_list),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+        if (!isInList) {
+            Button(
+                onClick = onAddToListClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            ) {
+                Text(
+                    text = stringResource(Res.string.detail_add_to_list),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
     }
 }

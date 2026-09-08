@@ -1,0 +1,317 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "ddbb845319f6283dbcc4658799808d45",
+    "entities": [
+      {
+        "tableName": "media_list_entries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `media_id` INTEGER NOT NULL, `media_type` TEXT NOT NULL, `status` TEXT NOT NULL, `progress` INTEGER NOT NULL, `progress_volumes` INTEGER, `repeat_count` INTEGER NOT NULL, `score` REAL, `start_date` TEXT, `finish_date` TEXT, `notes` TEXT, `priority` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `anilist_entry_id` INTEGER, `is_synced` INTEGER NOT NULL, `needs_sync` INTEGER NOT NULL, `media_title` TEXT, `media_cover_image` TEXT, `media_total_episodes` INTEGER, `media_total_chapters` INTEGER, `media_total_volumes` INTEGER, `media_status` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaId",
+            "columnName": "media_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaType",
+            "columnName": "media_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "progress",
+            "columnName": "progress",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "progressVolumes",
+            "columnName": "progress_volumes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "repeatCount",
+            "columnName": "repeat_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "score",
+            "columnName": "score",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "startDate",
+            "columnName": "start_date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "finishDate",
+            "columnName": "finish_date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "anilistEntryId",
+            "columnName": "anilist_entry_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "isSynced",
+            "columnName": "is_synced",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "needsSync",
+            "columnName": "needs_sync",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaTitle",
+            "columnName": "media_title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "mediaCoverImage",
+            "columnName": "media_cover_image",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "mediaTotalEpisodes",
+            "columnName": "media_total_episodes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "mediaTotalChapters",
+            "columnName": "media_total_chapters",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "mediaTotalVolumes",
+            "columnName": "media_total_volumes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "mediaStatus",
+            "columnName": "media_status",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_media_list_entries_media_id_media_type",
+            "unique": true,
+            "columnNames": [
+              "media_id",
+              "media_type"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_media_list_entries_media_id_media_type` ON `${TABLE_NAME}` (`media_id`, `media_type`)"
+          },
+          {
+            "name": "index_media_list_entries_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_media_list_entries_status` ON `${TABLE_NAME}` (`status`)"
+          },
+          {
+            "name": "index_media_list_entries_media_type",
+            "unique": false,
+            "columnNames": [
+              "media_type"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_media_list_entries_media_type` ON `${TABLE_NAME}` (`media_type`)"
+          },
+          {
+            "name": "index_media_list_entries_updated_at",
+            "unique": false,
+            "columnNames": [
+              "updated_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_media_list_entries_updated_at` ON `${TABLE_NAME}` (`updated_at`)"
+          }
+        ]
+      },
+      {
+        "tableName": "user_profiles",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `anilistId` INTEGER, `name` TEXT NOT NULL, `avatarLarge` TEXT, `avatarMedium` TEXT, `banner` TEXT, `about` TEXT, `animeCount` INTEGER NOT NULL, `animeMeanScore` REAL NOT NULL, `minutesWatched` INTEGER NOT NULL, `episodesWatched` INTEGER NOT NULL, `mangaCount` INTEGER NOT NULL, `mangaMeanScore` REAL NOT NULL, `chaptersRead` INTEGER NOT NULL, `volumesRead` INTEGER NOT NULL, `displayAdultContent` INTEGER NOT NULL, `titleLanguage` TEXT NOT NULL, `isLocal` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "anilistId",
+            "columnName": "anilistId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "avatarLarge",
+            "columnName": "avatarLarge",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "avatarMedium",
+            "columnName": "avatarMedium",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "banner",
+            "columnName": "banner",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "about",
+            "columnName": "about",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "animeCount",
+            "columnName": "animeCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "animeMeanScore",
+            "columnName": "animeMeanScore",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minutesWatched",
+            "columnName": "minutesWatched",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "episodesWatched",
+            "columnName": "episodesWatched",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mangaCount",
+            "columnName": "mangaCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mangaMeanScore",
+            "columnName": "mangaMeanScore",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chaptersRead",
+            "columnName": "chaptersRead",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "volumesRead",
+            "columnName": "volumesRead",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayAdultContent",
+            "columnName": "displayAdultContent",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "titleLanguage",
+            "columnName": "titleLanguage",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isLocal",
+            "columnName": "isLocal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ddbb845319f6283dbcc4658799808d45')"
+    ]
+  }
+}

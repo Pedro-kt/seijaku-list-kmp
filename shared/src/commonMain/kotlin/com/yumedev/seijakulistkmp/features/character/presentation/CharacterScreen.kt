@@ -17,6 +17,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.core.error.ErrorType
+import com.yumedev.seijakulistkmp.core.error.ErrorUiMapper
 import com.yumedev.seijakulistkmp.features.character.domain.model.CharacterDetail
 import com.yumedev.seijakulistkmp.features.character.presentation.components.*
 import com.yumedev.seijakulistkmp.features.character.presentation.mapper.toUiModel
@@ -321,12 +322,7 @@ private fun ErrorContent(
                     tint = MaterialTheme.colorScheme.error
                 )
                 Text(
-                    text = when (error) {
-                        ErrorType.NetworkError -> stringResource(Res.string.error_network)
-                        ErrorType.ServerError -> stringResource(Res.string.error_server)
-                        ErrorType.ServerUnavailable -> stringResource(Res.string.error_server_unavailable)
-                        ErrorType.UnknownError -> stringResource(Res.string.error_unknown)
-                    },
+                    text = stringResource(ErrorUiMapper.mapToStringResource(error)),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )

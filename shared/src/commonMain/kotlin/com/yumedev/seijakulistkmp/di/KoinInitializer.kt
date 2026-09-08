@@ -14,7 +14,8 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
             searchModule,
             detailModule,
             characterModule,
-            settingsModule
+            settingsModule,
+            trackingModule
         )
     }
 }

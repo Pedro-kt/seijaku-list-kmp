@@ -5,6 +5,7 @@ import com.russhwolf.settings.coroutines.toFlowSettings
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.settings.domain.repository.SettingsRepository
+import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCardType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -52,9 +53,29 @@ class SettingsRepositoryImpl(
         settings.putBoolean(KEY_SFW_MODE, enabled)
     }
 
+    override fun getCardType(): Flow<MediaListCardType> {
+        return flowSettings.getStringFlow(KEY_CARD_TYPE, "Grid")
+            .map { cardTypeName ->
+                when (cardTypeName) {
+                    "Compact" -> MediaListCardType.Compact
+                    "Grid" -> MediaListCardType.Grid
+                    else -> MediaListCardType.Grid
+                }
+            }
+    }
+
+    override suspend fun setCardType(cardType: MediaListCardType) {
+        val cardTypeName = when (cardType) {
+            is MediaListCardType.Compact -> "Compact"
+            is MediaListCardType.Grid -> "Grid"
+        }
+        settings.putString(KEY_CARD_TYPE, cardTypeName)
+    }
+
     companion object {
         private const val KEY_THEME_MODE = "theme_mode"
         private const val KEY_LANGUAGE_MODE = "language_mode"
         private const val KEY_SFW_MODE = "sfw_mode"
+        private const val KEY_CARD_TYPE = "card_type"
     }
 }

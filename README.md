@@ -2,6 +2,8 @@
 
 Aplicación multiplataforma para descubrir, seguir y gestionar tu colección de anime y manga usando la API de AniList.
 
+<img src="images/featured_graphics.png" width="100%" alt="Seijaku List Featured Graphics">
+
 ## Plataformas
 
 - Android (API 26+)

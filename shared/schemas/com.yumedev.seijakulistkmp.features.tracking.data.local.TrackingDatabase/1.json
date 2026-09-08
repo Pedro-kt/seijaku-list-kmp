@@ -1,0 +1,185 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "8d4a7bef1ff28eb01d0796ed6a9a451e",
+    "entities": [
+      {
+        "tableName": "media_list_entries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `media_id` INTEGER NOT NULL, `media_type` TEXT NOT NULL, `status` TEXT NOT NULL, `progress` INTEGER NOT NULL, `progress_volumes` INTEGER, `repeat_count` INTEGER NOT NULL, `score` REAL, `start_date` TEXT, `finish_date` TEXT, `notes` TEXT, `priority` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `anilist_entry_id` INTEGER, `is_synced` INTEGER NOT NULL, `needs_sync` INTEGER NOT NULL, `media_title` TEXT, `media_cover_image` TEXT, `media_total_episodes` INTEGER, `media_total_chapters` INTEGER, `media_total_volumes` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaId",
+            "columnName": "media_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaType",
+            "columnName": "media_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "progress",
+            "columnName": "progress",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "progressVolumes",
+            "columnName": "progress_volumes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "repeatCount",
+            "columnName": "repeat_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "score",
+            "columnName": "score",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "startDate",
+            "columnName": "start_date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "finishDate",
+            "columnName": "finish_date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "anilistEntryId",
+            "columnName": "anilist_entry_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "isSynced",
+            "columnName": "is_synced",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "needsSync",
+            "columnName": "needs_sync",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaTitle",
+            "columnName": "media_title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "mediaCoverImage",
+            "columnName": "media_cover_image",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "mediaTotalEpisodes",
+            "columnName": "media_total_episodes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "mediaTotalChapters",
+            "columnName": "media_total_chapters",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "mediaTotalVolumes",
+            "columnName": "media_total_volumes",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_media_list_entries_media_id_media_type",
+            "unique": true,
+            "columnNames": [
+              "media_id",
+              "media_type"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_media_list_entries_media_id_media_type` ON `${TABLE_NAME}` (`media_id`, `media_type`)"
+          },
+          {
+            "name": "index_media_list_entries_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_media_list_entries_status` ON `${TABLE_NAME}` (`status`)"
+          },
+          {
+            "name": "index_media_list_entries_media_type",
+            "unique": false,
+            "columnNames": [
+              "media_type"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_media_list_entries_media_type` ON `${TABLE_NAME}` (`media_type`)"
+          },
+          {
+            "name": "index_media_list_entries_updated_at",
+            "unique": false,
+            "columnNames": [
+              "updated_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_media_list_entries_updated_at` ON `${TABLE_NAME}` (`updated_at`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8d4a7bef1ff28eb01d0796ed6a9a451e')"
+    ]
+  }
+}

@@ -19,6 +19,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.core.error.ErrorType
+import com.yumedev.seijakulistkmp.core.error.ErrorUiMapper
 import com.yumedev.seijakulistkmp.core.utils.rememberShareHelper
 import com.yumedev.seijakulistkmp.core.utils.rememberUrlOpener
 import com.yumedev.seijakulistkmp.features.character.presentation.CharacterScreen
@@ -28,6 +29,8 @@ import com.yumedev.seijakulistkmp.features.detail.presentation.components.*
 import com.yumedev.seijakulistkmp.features.detail.presentation.mapper.toUiModel
 import com.yumedev.seijakulistkmp.features.detail.presentation.model.DetailStrings
 import com.yumedev.seijakulistkmp.features.detail.presentation.model.MediaDetailUiModel
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AlertCircle
 import org.jetbrains.compose.resources.stringResource
@@ -63,6 +66,7 @@ data class DetailScreen(
 
                 DetailScreenContent(
                     mediaDetail = mediaDetailUi,
+                    listEntry = state.listEntry,
                     onBackClick = { navigator.pop() },
                     onFavoriteClick = { viewModel.toggleFavorite() },
                     onShareClick = {
@@ -74,7 +78,11 @@ data class DetailScreen(
                         }
                         shareHelper.shareText(shareText, mediaDetailUi.title)
                     },
-                    onAddToListClick = { viewModel.addToList() },
+                    onAddToListClick = { viewModel.toggleFavorite() },
+                    onSaveToList = { status, progress, score, note, startDate, rewatches, priority ->
+                        viewModel.saveToList(status, progress, score, note, startDate, rewatches, priority)
+                    },
+                    onIncrementProgress = { viewModel.incrementProgress() },
                     onCharacterClick = { characterId ->
                         navigator.push(CharacterScreen(characterId))
                     },
@@ -300,12 +308,7 @@ private fun ErrorContent(
                     tint = MaterialTheme.colorScheme.error
                 )
                 Text(
-                    text = when (error) {
-                        ErrorType.NetworkError -> stringResource(Res.string.error_network)
-                        ErrorType.ServerError -> stringResource(Res.string.error_server)
-                        ErrorType.ServerUnavailable -> stringResource(Res.string.error_server_unavailable)
-                        ErrorType.UnknownError -> stringResource(Res.string.error_unknown)
-                    },
+                    text = stringResource(ErrorUiMapper.mapToStringResource(error)),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -355,10 +358,13 @@ private fun rememberMediaDetailUiModel(mediaDetail: MediaDetail): MediaDetailUiM
 @Composable
 fun DetailScreenContent(
     mediaDetail: MediaDetailUiModel,
+    listEntry: com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry?,
     onBackClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onShareClick: () -> Unit,
     onAddToListClick: () -> Unit,
+    onSaveToList: (MediaListStatus, Int, Float?, String, String?, Int, MediaListPriority) -> Unit,
+    onIncrementProgress: () -> Unit,
     onCharacterClick: (Int) -> Unit,
     onSeeAllChaptersClick: () -> Unit,
     onChapterClick: (Int) -> Unit,
@@ -403,8 +409,25 @@ fun DetailScreenContent(
                 rankingText = mediaDetail.rankingText,
                 popularityText = mediaDetail.popularityText,
                 nextAiringText = mediaDetail.nextAiringText,
+                isInList = mediaDetail.isInList,
                 onAddToListClick = { showAddToListBottomSheet = true }
             )
+
+            listEntry?.let { entry ->
+                MediaProgressCard(
+                    entry = entry,
+                    mediaType = when (mediaDetail.type) {
+                        MediaType.ANIME -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.ANIME
+                        MediaType.MANGA -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA
+                    },
+                    mediaStatus = entry.mediaStatus ?: mediaDetail.status,
+                    totalEpisodes = mediaDetail.totalEpisodes,
+                    totalChapters = mediaDetail.totalChapters,
+                    onIncrementProgress = onIncrementProgress,
+                    onEditClick = { showAddToListBottomSheet = true },
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
 
             DetailSynopsis(
                 synopsis = mediaDetail.description
@@ -458,14 +481,23 @@ fun DetailScreenContent(
     if (showAddToListBottomSheet) {
         AddToListBottomSheet(
             mediaTitle = mediaDetail.title,
-            mediaType = mediaDetail.type,
-            mediaStatus = mediaDetail.status,
+            mediaType = when (mediaDetail.type) {
+                MediaType.ANIME -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.ANIME
+                MediaType.MANGA -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA
+            },
+            mediaStatus = listEntry?.mediaStatus ?: mediaDetail.status,
             totalEpisodes = mediaDetail.totalEpisodes,
             totalChapters = mediaDetail.totalChapters,
+            currentProgress = listEntry?.progress ?: 0,
+            currentScore = listEntry?.score,
+            currentStatus = listEntry?.status,
+            currentNote = listEntry?.notes ?: "",
+            currentStartDate = listEntry?.startDate,
+            currentRewatches = listEntry?.repeatCount ?: 0,
+            currentPriority = listEntry?.priority ?: MediaListPriority.MEDIUM,
             onDismiss = { showAddToListBottomSheet = false },
             onSave = { status, progress, score, note, startDate, rewatches, priority ->
-                // TODO: Save to backend/database
-                onAddToListClick()
+                onSaveToList(status, progress, score, note, startDate, rewatches, priority)
             }
         )
     }

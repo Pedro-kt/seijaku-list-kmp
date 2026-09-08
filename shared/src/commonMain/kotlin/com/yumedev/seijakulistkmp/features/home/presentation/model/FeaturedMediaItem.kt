@@ -6,5 +6,6 @@ data class FeaturedMediaItem(
     val coverImageUrl: String?,
     val rating: String?,
     val status: String?,
-    val metadata: String
+    val metadata: String,
+    val isManga: Boolean = false
 )

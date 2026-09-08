@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.core.error.ErrorType
+import com.yumedev.seijakulistkmp.core.error.ErrorUiMapper
 import com.yumedev.seijakulistkmp.features.search.presentation.model.CharacterResultItem
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchResultItem
 import dev.seyfarth.tablericons.TablerIcons
@@ -67,17 +68,9 @@ fun SearchResultsContent(
                         stringResource(Res.string.error_server_unavailable) to
                         stringResource(Res.string.error_server_unavailable_hint)
                     }
-                    ErrorType.NetworkError -> {
+                    else -> {
                         stringResource(Res.string.error_search_failed) to
-                        stringResource(Res.string.error_network)
-                    }
-                    ErrorType.ServerError -> {
-                        stringResource(Res.string.error_search_failed) to
-                        stringResource(Res.string.error_server)
-                    }
-                    ErrorType.UnknownError -> {
-                        stringResource(Res.string.error_search_failed) to
-                        stringResource(Res.string.error_unknown)
+                        stringResource(ErrorUiMapper.mapToStringResource(error))
                     }
                 }
 

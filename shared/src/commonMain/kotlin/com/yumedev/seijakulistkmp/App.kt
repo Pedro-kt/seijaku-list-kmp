@@ -19,6 +19,7 @@ import com.yumedev.seijakulistkmp.di.homeModule
 import com.yumedev.seijakulistkmp.di.networkModule
 import com.yumedev.seijakulistkmp.di.searchModule
 import com.yumedev.seijakulistkmp.di.settingsModule
+import com.yumedev.seijakulistkmp.di.trackingModule
 import com.yumedev.seijakulistkmp.features.main.presentation.MainScreen
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeModeUseCase
@@ -47,7 +48,8 @@ fun App() {
             searchModule,
             detailModule,
             characterModule,
-            settingsModule
+            settingsModule,
+            trackingModule
         )
     }) {
         val getThemeModeUseCase: GetThemeModeUseCase = koinInject()

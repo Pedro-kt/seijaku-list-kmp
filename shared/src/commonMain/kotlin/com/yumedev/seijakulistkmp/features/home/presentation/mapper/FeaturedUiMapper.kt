@@ -15,7 +15,7 @@ class FeaturedUiMapper(
             title = displayTitle,
             coverImageUrl = dto.bannerImage ?: (dto.coverImage.extraLarge ?: dto.coverImage.large ?: dto.coverImage.medium),
             rating = formatter.formatRating(dto.averageScore),
-            status = formatter.formatStatus(dto.status),
+            status = dto.status,
             metadata = formatter.buildAnimeMetadata(dto.seasonYear, dto.format, dto.episodes)
         )
     }

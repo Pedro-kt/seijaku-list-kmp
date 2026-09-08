@@ -64,6 +64,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.xmlutil.serialization)
 
             // Room 3 KMP
             implementation(libs.room3.runtime)
@@ -117,6 +118,9 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.uiTooling)
+
+            // AndroidX Activity Compose
+            implementation(libs.androidx.activity.compose)
 
             // Kotlinx Coroutines Android
             implementation(libs.kotlinx.coroutines.android)

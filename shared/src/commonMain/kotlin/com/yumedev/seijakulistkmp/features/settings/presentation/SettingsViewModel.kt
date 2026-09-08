@@ -2,6 +2,7 @@ package com.yumedev.seijakulistkmp.features.settings.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetLanguageModeUseCase
@@ -11,6 +12,12 @@ import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetLanguageMo
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetSfwModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetThemeModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.presentation.model.SettingsUiState
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ConflictResolution
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ImportConflict
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ExportToMALUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ImportFromMALUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ResolveAllImportConflictsUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ResolveImportConflictUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +30,11 @@ class SettingsViewModel(
     private val getLanguageModeUseCase: GetLanguageModeUseCase,
     private val setLanguageModeUseCase: SetLanguageModeUseCase,
     private val getSfwModeUseCase: GetSfwModeUseCase,
-    private val setSfwModeUseCase: SetSfwModeUseCase
+    private val setSfwModeUseCase: SetSfwModeUseCase,
+    private val exportToMALUseCase: ExportToMALUseCase,
+    private val importFromMALUseCase: ImportFromMALUseCase,
+    private val resolveImportConflictUseCase: ResolveImportConflictUseCase,
+    private val resolveAllImportConflictsUseCase: ResolveAllImportConflictsUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsUiState())
@@ -86,10 +97,6 @@ class SettingsViewModel(
         // TODO: Implement AniList sync
     }
 
-    fun onDownloadListClick() {
-        // TODO: Implement list download
-    }
-
     fun onClearCacheClick() {
         // TODO: Implement cache clearing
     }
@@ -100,5 +107,141 @@ class SettingsViewModel(
 
     fun onLogoutClick() {
         // TODO: Implement logout
+    }
+
+    fun onExportAnimeClick(onExport: (String, String) -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            exportToMALUseCase(MediaType.ANIME)
+                .onSuccess { xmlContent ->
+                    onExport(xmlContent, "animelist.xml")
+                }
+                .onFailure { exception ->
+                    onError(exception.message ?: "Error exporting anime list")
+                }
+        }
+    }
+
+    fun onExportMangaClick(onExport: (String, String) -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            exportToMALUseCase(MediaType.MANGA)
+                .onSuccess { xmlContent ->
+                    onExport(xmlContent, "mangalist.xml")
+                }
+                .onFailure { exception ->
+                    onError(exception.message ?: "Error exporting manga list")
+                }
+        }
+    }
+
+    fun onImportAnimeClick(xmlContent: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            _state.update { it.copy(isImporting = true) }
+
+            importFromMALUseCase(xmlContent, MediaType.ANIME)
+                .onSuccess { importResult ->
+                    _state.update {
+                        it.copy(
+                            isImporting = false,
+                            importResult = importResult,
+                            showImportResultDialog = true,
+                            currentConflicts = importResult.conflicts
+                        )
+                    }
+                    onSuccess()
+                }
+                .onFailure { exception ->
+                    exception.printStackTrace()
+                    _state.update { it.copy(isImporting = false) }
+                    onError(exception.message ?: "Error importing anime list")
+                }
+        }
+    }
+
+    fun onImportMangaClick(xmlContent: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            _state.update { it.copy(isImporting = true) }
+
+            importFromMALUseCase(xmlContent, MediaType.MANGA)
+                .onSuccess { importResult ->
+                    _state.update {
+                        it.copy(
+                            isImporting = false,
+                            importResult = importResult,
+                            showImportResultDialog = true,
+                            currentConflicts = importResult.conflicts
+                        )
+                    }
+                    onSuccess()
+                }
+                .onFailure { exception ->
+                    exception.printStackTrace()
+                    _state.update { it.copy(isImporting = false) }
+                    onError(exception.message ?: "Error importing manga list")
+                }
+        }
+    }
+
+    fun dismissImportResultDialog() {
+        _state.update {
+            it.copy(
+                showImportResultDialog = false,
+                importResult = null
+            )
+        }
+    }
+
+    fun showConflictResolutionDialog() {
+        _state.update {
+            it.copy(
+                showImportResultDialog = false,
+                showConflictDialog = true
+            )
+        }
+    }
+
+    fun dismissConflictDialog() {
+        _state.update {
+            it.copy(
+                showConflictDialog = false,
+                currentConflicts = emptyList()
+            )
+        }
+    }
+
+    fun resolveConflict(conflict: ImportConflict, resolution: ConflictResolution) {
+        viewModelScope.launch {
+            resolveImportConflictUseCase(conflict, resolution)
+                .onSuccess {
+                    _state.update {
+                        it.copy(
+                            currentConflicts = it.currentConflicts.filter { c -> c != conflict }
+                        )
+                    }
+
+                    if (_state.value.currentConflicts.isEmpty()) {
+                        dismissConflictDialog()
+                    }
+                }
+                .onFailure {
+                    // Handle error
+                }
+        }
+    }
+
+    fun resolveAllConflicts(resolution: ConflictResolution) {
+        viewModelScope.launch {
+            resolveAllImportConflictsUseCase(_state.value.currentConflicts, resolution)
+                .onSuccess {
+                    _state.update {
+                        it.copy(
+                            currentConflicts = emptyList(),
+                            showConflictDialog = false
+                        )
+                    }
+                }
+                .onFailure {
+                    // Handle error
+                }
+        }
     }
 }
