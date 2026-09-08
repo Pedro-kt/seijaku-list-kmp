@@ -167,13 +167,44 @@
     <string name="settings_sync_anilist_desc">Última vez: %1$s</string>
     <string name="settings_download_list">Descargar mi lista</string>
     <string name="settings_download_list_desc">Exporta un archivo XML</string>
+    <string name="settings_import_anime">Importar lista de anime</string>
+    <string name="settings_import_anime_desc">Importar desde archivo XML de MAL</string>
+    <string name="settings_import_manga">Importar lista de manga</string>
+    <string name="settings_import_manga_desc">Importar desde archivo XML de MAL</string>
     <string name="settings_export_anime">Exportar lista de anime</string>
     <string name="settings_export_anime_desc">Exportar a animelist.xml (formato MAL)</string>
     <string name="settings_export_manga">Exportar lista de manga</string>
     <string name="settings_export_manga_desc">Exportar a mangalist.xml (formato MAL)</string>
+    <string name="settings_import_success">Importación completada exitosamente</string>
     <string name="settings_export_anime_success">Lista de anime exportada exitosamente</string>
     <string name="settings_export_manga_success">Lista de manga exportada exitosamente</string>
-    <string name="settings_export_error">Error: %1$s</string>
+    <string name="settings_import_error">Importación fallida: %1$s</string>
+    <string name="settings_export_error">Exportación fallida: %1$s</string>
+
+    <!-- Import Result Dialog -->
+    <string name="import_result_title">Resultados de Importación</string>
+    <string name="import_result_summary">Resumen</string>
+    <string name="import_result_total_processed">Total procesado:</string>
+    <string name="import_result_successful">Exitosos:</string>
+    <string name="import_result_conflicts">Conflictos:</string>
+    <string name="import_result_errors">Errores:</string>
+    <string name="import_result_and_more">... y %1$d más</string>
+    <string name="import_result_resolve_conflicts">Resolver Conflictos</string>
+    <string name="import_result_ok">OK</string>
+    <string name="import_result_close">Cerrar</string>
+
+    <!-- Conflict Resolution Dialog -->
+    <string name="conflict_resolution_title">Resolver Conflictos de Importación</string>
+    <string name="conflict_resolution_conflicts_found">%1$d conflicto(s) encontrado(s)</string>
+    <string name="conflict_resolution_already_exist">Estas entradas ya existen en tu lista:</string>
+    <string name="conflict_resolution_choose_action">Elige cómo resolver todos los conflictos:</string>
+    <string name="conflict_resolution_use_imported">Usar Datos Importados</string>
+    <string name="conflict_resolution_keep_local">Mantener Datos Locales</string>
+    <string name="conflict_resolution_cancel">Cancelar</string>
+    <string name="conflict_resolution_local">Local</string>
+    <string name="conflict_resolution_imported">Importado</string>
+    <string name="conflict_resolution_progress">Progreso: %1$d</string>
+    <string name="conflict_resolution_status">Estado: %1$s</string>
     <string name="settings_clear_cache">Borrar caché de imágenes</string>
     <string name="settings_clear_cache_desc">%1$s en el dispositivo</string>
     <string name="settings_about">Acerca de</string>
@@ -336,6 +367,30 @@
     <string name="profile_coming_soon_description">Estamos trabajando arduamente para traerte una experiencia de perfil increíble. Pronto podrás ver tus estadísticas, logros y mucho más.</string>
     <string name="profile_stay_tuned">¡Mantente atento a las actualizaciones!</string>
     <string name="profile_view_welcome">Ver Guía de Bienvenida</string>
+    <string name="profile_edit_button">Editar perfil</string>
+    <string name="profile_member_since">Miembro desde %1$s %2$d</string>
+    <string name="profile_local_badge">Perfil Local</string>
+    <string name="profile_tab_anime">Anime</string>
+    <string name="profile_tab_manga">Manga</string>
+
+    <!-- Profile Stats -->
+    <string name="profile_stats_total">Total</string>
+    <string name="profile_stats_score">Puntuación Media</string>
+    <string name="profile_stats_episodes">Episodios Vistos</string>
+    <string name="profile_stats_chapters">Capítulos Leídos</string>
+    <string name="profile_stats_time">Tiempo Total</string>
+    <string name="profile_stats_volumes">Volúmenes</string>
+    <string name="profile_distribution">Distribución</string>
+    <string name="profile_no_data">Sin datos</string>
+    <string name="profile_edit_title">Editar Perfil</string>
+    <string name="profile_name_label">Nombre</string>
+    <string name="profile_about_label">Acerca de</string>
+    <string name="profile_save_button">Guardar</string>
+    <string name="profile_cancel_button">Cancelar</string>
+    <string name="profile_error_loading">Error al cargar el perfil</string>
+    <string name="profile_error_saving">Error al guardar el perfil</string>
+    <string name="profile_error_updating_stats">Error al actualizar estadísticas</string>
+    <string name="profile_anilist_sync_unavailable">Sincronización con AniList no disponible aún</string>
 
     <!-- Welcome/Onboarding Screen -->
     <string name="welcome_skip">Omitir</string>
