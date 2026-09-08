@@ -194,6 +194,76 @@ class ProfileViewModel(
         }
     }
 
+    fun onRemoveAvatar() {
+        val currentProfile = _uiState.value.profile ?: return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+
+            when (
+                updateProfile(
+                    name = currentProfile.name,
+                    about = currentProfile.about,
+                    avatarUrl = null,
+                    bannerUrl = currentProfile.banner,
+                )
+            ) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = null,
+                        )
+                    }
+                }
+
+                is Result.Failure -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = ProfileError.SavingError,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun onRemoveBanner() {
+        val currentProfile = _uiState.value.profile ?: return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+
+            when (
+                updateProfile(
+                    name = currentProfile.name,
+                    about = currentProfile.about,
+                    avatarUrl = currentProfile.avatar?.large,
+                    bannerUrl = null,
+                )
+            ) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = null,
+                        )
+                    }
+                }
+
+                is Result.Failure -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = ProfileError.SavingError,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun onRefreshStatistics() {
         viewModelScope.launch {
             when (updateStatistics()) {

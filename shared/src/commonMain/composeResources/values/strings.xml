@@ -402,6 +402,8 @@
     <string name="profile_error_updating_stats">Error updating statistics</string>
     <string name="profile_anilist_sync_unavailable">AniList sync not available yet</string>
     <string name="profile_edit_subtitle">Update your profile information</string>
+    <string name="profile_select_image">Select image</string>
+    <string name="profile_remove_image">Remove</string>
 
     <!-- Welcome/Onboarding Screen -->
     <string name="welcome_skip">Skip</string>

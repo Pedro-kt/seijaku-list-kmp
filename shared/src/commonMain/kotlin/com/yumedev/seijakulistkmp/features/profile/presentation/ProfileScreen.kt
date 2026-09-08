@@ -20,6 +20,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -62,9 +64,11 @@ import com.yumedev.seijakulistkmp.features.settings.presentation.SettingsScreen
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStats
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Camera
+import dev.seyfarth.tablericons.outlined.Edit
+import dev.seyfarth.tablericons.outlined.Photo
 import dev.seyfarth.tablericons.outlined.Settings
+import dev.seyfarth.tablericons.outlined.Trash
 import dev.seyfarth.tablericons.outlined.User
-import dev.seyfarth.tablericons.outlined.InfoCircle
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
@@ -100,6 +104,8 @@ import seijakulistkmp.shared.generated.resources.profile_stats_total
 import seijakulistkmp.shared.generated.resources.profile_stats_volumes
 import seijakulistkmp.shared.generated.resources.profile_tab_anime
 import seijakulistkmp.shared.generated.resources.profile_tab_manga
+import seijakulistkmp.shared.generated.resources.profile_select_image
+import seijakulistkmp.shared.generated.resources.profile_remove_image
 import seijakulistkmp.shared.generated.resources.settings
 import kotlin.math.roundToInt
 
@@ -129,6 +135,8 @@ class ProfileScreen : Screen {
             onSaveProfileInfo = viewModel::onSaveProfileInfo,
             onUpdateAvatar = viewModel::onUpdateAvatar,
             onUpdateBanner = viewModel::onUpdateBanner,
+            onRemoveAvatar = viewModel::onRemoveAvatar,
+            onRemoveBanner = viewModel::onRemoveBanner,
             onRefreshStatistics = viewModel::onRefreshStatistics,
             onTabChanged = viewModel::onTabChanged,
         )
@@ -145,6 +153,8 @@ fun ProfileScreenContent(
     onSaveProfileInfo: (String, String?) -> Unit,
     onUpdateAvatar: (String) -> Unit,
     onUpdateBanner: (String) -> Unit,
+    onRemoveAvatar: () -> Unit,
+    onRemoveBanner: () -> Unit,
     onRefreshStatistics: () -> Unit,
     onTabChanged: (Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -154,11 +164,16 @@ fun ProfileScreenContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(Res.string.my_profile),
-                        style = MaterialTheme.typography.titleMedium,
+                        text = stringResource(Res.string.my_profile)
                     )
                 },
                 actions = {
+                    IconButton(onClick = onEditProfile) {
+                        Icon(
+                            imageVector = TablerIcons.Outlined.Edit,
+                            contentDescription = stringResource(Res.string.profile_edit_button),
+                        )
+                    }
                     IconButton(onClick = onSettingsClick) {
                         Icon(
                             imageVector = TablerIcons.Outlined.Settings,
@@ -205,7 +220,6 @@ fun ProfileScreenContent(
                     animeStats = uiState.animeStats,
                     mangaStats = uiState.mangaStats,
                     selectedTab = uiState.selectedTab,
-                    onEditProfile = onEditProfile,
                     onTabChanged = onTabChanged,
                     onAvatarClick = {
                         filePicker.pickImage(
@@ -237,6 +251,8 @@ fun ProfileScreenContent(
                             onError = { /* TODO: Handle error */ }
                         )
                     },
+                    onRemoveAvatar = onRemoveAvatar,
+                    onRemoveBanner = onRemoveBanner,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
@@ -261,10 +277,11 @@ fun ProfileContent(
     animeStats: MediaListStats?,
     mangaStats: MediaListStats?,
     selectedTab: Int,
-    onEditProfile: () -> Unit,
     onTabChanged: (Int) -> Unit,
     onAvatarClick: () -> Unit,
     onBannerClick: () -> Unit,
+    onRemoveAvatar: () -> Unit,
+    onRemoveBanner: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -275,9 +292,10 @@ fun ProfileContent(
         // Hero Section
         ProfileHeroSection(
             profile = profile,
-            onEditProfile = onEditProfile,
             onAvatarClick = onAvatarClick,
             onBannerClick = onBannerClick,
+            onRemoveAvatar = onRemoveAvatar,
+            onRemoveBanner = onRemoveBanner,
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -337,11 +355,14 @@ fun ProfileContent(
 @Composable
 fun ProfileHeroSection(
     profile: UserProfile,
-    onEditProfile: () -> Unit,
     onAvatarClick: () -> Unit,
     onBannerClick: () -> Unit,
+    onRemoveAvatar: () -> Unit,
+    onRemoveBanner: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var showAvatarMenu by remember { mutableStateOf(false) }
+    var showBannerMenu by remember { mutableStateOf(false) }
     Column(modifier = modifier) {
         Box(
             modifier = Modifier
@@ -382,7 +403,13 @@ fun ProfileHeroSection(
                         .size(28.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
-                        .clickable { onBannerClick() },
+                        .clickable {
+                            if (!profile.banner.isNullOrBlank()) {
+                                showBannerMenu = true
+                            } else {
+                                onBannerClick()
+                            }
+                        },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -391,6 +418,38 @@ fun ProfileHeroSection(
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.primary,
                     )
+
+                    DropdownMenu(
+                        expanded = showBannerMenu,
+                        onDismissRequest = { showBannerMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(Res.string.profile_select_image)) },
+                            onClick = {
+                                showBannerMenu = false
+                                onBannerClick()
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = TablerIcons.Outlined.Photo,
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(Res.string.profile_remove_image)) },
+                            onClick = {
+                                showBannerMenu = false
+                                onRemoveBanner()
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = TablerIcons.Outlined.Trash,
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                    }
                 }
             }
 
@@ -427,7 +486,13 @@ fun ProfileHeroSection(
                     .size(28.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primary)
-                    .clickable { onAvatarClick() },
+                    .clickable {
+                        if (profile.avatar?.large != null) {
+                            showAvatarMenu = true
+                        } else {
+                            onAvatarClick()
+                        }
+                    },
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -436,6 +501,38 @@ fun ProfileHeroSection(
                     modifier = Modifier.size(16.dp),
                     tint = MaterialTheme.colorScheme.onPrimary,
                 )
+
+                DropdownMenu(
+                    expanded = showAvatarMenu,
+                    onDismissRequest = { showAvatarMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.profile_select_image)) },
+                        onClick = {
+                            showAvatarMenu = false
+                            onAvatarClick()
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = TablerIcons.Outlined.Photo,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.profile_remove_image)) },
+                        onClick = {
+                            showAvatarMenu = false
+                            onRemoveAvatar()
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = TablerIcons.Outlined.Trash,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
             }
         }
 
@@ -502,15 +599,6 @@ fun ProfileHeroSection(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedButton(
-                onClick = onEditProfile,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-            ) {
-                Text(stringResource(Res.string.profile_edit_button))
-            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
