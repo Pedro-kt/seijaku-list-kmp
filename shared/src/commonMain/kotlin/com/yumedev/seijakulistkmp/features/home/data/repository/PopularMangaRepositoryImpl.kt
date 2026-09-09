@@ -1,8 +1,6 @@
 package com.yumedev.seijakulistkmp.features.home.data.repository
 
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Optional
-import com.yumedev.seijakulistkmp.data.remote.graphql.GetPopularMangaQuery
+import com.yumedev.seijakulistkmp.features.home.data.datasource.PopularMangaDataSource
 import com.yumedev.seijakulistkmp.features.home.data.mapper.toPopularManga
 import com.yumedev.seijakulistkmp.features.home.domain.model.PopularManga
 import com.yumedev.seijakulistkmp.features.home.domain.repository.PopularMangaRepository
@@ -10,7 +8,7 @@ import com.yumedev.seijakulistkmp.features.settings.domain.repository.SettingsRe
 import kotlinx.coroutines.flow.firstOrNull
 
 class PopularMangaRepositoryImpl(
-    private val apolloClient: ApolloClient,
+    private val dataSource: PopularMangaDataSource,
     private val settingsRepository: SettingsRepository
 ) : PopularMangaRepository {
 
@@ -19,26 +17,19 @@ class PopularMangaRepositoryImpl(
             val sfwModeEnabled = settingsRepository.getSfwMode().firstOrNull() ?: true
             val isAdultFilter = if (sfwModeEnabled) false else null
 
-            val response = apolloClient
-                .query(
-                    GetPopularMangaQuery(
-                        page = Optional.present(page),
-                        perPage = Optional.present(perPage),
-                        isAdult = if (isAdultFilter != null) Optional.present(isAdultFilter) else Optional.absent()
-                    )
-                )
-                .execute()
+            val data = dataSource.getPopularManga(
+                page = page,
+                perPage = perPage,
+                isAdult = isAdultFilter
+            )
 
-            if (response.hasErrors()) {
-                Result.failure(Exception(response.errors?.firstOrNull()?.message ?: "Unknown error"))
-            } else {
-                val manga = response.data?.Page?.media
-                    ?.filterNotNull()
-                    ?.filter { !(it.isAdult ?: false) }
-                    ?.mapNotNull { it.toPopularManga() }
-                    ?: emptyList()
-                Result.success(manga)
-            }
+            val manga = data.Page?.media
+                ?.filterNotNull()
+                ?.filter { !(it.isAdult ?: false) }
+                ?.mapNotNull { it.toPopularManga() }
+                ?: emptyList()
+
+            Result.success(manga)
         } catch (e: Exception) {
             Result.failure(e)
         }

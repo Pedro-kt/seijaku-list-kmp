@@ -52,8 +52,11 @@ fun HomeScreenContent(
     onNavigateToAnimeDetail: (Int) -> Unit = {},
     onNavigateToMangaDetail: (Int) -> Unit = {}
 ) {
-    val viewModel = koinViewModel<HomeViewModel>()
-    val state by viewModel.state.collectAsState()
+    val animeViewModel = koinViewModel<AnimeHomeViewModel>()
+    val animeState by animeViewModel.state.collectAsState()
+
+    val mangaViewModel = koinViewModel<MangaHomeViewModel>()
+    val mangaState by mangaViewModel.state.collectAsState()
 
     var selectedTabIndex by remember { mutableStateOf(0) }
     val pagerState = rememberPagerState(pageCount = { 2 })
@@ -144,26 +147,26 @@ fun HomeScreenContent(
                 when (page) {
                     0 -> AnimeTabContent(
                         scrollState = animeScrollState,
-                        state = state,
-                        onRefresh = { viewModel.refreshAll() },
-                        onFeaturedRetry = { viewModel.retryLoadFeaturedAnime() },
-                        onFeaturedInteraction = { viewModel.onFeaturedAnimeInteraction() },
-                        onAiringNowRetry = { viewModel.retryLoadAiringNow() },
-                        onNextSeasonRetry = { viewModel.retryLoadNextSeason() },
-                        onTopRatedRetry = { viewModel.retryLoadTopRated() },
+                        state = animeState,
+                        onRefresh = { animeViewModel.refreshAll() },
+                        onFeaturedRetry = { animeViewModel.retryAllAnime() },
+                        onFeaturedInteraction = { animeViewModel.onFeaturedAnimeInteraction() },
+                        onAiringNowRetry = { animeViewModel.retryLoadAiringNow() },
+                        onNextSeasonRetry = { animeViewModel.retryLoadNextSeason() },
+                        onTopRatedRetry = { animeViewModel.retryLoadTopRated() },
                         onAnimeClick = onNavigateToAnimeDetail
                     )
                     1 -> MangaTabContent(
                         scrollState = mangaScrollState,
-                        state = state,
-                        onRefresh = { viewModel.refreshAll() },
-                        onFeaturedRetry = { viewModel.retryLoadFeaturedManga() },
-                        onFeaturedInteraction = { viewModel.onFeaturedMangaInteraction() },
-                        onPublishingRetry = { viewModel.retryLoadPublishingManga() },
-                        onPopularRetry = { viewModel.retryLoadPopularManga() },
-                        onTopRatedRetry = { viewModel.retryLoadTopRatedManga() },
-                        onRecentlyAddedRetry = { viewModel.retryLoadRecentlyAddedManga() },
-                        onManhwaRetry = { viewModel.retryLoadManhwaManga() },
+                        state = mangaState,
+                        onRefresh = { mangaViewModel.refreshAll() },
+                        onFeaturedRetry = { mangaViewModel.retryAllManga() },
+                        onFeaturedInteraction = { mangaViewModel.onFeaturedMangaInteraction() },
+                        onPublishingRetry = { mangaViewModel.retryLoadPublishingManga() },
+                        onPopularRetry = { mangaViewModel.retryLoadPopularManga() },
+                        onTopRatedRetry = { mangaViewModel.retryLoadTopRatedManga() },
+                        onRecentlyAddedRetry = { mangaViewModel.retryLoadRecentlyAddedManga() },
+                        onManhwaRetry = { mangaViewModel.retryLoadManhwaManga() },
                         onMangaClick = onNavigateToMangaDetail
                     )
                 }
@@ -175,7 +178,7 @@ fun HomeScreenContent(
 @Composable
 private fun AnimeTabContent(
     scrollState: LazyListState,
-    state: HomeState,
+    state: AnimeHomeState,
     onRefresh: () -> Unit,
     onFeaturedRetry: () -> Unit,
     onFeaturedInteraction: () -> Unit,
@@ -187,6 +190,7 @@ private fun AnimeTabContent(
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
         onRefresh = onRefresh,
+        enabled = !state.isLoadingFeaturedAnime && state.featuredAnimeError == null,
         modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn(
@@ -196,7 +200,7 @@ private fun AnimeTabContent(
         ) {
         item {
             when {
-                state.isLoadingFeatured -> {
+                state.isLoadingFeaturedAnime -> {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -207,9 +211,9 @@ private fun AnimeTabContent(
                         CircularProgressIndicator()
                     }
                 }
-                state.featuredError != null -> {
-                    val title = state.featuredError.title
-                    val hint = state.featuredError.hint
+                state.featuredAnimeError != null -> {
+                    val title = state.featuredAnimeError.title
+                    val hint = state.featuredAnimeError.hint
 
                     AnimatedVisibility(
                         visible = true,
@@ -314,7 +318,7 @@ private fun AnimeTabContent(
 @Composable
 private fun MangaTabContent(
     scrollState: LazyListState,
-    state: HomeState,
+    state: MangaHomeState,
     onRefresh: () -> Unit,
     onFeaturedRetry: () -> Unit,
     onFeaturedInteraction: () -> Unit,
@@ -328,6 +332,7 @@ private fun MangaTabContent(
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
         onRefresh = onRefresh,
+        enabled = !state.isLoadingFeaturedManga && state.featuredMangaError == null,
         modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn(
@@ -338,7 +343,7 @@ private fun MangaTabContent(
         // Featured Manga Carousel
         item {
             when {
-                state.isLoadingFeatured -> {
+                state.isLoadingFeaturedManga -> {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -349,9 +354,9 @@ private fun MangaTabContent(
                         CircularProgressIndicator()
                     }
                 }
-                state.featuredError != null -> {
-                    val title = state.featuredError.title
-                    val hint = state.featuredError.hint
+                state.featuredMangaError != null -> {
+                    val title = state.featuredMangaError.title
+                    val hint = state.featuredMangaError.hint
 
                     AnimatedVisibility(
                         visible = true,

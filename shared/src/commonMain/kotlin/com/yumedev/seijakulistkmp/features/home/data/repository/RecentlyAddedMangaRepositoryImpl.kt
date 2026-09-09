@@ -1,8 +1,6 @@
 package com.yumedev.seijakulistkmp.features.home.data.repository
 
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Optional
-import com.yumedev.seijakulistkmp.data.remote.graphql.GetRecentlyAddedMangaQuery
+import com.yumedev.seijakulistkmp.features.home.data.datasource.RecentlyAddedMangaDataSource
 import com.yumedev.seijakulistkmp.features.home.data.mapper.toRecentlyAddedManga
 import com.yumedev.seijakulistkmp.features.home.domain.model.RecentlyAddedManga
 import com.yumedev.seijakulistkmp.features.home.domain.repository.RecentlyAddedMangaRepository
@@ -10,7 +8,7 @@ import com.yumedev.seijakulistkmp.features.settings.domain.repository.SettingsRe
 import kotlinx.coroutines.flow.firstOrNull
 
 class RecentlyAddedMangaRepositoryImpl(
-    private val apolloClient: ApolloClient,
+    private val dataSource: RecentlyAddedMangaDataSource,
     private val settingsRepository: SettingsRepository
 ) : RecentlyAddedMangaRepository {
 
@@ -19,26 +17,19 @@ class RecentlyAddedMangaRepositoryImpl(
             val sfwModeEnabled = settingsRepository.getSfwMode().firstOrNull() ?: true
             val isAdultFilter = if (sfwModeEnabled) false else null
 
-            val response = apolloClient
-                .query(
-                    GetRecentlyAddedMangaQuery(
-                        page = Optional.present(page),
-                        perPage = Optional.present(perPage),
-                        isAdult = if (isAdultFilter != null) Optional.present(isAdultFilter) else Optional.absent()
-                    )
-                )
-                .execute()
+            val data = dataSource.getRecentlyAddedManga(
+                page = page,
+                perPage = perPage,
+                isAdult = isAdultFilter
+            )
 
-            if (response.hasErrors()) {
-                Result.failure(Exception(response.errors?.firstOrNull()?.message ?: "Unknown error"))
-            } else {
-                val manga = response.data?.Page?.media
-                    ?.filterNotNull()
-                    ?.filter { !(it.isAdult ?: false) }
-                    ?.mapNotNull { it.toRecentlyAddedManga() }
-                    ?: emptyList()
-                Result.success(manga)
-            }
+            val manga = data.Page?.media
+                ?.filterNotNull()
+                ?.filter { !(it.isAdult ?: false) }
+                ?.mapNotNull { it.toRecentlyAddedManga() }
+                ?: emptyList()
+
+            Result.success(manga)
         } catch (e: Exception) {
             Result.failure(e)
         }
