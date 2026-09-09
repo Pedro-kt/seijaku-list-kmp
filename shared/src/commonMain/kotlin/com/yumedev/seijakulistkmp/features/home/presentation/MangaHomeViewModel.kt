@@ -2,22 +2,27 @@ package com.yumedev.seijakulistkmp.features.home.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yumedev.seijakulistkmp.core.common.resource.Resource
 import com.yumedev.seijakulistkmp.core.error.ErrorMapper
 import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
-import com.yumedev.seijakulistkmp.features.home.domain.usecase.*
-import com.yumedev.seijakulistkmp.features.home.presentation.mapper.*
-import kotlinx.coroutines.*
+import com.yumedev.seijakulistkmp.features.home.domain.usecase.GetFeaturedMangaUseCase
+import com.yumedev.seijakulistkmp.features.home.domain.usecase.GetManhwaMangaUseCase
+import com.yumedev.seijakulistkmp.features.home.domain.usecase.GetPopularMangaUseCase
+import com.yumedev.seijakulistkmp.features.home.domain.usecase.GetPublishingMangaUseCase
+import com.yumedev.seijakulistkmp.features.home.domain.usecase.GetRecentlyAddedMangaUseCase
+import com.yumedev.seijakulistkmp.features.home.domain.usecase.GetTopRatedMangaUseCase
+import com.yumedev.seijakulistkmp.features.home.presentation.mapper.ErrorUiMapper
+import com.yumedev.seijakulistkmp.features.home.presentation.mapper.toFeaturedMediaItem
+import com.yumedev.seijakulistkmp.features.home.presentation.mapper.toMangaCardItem
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class HomeViewModel(
-    private val getFeaturedAnimeUseCase: GetFeaturedAnimeUseCase,
-    private val getAiringNowAnimeUseCase: GetAiringNowAnimeUseCase,
-    private val getNextSeasonAnimeUseCase: GetNextSeasonAnimeUseCase,
-    private val getTopRatedAnimeUseCase: GetTopRatedAnimeUseCase,
+class MangaHomeViewModel(
     private val getFeaturedMangaUseCase: GetFeaturedMangaUseCase,
     private val getPublishingMangaUseCase: GetPublishingMangaUseCase,
     private val getPopularMangaUseCase: GetPopularMangaUseCase,
@@ -28,10 +33,9 @@ class HomeViewModel(
     private val errorUiMapper: ErrorUiMapper
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(HomeState())
-    val state: StateFlow<HomeState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(MangaHomeState())
+    val state: StateFlow<MangaHomeState> = _state.asStateFlow()
 
-    private var animeAutoScrollJob: Job? = null
     private var mangaAutoScrollJob: Job? = null
 
     companion object {
@@ -44,10 +48,6 @@ class HomeViewModel(
 
     private fun loadAllSections() {
         viewModelScope.launch {
-            launch { loadFeaturedAnime() }
-            launch { loadAiringNow() }
-            launch { loadNextSeason() }
-            launch { loadTopRated() }
             launch { loadFeaturedManga() }
             launch { loadPublishingManga() }
             launch { loadPopularManga() }
@@ -57,129 +57,17 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun loadFeaturedAnime() {
-        _state.update { it.copy(isLoadingFeaturedAnime = true, featuredAnimeError = null) }
-
-        getFeaturedAnimeUseCase(limit = 5).collect { resource ->
-            when (resource) {
-                is Resource.Success -> {
-                    val featuredItems = resource.data.map { dto ->
-                        dto.toFeaturedMediaItem(mediaStringFormatter)
-                    }
-
-                    _state.update {
-                        it.copy(
-                            featuredAnime = featuredItems,
-                            currentFeaturedAnimeIndex = 0,
-                            isLoadingFeaturedAnime = false,
-                            featuredAnimeError = null
-                        )
-                    }
-                    startAnimeAutoScroll()
-                }
-
-                is Resource.Error -> {
-                    val errorType = resource.exception?.let { ErrorMapper.mapToErrorType(it) }
-                    val errorUi = errorType?.let { errorUiMapper.mapFeaturedError(it) }
-                    _state.update {
-                        it.copy(
-                            isLoadingFeaturedAnime = false,
-                            featuredAnimeError = errorUi
-                        )
-                    }
-                }
-
-                is Resource.Loading -> {
-                    _state.update { it.copy(isLoadingFeaturedAnime = true) }
-                }
-
-                is Resource.Idle -> {
-                }
-            }
-        }
-    }
-
-    private suspend fun loadAiringNow() {
-        _state.update { it.copy(isLoadingAiringNow = true, airingNowError = null) }
-
-        val result = getAiringNowAnimeUseCase(page = 1, perPage = 10)
-
-        result.onSuccess { animeList ->
-            val cardItems = animeList.map { anime ->
-                anime.toAnimeCardItem(mediaStringFormatter)
-            }
-            _state.update {
-                it.copy(
-                    airingNowAnime = cardItems,
-                    isLoadingAiringNow = false,
-                    airingNowError = null
-                )
-            }
-        }.onFailure { error ->
-            _state.update {
-                it.copy(
-                    isLoadingAiringNow = false,
-                    airingNowError = error.message
-                )
-            }
-        }
-    }
-
-    private suspend fun loadNextSeason() {
-        _state.update { it.copy(isLoadingNextSeason = true, nextSeasonError = null) }
-
-        val result = getNextSeasonAnimeUseCase(page = 1, perPage = 10)
-
-        result.onSuccess { animeList ->
-            val cardItems = animeList.map { it.toAnimeCardItem(mediaStringFormatter) }
-            _state.update {
-                it.copy(
-                    nextSeasonAnime = cardItems,
-                    isLoadingNextSeason = false,
-                    nextSeasonError = null
-                )
-            }
-        }.onFailure { error ->
-            _state.update {
-                it.copy(
-                    isLoadingNextSeason = false,
-                    nextSeasonError = error.message
-                )
-            }
-        }
-    }
-
-    private suspend fun loadTopRated() {
-        _state.update { it.copy(isLoadingTopRated = true, topRatedError = null) }
-
-        val result = getTopRatedAnimeUseCase(page = 1, perPage = 10)
-
-        result.onSuccess { animeList ->
-            val cardItems = animeList.map { it.toAnimeCardItem(mediaStringFormatter) }
-            _state.update {
-                it.copy(
-                    topRatedAnime = cardItems,
-                    isLoadingTopRated = false,
-                    topRatedError = null
-                )
-            }
-        }.onFailure { error ->
-            _state.update {
-                it.copy(
-                    isLoadingTopRated = false,
-                    topRatedError = error.message
-                )
-            }
-        }
-    }
-
     private suspend fun loadFeaturedManga() {
         _state.update { it.copy(isLoadingFeaturedManga = true, featuredMangaError = null) }
 
-        getFeaturedMangaUseCase(page = 1, perPage = 5)
-            .onSuccess { mangaList ->
-                val featuredItems = mangaList.map {  manga ->
-                    manga.toFeaturedMediaItem(mediaStringFormatter)
+        try {
+            val result = getFeaturedMangaUseCase(page = 1, perPage = 5)
+
+            result.onSuccess { mangaList ->
+                val featuredItems = buildList {
+                    mangaList.forEach { manga ->
+                        add(manga.toFeaturedMediaItem(mediaStringFormatter))
+                    }
                 }
                 _state.update {
                     it.copy(
@@ -190,8 +78,7 @@ class HomeViewModel(
                     )
                 }
                 startMangaAutoScroll()
-            }
-            .onFailure { error ->
+            }.onFailure { error ->
                 val errorType = ErrorMapper.mapToErrorType(error)
                 val errorUi = errorUiMapper.mapFeaturedError(errorType)
                 _state.update {
@@ -201,6 +88,16 @@ class HomeViewModel(
                     )
                 }
             }
+        } catch (e: Exception) {
+            val errorType = ErrorMapper.mapToErrorType(e)
+            val errorUi = errorUiMapper.mapFeaturedError(errorType)
+            _state.update {
+                it.copy(
+                    isLoadingFeaturedManga = false,
+                    featuredMangaError = errorUi
+                )
+            }
+        }
     }
 
     private suspend fun loadPublishingManga() {
@@ -323,20 +220,6 @@ class HomeViewModel(
         }
     }
 
-    private fun startAnimeAutoScroll() {
-        animeAutoScrollJob?.cancel()
-        animeAutoScrollJob = viewModelScope.launch {
-            while (true) {
-                delay(AUTO_SCROLL_DELAY_MS)
-                val currentState = _state.value
-                if (currentState.featuredAnime.isNotEmpty()) {
-                    val nextIndex = (currentState.currentFeaturedAnimeIndex + 1) % currentState.featuredAnime.size
-                    _state.update { it.copy(currentFeaturedAnimeIndex = nextIndex) }
-                }
-            }
-        }
-    }
-
     private fun startMangaAutoScroll() {
         mangaAutoScrollJob?.cancel()
         mangaAutoScrollJob = viewModelScope.launch {
@@ -351,17 +234,12 @@ class HomeViewModel(
         }
     }
 
-    fun onFeaturedAnimeInteraction() {
-        startAnimeAutoScroll()
-    }
-
     fun onFeaturedMangaInteraction() {
         startMangaAutoScroll()
     }
 
     override fun onCleared() {
         super.onCleared()
-        animeAutoScrollJob?.cancel()
         mangaAutoScrollJob?.cancel()
     }
 
@@ -370,10 +248,6 @@ class HomeViewModel(
             _state.update { it.copy(isRefreshing = true) }
 
             val jobs = listOf(
-                async { loadFeaturedAnime() },
-                async { loadAiringNow() },
-                async { loadNextSeason() },
-                async { loadTopRated() },
                 async { loadFeaturedManga() },
                 async { loadPublishingManga() },
                 async { loadPopularManga() },
@@ -382,30 +256,17 @@ class HomeViewModel(
                 async { loadManhwaManga() }
             )
 
-            jobs.awaitAll()
+            jobs.forEach { it.await() }
             _state.update { it.copy(isRefreshing = false) }
         }
     }
 
-    fun retryLoadFeaturedAnime() = viewModelScope.launch { loadFeaturedAnime() }
-    fun retryLoadAiringNow() = viewModelScope.launch { loadAiringNow() }
-    fun retryLoadNextSeason() = viewModelScope.launch { loadNextSeason() }
-    fun retryLoadTopRated() = viewModelScope.launch { loadTopRated() }
     fun retryLoadFeaturedManga() = viewModelScope.launch { loadFeaturedManga() }
     fun retryLoadPublishingManga() = viewModelScope.launch { loadPublishingManga() }
     fun retryLoadPopularManga() = viewModelScope.launch { loadPopularManga() }
     fun retryLoadTopRatedManga() = viewModelScope.launch { loadTopRatedManga() }
     fun retryLoadRecentlyAddedManga() = viewModelScope.launch { loadRecentlyAddedManga() }
     fun retryLoadManhwaManga() = viewModelScope.launch { loadManhwaManga() }
-
-    fun retryAllAnime() {
-        viewModelScope.launch {
-            launch { loadFeaturedAnime() }
-            launch { loadAiringNow() }
-            launch { loadNextSeason() }
-            launch { loadTopRated() }
-        }
-    }
 
     fun retryAllManga() {
         viewModelScope.launch {

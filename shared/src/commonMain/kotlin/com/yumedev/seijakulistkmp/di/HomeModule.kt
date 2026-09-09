@@ -1,11 +1,11 @@
 package com.yumedev.seijakulistkmp.di
 
-import com.yumedev.seijakulistkmp.features.home.data.datasource.FeaturedDataSource
-import com.yumedev.seijakulistkmp.features.home.data.datasource.FeaturedDataSourceImpl
+import com.yumedev.seijakulistkmp.features.home.data.datasource.*
 import com.yumedev.seijakulistkmp.features.home.data.repository.*
 import com.yumedev.seijakulistkmp.features.home.domain.repository.*
 import com.yumedev.seijakulistkmp.features.home.domain.usecase.*
-import com.yumedev.seijakulistkmp.features.home.presentation.HomeViewModel
+import com.yumedev.seijakulistkmp.features.home.presentation.AnimeHomeViewModel
+import com.yumedev.seijakulistkmp.features.home.presentation.MangaHomeViewModel
 import com.yumedev.seijakulistkmp.features.home.presentation.mapper.ErrorUiMapper
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -19,6 +19,13 @@ val homeModule = module {
     singleOf(::FeaturedDataSourceImpl) bind FeaturedDataSource::class
     singleOf(::FeaturedRepositoryImpl) bind FeaturedRepository::class
     factoryOf(::GetFeaturedAnimeUseCase)
+
+    singleOf(::FeaturedMangaDataSourceImpl) bind FeaturedMangaDataSource::class
+    singleOf(::PublishingMangaDataSourceImpl) bind PublishingMangaDataSource::class
+    singleOf(::PopularMangaDataSourceImpl) bind PopularMangaDataSource::class
+    singleOf(::TopRatedMangaDataSourceImpl) bind TopRatedMangaDataSource::class
+    singleOf(::RecentlyAddedMangaDataSourceImpl) bind RecentlyAddedMangaDataSource::class
+    singleOf(::ManhwaMangaDataSourceImpl) bind ManhwaMangaDataSource::class
 
     singleOf(::AiringNowRepositoryImpl) bind AiringNowRepository::class
     factoryOf(::GetAiringNowAnimeUseCase)
@@ -42,5 +49,6 @@ val homeModule = module {
     singleOf(::ManhwaMangaRepositoryImpl) bind ManhwaMangaRepository::class
     factoryOf(::GetManhwaMangaUseCase)
 
-    viewModelOf(::HomeViewModel)
+    viewModelOf(::AnimeHomeViewModel)
+    viewModelOf(::MangaHomeViewModel)
 }
