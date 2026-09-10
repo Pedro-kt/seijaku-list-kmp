@@ -3,6 +3,7 @@ package com.yumedev.seijakulistkmp.features.settings.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
+import com.yumedev.seijakulistkmp.features.profile.domain.usecase.GetCurrentProfileUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetLanguageModeUseCase
@@ -31,6 +32,7 @@ class SettingsViewModel(
     private val setLanguageModeUseCase: SetLanguageModeUseCase,
     private val getSfwModeUseCase: GetSfwModeUseCase,
     private val setSfwModeUseCase: SetSfwModeUseCase,
+    private val getCurrentProfileUseCase: GetCurrentProfileUseCase,
     private val exportToMALUseCase: ExportToMALUseCase,
     private val importFromMALUseCase: ImportFromMALUseCase,
     private val resolveImportConflictUseCase: ResolveImportConflictUseCase,
@@ -44,6 +46,7 @@ class SettingsViewModel(
         observeThemeMode()
         observeLanguageMode()
         observeSfwMode()
+        observeCurrentProfile()
     }
 
     private fun observeThemeMode() {
@@ -66,6 +69,20 @@ class SettingsViewModel(
         viewModelScope.launch {
             getSfwModeUseCase().collect { sfwEnabled ->
                 _state.update { it.copy(sfwModeEnabled = sfwEnabled) }
+            }
+        }
+    }
+
+    private fun observeCurrentProfile() {
+        viewModelScope.launch {
+            getCurrentProfileUseCase().collect { profile ->
+                _state.update {
+                    it.copy(
+                        username = profile?.name ?: "",
+                        userHandle = profile?.anilistId?.toString() ?: "Local",
+                        isLoggedIn = profile?.let { !it.isLocal } ?: false
+                    )
+                }
             }
         }
     }

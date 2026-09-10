@@ -145,7 +145,10 @@
     <string name="profile_title">Perfil</string>
     <string name="my_profile">Mi Perfil</string>
     <string name="settings">Configuración</string>
+    <string name="login">Iniciar sesión</string>
     <string name="logout">Cerrar sesión</string>
+    <string name="profile_no_name">Sin nombre</string>
+    <string name="profile_local_user">Usuario local</string>
 
     <!-- Settings -->
     <string name="settings_appearance">APARIENCIA</string>

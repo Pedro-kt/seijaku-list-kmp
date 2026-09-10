@@ -24,6 +24,7 @@ import com.yumedev.seijakulistkmp.features.settings.presentation.components.*
 import com.yumedev.seijakulistkmp.features.settings.presentation.model.SettingsUiState
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.ConflictResolutionDialog
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.ImportResultDialog
+import com.yumedev.seijakulistkmp.features.welcome.presentation.WelcomeScreen
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowLeft
 import org.jetbrains.compose.resources.stringResource
@@ -61,6 +62,9 @@ class SettingsScreen : Screen {
             onAiringNotificationsToggle = viewModel::onAiringNotificationsToggle,
             onSfwModeToggle = viewModel::onSfwModeToggle,
             onSyncClick = viewModel::onSyncClick,
+            onLoginClick = {
+                navigator.push(WelcomeScreen())
+            },
             onImportAnimeClick = {
                 filePicker.pickXmlFile(
                     onFileSelected = { xmlContent ->
@@ -166,6 +170,7 @@ fun SettingsScreenContent(
     onAiringNotificationsToggle: (Boolean) -> Unit,
     onSfwModeToggle: (Boolean) -> Unit,
     onSyncClick: () -> Unit,
+    onLoginClick: () -> Unit,
     onImportAnimeClick: () -> Unit,
     onImportMangaClick: () -> Unit,
     onExportAnimeClick: () -> Unit,
@@ -244,6 +249,8 @@ fun SettingsScreenContent(
                     userHandle = state.userHandle,
                     appVersion = appVersion,
                     buildNumber = buildNumber,
+                    isLoggedIn = state.isLoggedIn,
+                    onLoginClick = onLoginClick,
                     onLogoutClick = onLogoutClick
                 )
             }

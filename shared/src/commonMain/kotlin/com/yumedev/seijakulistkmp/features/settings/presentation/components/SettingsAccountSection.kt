@@ -17,6 +17,8 @@ fun SettingsAccountSection(
     userHandle: String,
     appVersion: String,
     buildNumber: String,
+    isLoggedIn: Boolean,
+    onLoginClick: () -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -35,30 +37,51 @@ fun SettingsAccountSection(
 
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
-                text = username,
+                text = username.ifEmpty { stringResource(Res.string.profile_no_name) },
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium
             )
 
             Text(
-                text = stringResource(Res.string.settings_version, userHandle, appVersion, buildNumber),
+                text = stringResource(
+                    Res.string.settings_version,
+                    if (userHandle == "Local") stringResource(Res.string.profile_local_user) else userHandle,
+                    appVersion,
+                    buildNumber
+                ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
         }
 
-        OutlinedButton(
-            onClick = onLogoutClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text(
-                text = stringResource(Res.string.logout),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
+        if (isLoggedIn) {
+            OutlinedButton(
+                onClick = onLogoutClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = stringResource(Res.string.logout),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+        } else {
+            Button(
+                onClick = onLoginClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = stringResource(Res.string.login),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
         }
     }
 }

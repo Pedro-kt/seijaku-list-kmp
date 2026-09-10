@@ -14,6 +14,7 @@ data class SettingsUiState(
     val cacheSize: String = "0 MB",
     val username: String = "",
     val userHandle: String = "",
+    val isLoggedIn: Boolean = false,
     val isImporting: Boolean = false,
     val importResult: ImportResult? = null,
     val showImportResultDialog: Boolean = false,
