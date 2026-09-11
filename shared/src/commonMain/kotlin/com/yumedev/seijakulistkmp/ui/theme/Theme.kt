@@ -88,6 +88,7 @@ fun SeijakuTheme(
 ) {
     MaterialTheme(
         colorScheme = if (darkTheme) SumiDark else SumiLight,
+        typography = SeijakuTypography(),
         content = content,
     )
 }

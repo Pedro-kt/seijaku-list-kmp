@@ -414,12 +414,12 @@
     <string name="welcome_get_started">Get Started</string>
     <string name="welcome_page1_title">Welcome to Seijaku List</string>
     <string name="welcome_page1_description">Track your favorite anime and manga in one beautiful app</string>
-    <string name="welcome_page2_title">Use Offline, No Account Needed</string>
+    <string name="welcome_page2_title">Use totally Offline</string>
     <string name="welcome_page2_description">Track your collection offline without creating an account. Export your lists anytime you need them</string>
-    <string name="welcome_page3_title">Standard XML Format</string>
+    <string name="welcome_page3_title">Standard Format</string>
     <string name="welcome_page3_description">Your exports use standard XML files compatible with MAL and AniList trackers</string>
-    <string name="welcome_page4_title">Organize Your Collection</string>
+    <string name="welcome_page4_title">Stay Organized</string>
     <string name="welcome_page4_description">Keep track of what you\'re watching, planning, or have completed</string>
-    <string name="welcome_page5_title">Sync with AniList (Optional)</string>
+    <string name="welcome_page5_title">Sync with AniList</string>
     <string name="welcome_page5_description">If you want, sync your lists with AniList and never lose your progress across devices</string>
 </resources>
