@@ -4,12 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yumedev.seijakulistkmp.core.error.ErrorMapper
 import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
-import com.yumedev.seijakulistkmp.features.home.domain.usecase.GetAnimeHomeDataUseCase
-import com.yumedev.seijakulistkmp.data.remote.graphql.GetAnimeHomeDataQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.type.MediaSeason
+import com.yumedev.seijakulistkmp.features.detail.domain.usecase.GetAnimeDetailUseCase
+import com.yumedev.seijakulistkmp.features.detail.presentation.utils.toCore
+import com.yumedev.seijakulistkmp.features.home.domain.usecase.GetAnimeHomeDataUseCase
 import com.yumedev.seijakulistkmp.features.home.presentation.mapper.ErrorUiMapper
 import com.yumedev.seijakulistkmp.features.home.presentation.mapper.toAnimeCardItem
 import com.yumedev.seijakulistkmp.features.home.presentation.mapper.toFeaturedMediaItem
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.CachedMediaInfo
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.AddToListUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListEntryUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.UpdateListEntryUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +30,10 @@ import kotlinx.datetime.toLocalDateTime
 
 class AnimeHomeViewModel(
     private val getAnimeHomeDataUseCase: GetAnimeHomeDataUseCase,
+    private val getAnimeDetailUseCase: GetAnimeDetailUseCase,
+    private val addToListUseCase: AddToListUseCase,
+    private val updateListEntryUseCase: UpdateListEntryUseCase,
+    private val getListEntryUseCase: GetListEntryUseCase,
     private val mediaStringFormatter: MediaStringFormatter,
     private val errorUiMapper: ErrorUiMapper
 ) : ViewModel() {
@@ -149,6 +160,117 @@ class AnimeHomeViewModel(
 
     fun onFeaturedAnimeInteraction() {
         startAnimeAutoScroll()
+    }
+
+    fun onCardLongPress(mediaId: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingBottomSheet = true) }
+
+            val detailResult = getAnimeDetailUseCase(mediaId)
+
+            detailResult.onSuccess { mediaDetail ->
+                val listEntryResult = getListEntryUseCase(mediaId, mediaDetail.type.toCore())
+
+                listEntryResult.onSuccess { listEntry ->
+                    _state.update {
+                        it.copy(
+                            selectedMediaDetail = mediaDetail,
+                            selectedMediaListEntry = listEntry,
+                            isBottomSheetVisible = true,
+                            isLoadingBottomSheet = false
+                        )
+                    }
+                }.onFailure {
+                    _state.update {
+                        it.copy(
+                            selectedMediaDetail = mediaDetail,
+                            selectedMediaListEntry = null,
+                            isBottomSheetVisible = true,
+                            isLoadingBottomSheet = false
+                        )
+                    }
+                }
+            }.onFailure {
+                _state.update { it.copy(isLoadingBottomSheet = false) }
+            }
+        }
+    }
+
+    fun saveToList(
+        status: MediaListStatus,
+        progress: Int,
+        score: Float?,
+        note: String,
+        startDate: String?,
+        rewatches: Int,
+        priority: MediaListPriority
+    ) {
+        viewModelScope.launch {
+            val currentDetail = _state.value.selectedMediaDetail ?: return@launch
+            val existingEntry = _state.value.selectedMediaListEntry
+
+            val mediaInfo = CachedMediaInfo(
+                title = currentDetail.title,
+                coverImage = currentDetail.coverImageUrl ?: currentDetail.bannerImageUrl,
+                totalEpisodes = currentDetail.episodes,
+                totalChapters = null,
+                totalVolumes = null,
+                mediaStatus = currentDetail.status
+            )
+
+            val result = if (existingEntry != null) {
+                updateListEntryUseCase(
+                    mediaId = currentDetail.id,
+                    mediaType = currentDetail.type.toCore(),
+                    status = status,
+                    progress = progress,
+                    score = score,
+                    notes = note,
+                    startDate = startDate,
+                    repeatCount = rewatches,
+                    priority = priority,
+                    mediaStatus = currentDetail.status
+                )
+            } else {
+                addToListUseCase(
+                    mediaId = currentDetail.id,
+                    mediaType = currentDetail.type.toCore(),
+                    status = status,
+                    mediaInfo = mediaInfo
+                ).onSuccess { entry ->
+                    if (progress != 0 || score != null || note.isNotEmpty() || startDate != null || rewatches != 0 || priority != MediaListPriority.MEDIUM) {
+                        updateListEntryUseCase(
+                            mediaId = currentDetail.id,
+                            mediaType = currentDetail.type.toCore(),
+                            status = status,
+                            progress = progress,
+                            score = score,
+                            notes = note,
+                            startDate = startDate,
+                            repeatCount = rewatches,
+                            priority = priority
+                        )
+                    } else {
+                        Result.success(entry)
+                    }
+                }
+            }
+
+            result.onSuccess {
+                dismissBottomSheet()
+            }
+        }
+    }
+
+    fun dismissBottomSheet() {
+        _state.update {
+            it.copy(
+                selectedMediaDetail = null,
+                selectedMediaListEntry = null,
+                isBottomSheetVisible = false,
+                isLoadingBottomSheet = false
+            )
+        }
     }
 
     override fun onCleared() {

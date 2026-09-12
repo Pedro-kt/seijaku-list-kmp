@@ -1,6 +1,6 @@
 package com.yumedev.seijakulistkmp.features.home.presentation.components
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -22,6 +22,7 @@ import dev.seyfarth.tablericons.filled.Star
 fun MangaCard(
     item: MangaCardItem,
     onClick: () -> Unit,
+    onLongClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column (
@@ -36,7 +37,10 @@ fun MangaCard(
                     .fillMaxWidth()
                     .height(170.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .clickable(onClick = onClick)
+                    .combinedClickable(
+                        onClick = onClick,
+                        onLongClick = onLongClick
+                    )
             ) {
                 item.coverImageUrl?.let { imageUrl ->
                     AsyncImage(

@@ -19,6 +19,7 @@ fun MangaSection(
     items: List<MangaCardItem>,
     onSeeMoreClick: () -> Unit,
     onItemClick: (MangaCardItem) -> Unit,
+    onItemLongClick: (MangaCardItem) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     if (items.isEmpty()) return
@@ -55,7 +56,8 @@ fun MangaSection(
             items(items) { item ->
                 MangaCard(
                     item = item,
-                    onClick = { onItemClick(item) }
+                    onClick = { onItemClick(item) },
+                    onLongClick = { onItemLongClick(item) }
                 )
             }
         }

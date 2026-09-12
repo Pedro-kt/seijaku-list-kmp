@@ -27,6 +27,8 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
 import com.yumedev.seijakulistkmp.features.detail.presentation.DetailScreen
+import com.yumedev.seijakulistkmp.features.detail.presentation.components.AddToListBottomSheet
+import com.yumedev.seijakulistkmp.features.detail.presentation.utils.toCore
 import com.yumedev.seijakulistkmp.features.home.domain.model.SectionType
 import com.yumedev.seijakulistkmp.features.home.presentation.components.AnimeSection
 import com.yumedev.seijakulistkmp.features.home.presentation.components.FeaturedCarousel
@@ -208,6 +210,7 @@ fun HomeScreenContent(
                         0 -> AnimeTabContent(
                                 scrollState = animeScrollState,
                                 state = animeState,
+                                viewModel = animeViewModel,
                                 onRefresh = { animeViewModel.refreshAll() },
                                 onFeaturedRetry = { animeViewModel.retryAllAnime() },
                                 onFeaturedInteraction = { animeViewModel.onFeaturedAnimeInteraction() },
@@ -215,11 +218,13 @@ fun HomeScreenContent(
                                 onNextSeasonRetry = { animeViewModel.retryAllAnime() },
                                 onTopRatedRetry = { animeViewModel.retryAllAnime() },
                                 onAnimeClick = onNavigateToAnimeDetail,
+                                onAnimeLongClick = { item -> animeViewModel.onCardLongPress(item.id) },
                                 onNavigateToSectionList = onNavigateToSectionList
                             )
                         1 -> MangaTabContent(
                             scrollState = mangaScrollState,
                             state = mangaState,
+                            viewModel = mangaViewModel,
                             onRefresh = { mangaViewModel.refreshAll() },
                             onFeaturedRetry = { mangaViewModel.retryAllManga() },
                             onFeaturedInteraction = { mangaViewModel.onFeaturedMangaInteraction() },
@@ -229,6 +234,7 @@ fun HomeScreenContent(
                             onRecentlyAddedRetry = { mangaViewModel.retryAllManga() },
                             onManhwaRetry = { mangaViewModel.retryAllManga() },
                             onMangaClick = onNavigateToMangaDetail,
+                            onMangaLongClick = { item -> mangaViewModel.onCardLongPress(item.id) },
                             onNavigateToSectionList = onNavigateToSectionList
                         )
                     }
@@ -242,6 +248,7 @@ fun HomeScreenContent(
 private fun AnimeTabContent(
     scrollState: LazyListState,
     state: AnimeHomeState,
+    viewModel: AnimeHomeViewModel,
     onRefresh: () -> Unit,
     onFeaturedRetry: () -> Unit,
     onFeaturedInteraction: () -> Unit,
@@ -249,6 +256,7 @@ private fun AnimeTabContent(
     onNextSeasonRetry: () -> Unit,
     onTopRatedRetry: () -> Unit,
     onAnimeClick: (Int) -> Unit,
+    onAnimeLongClick: (AnimeCardItem) -> Unit,
     onNavigateToSectionList: (SectionType, MediaType, String) -> Unit
 ) {
     PullToRefreshBox(
@@ -359,7 +367,8 @@ private fun AnimeTabContent(
                         airingNowTitle
                     )
                 },
-                onItemClick = { item -> onAnimeClick(item.id) }
+                onItemClick = { item -> onAnimeClick(item.id) },
+                onItemLongClick = onAnimeLongClick
             )
         }
 
@@ -375,7 +384,8 @@ private fun AnimeTabContent(
                         upcomingTitle
                     )
                 },
-                onItemClick = { item -> onAnimeClick(item.id) }
+                onItemClick = { item -> onAnimeClick(item.id) },
+                onItemLongClick = onAnimeLongClick
             )
         }
 
@@ -391,11 +401,36 @@ private fun AnimeTabContent(
                         topRatedTitle
                     )
                 },
-                onItemClick = { item -> onAnimeClick(item.id) }
+                onItemClick = { item -> onAnimeClick(item.id) },
+                onItemLongClick = onAnimeLongClick
             )
         }
 
             item { Spacer(modifier = Modifier.height(80.dp)) }
+        }
+
+        if (state.isBottomSheetVisible && state.selectedMediaDetail != null) {
+            val mediaDetail = state.selectedMediaDetail
+            val listEntry = state.selectedMediaListEntry
+
+            AddToListBottomSheet(
+                mediaTitle = mediaDetail.title,
+                mediaType = mediaDetail.type.toCore(),
+                mediaStatus = mediaDetail.status,
+                totalEpisodes = mediaDetail.episodes,
+                totalChapters = null,
+                currentProgress = listEntry?.progress ?: 0,
+                currentScore = listEntry?.score,
+                currentStatus = listEntry?.status,
+                currentNote = listEntry?.notes ?: "",
+                currentStartDate = listEntry?.startDate,
+                currentRewatches = listEntry?.repeatCount ?: 0,
+                currentPriority = listEntry?.priority ?: com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority.MEDIUM,
+                onDismiss = { viewModel.dismissBottomSheet() },
+                onSave = { status, progress, score, note, startDate, rewatches, priority ->
+                    viewModel.saveToList(status, progress, score, note, startDate, rewatches, priority)
+                }
+            )
         }
     }
 }
@@ -404,6 +439,7 @@ private fun AnimeTabContent(
 private fun MangaTabContent(
     scrollState: LazyListState,
     state: MangaHomeState,
+    viewModel: MangaHomeViewModel,
     onRefresh: () -> Unit,
     onFeaturedRetry: () -> Unit,
     onFeaturedInteraction: () -> Unit,
@@ -413,6 +449,7 @@ private fun MangaTabContent(
     onRecentlyAddedRetry: () -> Unit,
     onManhwaRetry: () -> Unit,
     onMangaClick: (Int) -> Unit,
+    onMangaLongClick: (com.yumedev.seijakulistkmp.features.home.presentation.model.MangaCardItem) -> Unit,
     onNavigateToSectionList: (SectionType, MediaType, String) -> Unit
 ) {
     PullToRefreshBox(
@@ -525,7 +562,8 @@ private fun MangaTabContent(
                         publishingNowTitle
                     )
                 },
-                onItemClick = { item -> onMangaClick(item.id) }
+                onItemClick = { item -> onMangaClick(item.id) },
+                onItemLongClick = onMangaLongClick
             )
         }
 
@@ -542,7 +580,8 @@ private fun MangaTabContent(
                         popularMangaTitle
                     )
                 },
-                onItemClick = { item -> onMangaClick(item.id) }
+                onItemClick = { item -> onMangaClick(item.id) },
+                onItemLongClick = onMangaLongClick
             )
         }
 
@@ -559,7 +598,8 @@ private fun MangaTabContent(
                         topRatedMangaTitle
                     )
                 },
-                onItemClick = { item -> onMangaClick(item.id) }
+                onItemClick = { item -> onMangaClick(item.id) },
+                onItemLongClick = onMangaLongClick
             )
         }
 
@@ -576,7 +616,8 @@ private fun MangaTabContent(
                         recentlyAddedTitle
                     )
                 },
-                onItemClick = { item -> onMangaClick(item.id) }
+                onItemClick = { item -> onMangaClick(item.id) },
+                onItemLongClick = onMangaLongClick
             )
         }
 
@@ -593,11 +634,36 @@ private fun MangaTabContent(
                         manhwaTitle
                     )
                 },
-                onItemClick = { item -> onMangaClick(item.id) }
+                onItemClick = { item -> onMangaClick(item.id) },
+                onItemLongClick = onMangaLongClick
             )
         }
 
             item { Spacer(modifier = Modifier.height(80.dp)) }
+        }
+
+        if (state.isBottomSheetVisible && state.selectedMediaDetail != null) {
+            val mediaDetail = state.selectedMediaDetail
+            val listEntry = state.selectedMediaListEntry
+
+            AddToListBottomSheet(
+                mediaTitle = mediaDetail.title,
+                mediaType = mediaDetail.type.toCore(),
+                mediaStatus = mediaDetail.status,
+                totalEpisodes = null,
+                totalChapters = mediaDetail.chapters,
+                currentProgress = listEntry?.progress ?: 0,
+                currentScore = listEntry?.score,
+                currentStatus = listEntry?.status,
+                currentNote = listEntry?.notes ?: "",
+                currentStartDate = listEntry?.startDate,
+                currentRewatches = listEntry?.repeatCount ?: 0,
+                currentPriority = listEntry?.priority ?: com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority.MEDIUM,
+                onDismiss = { viewModel.dismissBottomSheet() },
+                onSave = { status, progress, score, note, startDate, rewatches, priority ->
+                    viewModel.saveToList(status, progress, score, note, startDate, rewatches, priority)
+                }
+            )
         }
     }
 }
