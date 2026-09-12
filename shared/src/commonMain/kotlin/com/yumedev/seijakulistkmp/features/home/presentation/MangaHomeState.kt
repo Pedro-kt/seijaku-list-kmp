@@ -1,8 +1,10 @@
 package com.yumedev.seijakulistkmp.features.home.presentation
 
+import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaDetail
 import com.yumedev.seijakulistkmp.features.home.presentation.model.ErrorUiModel
 import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
 import com.yumedev.seijakulistkmp.features.home.presentation.model.MangaCardItem
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry
 
 data class MangaHomeState(
     val featuredManga: List<FeaturedMediaItem> = emptyList(),
@@ -30,5 +32,16 @@ data class MangaHomeState(
     val isLoadingManhwaManga: Boolean = false,
     val manhwaMangaError: String? = null,
 
-    val isRefreshing: Boolean = false
-)
+    val isRefreshing: Boolean = false,
+    val isInitialLoading: Boolean = true,
+
+    val selectedMediaDetail: MediaDetail? = null,
+    val selectedMediaListEntry: MediaListEntry? = null,
+    val isBottomSheetVisible: Boolean = false,
+    val isLoadingBottomSheet: Boolean = false
+) {
+    val hasInitialData: Boolean
+        get() = featuredManga.isNotEmpty() &&
+                publishingManga.isNotEmpty() &&
+                popularManga.isNotEmpty()
+}

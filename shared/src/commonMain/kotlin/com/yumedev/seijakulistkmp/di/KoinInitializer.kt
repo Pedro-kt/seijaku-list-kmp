@@ -9,7 +9,6 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
         modules(
             coreModule,
             networkModule,
-            animeModule,
             homeModule,
             searchModule,
             detailModule,

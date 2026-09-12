@@ -18,6 +18,7 @@ import com.yumedev.seijakulistkmp.features.search.presentation.SearchScreenConte
 import com.yumedev.seijakulistkmp.features.welcome.presentation.WelcomeScreen
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.features.home.presentation.sectionlist.SectionListScreen
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Book
 import dev.seyfarth.tablericons.filled.DeviceTv
@@ -44,6 +45,7 @@ fun MainScreenContent() {
     var selectedItem by remember { mutableStateOf<BottomNavItem>(BottomNavItem.Home) }
     var isSearchExpanded by remember { mutableStateOf(false) }
     var shouldExpandSearch by remember { mutableStateOf(false) }
+
 
     LaunchedEffect(selectedItem) {
         if (selectedItem != BottomNavItem.Search) {
@@ -79,6 +81,9 @@ fun MainScreenContent() {
                     },
                     onNavigateToMangaDetail = { mangaId ->
                         navigator.push(DetailScreen(mangaId, MediaType.MANGA))
+                    },
+                    onNavigateToSectionList = { sectionType, mediaType, title ->
+                        navigator.push(SectionListScreen(sectionType, mediaType, title))
                     }
                 )
                 BottomNavItem.Anime -> AnimeListScreenContent()

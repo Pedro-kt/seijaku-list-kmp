@@ -136,6 +136,7 @@ kotlin {
 
             // Android-only Libraries
             implementation(libs.lottie.compose)
+            implementation(libs.androidx.palette.ktx)
         }
 
         // iOS Main - iOS specific implementations

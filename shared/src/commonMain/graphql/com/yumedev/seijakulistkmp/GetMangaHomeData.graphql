@@ -1,0 +1,163 @@
+query GetMangaHomeData(
+    $featuredPage: Int,
+    $featuredPerPage: Int,
+    $publishingPage: Int,
+    $publishingPerPage: Int,
+    $popularPage: Int,
+    $popularPerPage: Int,
+    $topRatedPage: Int,
+    $topRatedPerPage: Int,
+    $recentlyAddedPage: Int,
+    $recentlyAddedPerPage: Int,
+    $manhwaPage: Int,
+    $manhwaPerPage: Int,
+    $manhwaCountry: CountryCode,
+    $isAdult: Boolean
+) {
+    featured: Page(page: $featuredPage, perPage: $featuredPerPage) {
+        media(type: MANGA, sort: TRENDING_DESC, isAdult: $isAdult) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            bannerImage
+            averageScore
+            status
+            format
+            chapters
+            volumes
+            startDate {
+                year
+                month
+                day
+            }
+            genres
+            isAdult
+        }
+    }
+
+    publishing: Page(page: $publishingPage, perPage: $publishingPerPage) {
+        media(type: MANGA, status: RELEASING, sort: POPULARITY_DESC, isAdult: $isAdult) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            format
+            chapters
+            volumes
+            genres
+            isAdult
+        }
+    }
+
+    popular: Page(page: $popularPage, perPage: $popularPerPage) {
+        media(type: MANGA, sort: POPULARITY_DESC, isAdult: $isAdult) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            format
+            chapters
+            volumes
+            genres
+            isAdult
+        }
+    }
+
+    topRated: Page(page: $topRatedPage, perPage: $topRatedPerPage) {
+        media(type: MANGA, sort: SCORE_DESC, isAdult: $isAdult) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            format
+            status
+            chapters
+            volumes
+            genres
+            isAdult
+        }
+    }
+
+    recentlyAdded: Page(page: $recentlyAddedPage, perPage: $recentlyAddedPerPage) {
+        media(type: MANGA, sort: ID_DESC, isAdult: $isAdult) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            format
+            chapters
+            volumes
+            genres
+            isAdult
+        }
+    }
+
+    manhwa: Page(page: $manhwaPage, perPage: $manhwaPerPage) {
+        media(type: MANGA, countryOfOrigin: $manhwaCountry, sort: POPULARITY_DESC, isAdult: $isAdult) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            format
+            chapters
+            volumes
+            genres
+            countryOfOrigin
+            isAdult
+        }
+    }
+}

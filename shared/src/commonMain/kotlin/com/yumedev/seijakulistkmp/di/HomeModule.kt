@@ -1,12 +1,15 @@
 package com.yumedev.seijakulistkmp.di
 
+import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
 import com.yumedev.seijakulistkmp.features.home.data.datasource.*
 import com.yumedev.seijakulistkmp.features.home.data.repository.*
+import com.yumedev.seijakulistkmp.features.home.domain.model.SectionType
 import com.yumedev.seijakulistkmp.features.home.domain.repository.*
 import com.yumedev.seijakulistkmp.features.home.domain.usecase.*
 import com.yumedev.seijakulistkmp.features.home.presentation.AnimeHomeViewModel
 import com.yumedev.seijakulistkmp.features.home.presentation.MangaHomeViewModel
 import com.yumedev.seijakulistkmp.features.home.presentation.mapper.ErrorUiMapper
+import com.yumedev.seijakulistkmp.features.home.presentation.sectionlist.SectionListViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -16,38 +19,17 @@ import org.koin.dsl.module
 val homeModule = module {
     singleOf(::ErrorUiMapper)
 
-    singleOf(::FeaturedDataSourceImpl) bind FeaturedDataSource::class
-    singleOf(::FeaturedRepositoryImpl) bind FeaturedRepository::class
-    factoryOf(::GetFeaturedAnimeUseCase)
+    singleOf(::AnimeHomeDataSourceImpl) bind AnimeHomeDataSource::class
+    factoryOf(::GetAnimeHomeDataUseCase)
 
-    singleOf(::FeaturedMangaDataSourceImpl) bind FeaturedMangaDataSource::class
-    singleOf(::PublishingMangaDataSourceImpl) bind PublishingMangaDataSource::class
-    singleOf(::PopularMangaDataSourceImpl) bind PopularMangaDataSource::class
-    singleOf(::TopRatedMangaDataSourceImpl) bind TopRatedMangaDataSource::class
-    singleOf(::RecentlyAddedMangaDataSourceImpl) bind RecentlyAddedMangaDataSource::class
-    singleOf(::ManhwaMangaDataSourceImpl) bind ManhwaMangaDataSource::class
+    singleOf(::MangaHomeDataSourceImpl) bind MangaHomeDataSource::class
+    factoryOf(::GetMangaHomeDataUseCase)
 
-    singleOf(::AiringNowRepositoryImpl) bind AiringNowRepository::class
-    factoryOf(::GetAiringNowAnimeUseCase)
-
-    singleOf(::NextSeasonRepositoryImpl) bind NextSeasonRepository::class
-    factoryOf(::GetNextSeasonAnimeUseCase)
-
-    singleOf(::TopRatedRepositoryImpl) bind TopRatedRepository::class
-    factoryOf(::GetTopRatedAnimeUseCase)
-
-    singleOf(::FeaturedMangaRepositoryImpl) bind FeaturedMangaRepository::class
-    factoryOf(::GetFeaturedMangaUseCase)
-    singleOf(::PublishingMangaRepositoryImpl) bind PublishingMangaRepository::class
-    factoryOf(::GetPublishingMangaUseCase)
-    singleOf(::PopularMangaRepositoryImpl) bind PopularMangaRepository::class
-    factoryOf(::GetPopularMangaUseCase)
-    singleOf(::TopRatedMangaRepositoryImpl) bind TopRatedMangaRepository::class
-    factoryOf(::GetTopRatedMangaUseCase)
-    singleOf(::RecentlyAddedMangaRepositoryImpl) bind RecentlyAddedMangaRepository::class
-    factoryOf(::GetRecentlyAddedMangaUseCase)
-    singleOf(::ManhwaMangaRepositoryImpl) bind ManhwaMangaRepository::class
-    factoryOf(::GetManhwaMangaUseCase)
+    singleOf(::SectionDataSourceImpl) bind SectionDataSource::class
+    factoryOf(::GetSectionMediaUseCase)
+    factory { (sectionType: SectionType, mediaType: MediaType) ->
+        SectionListViewModel(sectionType, mediaType, get())
+    }
 
     viewModelOf(::AnimeHomeViewModel)
     viewModelOf(::MangaHomeViewModel)

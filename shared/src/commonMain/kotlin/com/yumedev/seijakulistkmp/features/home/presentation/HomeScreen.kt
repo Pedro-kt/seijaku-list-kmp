@@ -24,11 +24,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
+import com.yumedev.seijakulistkmp.features.detail.presentation.DetailScreen
+import com.yumedev.seijakulistkmp.features.detail.presentation.components.AddToListBottomSheet
+import com.yumedev.seijakulistkmp.features.detail.presentation.utils.toCore
+import com.yumedev.seijakulistkmp.features.home.domain.model.SectionType
 import com.yumedev.seijakulistkmp.features.home.presentation.components.AnimeSection
 import com.yumedev.seijakulistkmp.features.home.presentation.components.FeaturedCarousel
 import com.yumedev.seijakulistkmp.features.home.presentation.components.MangaSection
 import com.yumedev.seijakulistkmp.features.home.presentation.model.AnimeCardItem
 import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
+import com.yumedev.seijakulistkmp.features.home.presentation.sectionlist.SectionListScreen
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AlertCircle
 import dev.seyfarth.tablericons.outlined.Bell
@@ -42,7 +49,37 @@ import seijakulistkmp.shared.generated.resources.*
 class HomeScreen : Screen {
     @Composable
     override fun Content() {
-        HomeScreenContent()
+        val navigator = LocalNavigator.current ?: return
+
+        val navCallback: (SectionType, MediaType, String) -> Unit = { sectionType, mediaType, title ->
+            navigator.push(
+                SectionListScreen(
+                    sectionType = sectionType,
+                    mediaType = mediaType,
+                    title = title
+                )
+            )
+        }
+
+        HomeScreenContent(
+            onNavigateToAnimeDetail = { animeId ->
+                navigator.push(
+                    DetailScreen(
+                        animeId,
+                        MediaType.ANIME
+                    )
+                )
+            },
+            onNavigateToMangaDetail = { mangaId ->
+                navigator.push(
+                    DetailScreen(
+                        mangaId,
+                        MediaType.MANGA
+                    )
+                )
+            },
+            onNavigateToSectionList = navCallback
+        )
     }
 }
 
@@ -50,7 +87,8 @@ class HomeScreen : Screen {
 fun HomeScreenContent(
     onNavigateToSearch: () -> Unit = {},
     onNavigateToAnimeDetail: (Int) -> Unit = {},
-    onNavigateToMangaDetail: (Int) -> Unit = {}
+    onNavigateToMangaDetail: (Int) -> Unit = {},
+    onNavigateToSectionList: (SectionType, MediaType, String) -> Unit
 ) {
     val animeViewModel = koinViewModel<AnimeHomeViewModel>()
     val animeState by animeViewModel.state.collectAsState()
@@ -72,6 +110,16 @@ fun HomeScreenContent(
 
     LaunchedEffect(selectedTabIndex) {
         pagerState.animateScrollToPage(selectedTabIndex)
+    }
+
+    LaunchedEffect(Unit) {
+        animeViewModel.loadAllSections()
+    }
+
+    LaunchedEffect(selectedTabIndex) {
+        if (selectedTabIndex == 1) {
+            mangaViewModel.loadAllSections()
+        }
     }
 
     Scaffold(
@@ -139,36 +187,57 @@ fun HomeScreenContent(
                 )
             }
 
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize(),
-                userScrollEnabled = false
-            ) { page ->
-                when (page) {
-                    0 -> AnimeTabContent(
-                        scrollState = animeScrollState,
-                        state = animeState,
-                        onRefresh = { animeViewModel.refreshAll() },
-                        onFeaturedRetry = { animeViewModel.retryAllAnime() },
-                        onFeaturedInteraction = { animeViewModel.onFeaturedAnimeInteraction() },
-                        onAiringNowRetry = { animeViewModel.retryLoadAiringNow() },
-                        onNextSeasonRetry = { animeViewModel.retryLoadNextSeason() },
-                        onTopRatedRetry = { animeViewModel.retryLoadTopRated() },
-                        onAnimeClick = onNavigateToAnimeDetail
-                    )
-                    1 -> MangaTabContent(
-                        scrollState = mangaScrollState,
-                        state = mangaState,
-                        onRefresh = { mangaViewModel.refreshAll() },
-                        onFeaturedRetry = { mangaViewModel.retryAllManga() },
-                        onFeaturedInteraction = { mangaViewModel.onFeaturedMangaInteraction() },
-                        onPublishingRetry = { mangaViewModel.retryLoadPublishingManga() },
-                        onPopularRetry = { mangaViewModel.retryLoadPopularManga() },
-                        onTopRatedRetry = { mangaViewModel.retryLoadTopRatedManga() },
-                        onRecentlyAddedRetry = { mangaViewModel.retryLoadRecentlyAddedManga() },
-                        onManhwaRetry = { mangaViewModel.retryLoadManhwaManga() },
-                        onMangaClick = onNavigateToMangaDetail
-                    )
+            val showInitialLoading = if (selectedTabIndex == 0) {
+                animeState.isInitialLoading
+            } else {
+                mangaState.isInitialLoading
+            }
+
+            if (showInitialLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize(),
+                    userScrollEnabled = false
+                ) { page ->
+                    when (page) {
+                        0 -> AnimeTabContent(
+                                scrollState = animeScrollState,
+                                state = animeState,
+                                viewModel = animeViewModel,
+                                onRefresh = { animeViewModel.refreshAll() },
+                                onFeaturedRetry = { animeViewModel.retryAllAnime() },
+                                onFeaturedInteraction = { animeViewModel.onFeaturedAnimeInteraction() },
+                                onAiringNowRetry = { animeViewModel.retryAllAnime() },
+                                onNextSeasonRetry = { animeViewModel.retryAllAnime() },
+                                onTopRatedRetry = { animeViewModel.retryAllAnime() },
+                                onAnimeClick = onNavigateToAnimeDetail,
+                                onAnimeLongClick = { item -> animeViewModel.onCardLongPress(item.id) },
+                                onNavigateToSectionList = onNavigateToSectionList
+                            )
+                        1 -> MangaTabContent(
+                            scrollState = mangaScrollState,
+                            state = mangaState,
+                            viewModel = mangaViewModel,
+                            onRefresh = { mangaViewModel.refreshAll() },
+                            onFeaturedRetry = { mangaViewModel.retryAllManga() },
+                            onFeaturedInteraction = { mangaViewModel.onFeaturedMangaInteraction() },
+                            onPublishingRetry = { mangaViewModel.retryAllManga() },
+                            onPopularRetry = { mangaViewModel.retryAllManga() },
+                            onTopRatedRetry = { mangaViewModel.retryAllManga() },
+                            onRecentlyAddedRetry = { mangaViewModel.retryAllManga() },
+                            onManhwaRetry = { mangaViewModel.retryAllManga() },
+                            onMangaClick = onNavigateToMangaDetail,
+                            onMangaLongClick = { item -> mangaViewModel.onCardLongPress(item.id) },
+                            onNavigateToSectionList = onNavigateToSectionList
+                        )
+                    }
                 }
             }
         }
@@ -179,13 +248,16 @@ fun HomeScreenContent(
 private fun AnimeTabContent(
     scrollState: LazyListState,
     state: AnimeHomeState,
+    viewModel: AnimeHomeViewModel,
     onRefresh: () -> Unit,
     onFeaturedRetry: () -> Unit,
     onFeaturedInteraction: () -> Unit,
     onAiringNowRetry: () -> Unit,
     onNextSeasonRetry: () -> Unit,
     onTopRatedRetry: () -> Unit,
-    onAnimeClick: (Int) -> Unit
+    onAnimeClick: (Int) -> Unit,
+    onAnimeLongClick: (AnimeCardItem) -> Unit,
+    onNavigateToSectionList: (SectionType, MediaType, String) -> Unit
 ) {
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
@@ -284,33 +356,81 @@ private fun AnimeTabContent(
         }
 
         item {
+            val airingNowTitle = stringResource(Res.string.airing_now)
             AnimeSection(
-                title = stringResource(Res.string.airing_now),
+                title = airingNowTitle,
                 items = state.airingNowAnime,
-                onSeeMoreClick = { /* TODO: Navigate to Airing Now list */ },
-                onItemClick = { item -> onAnimeClick(item.id) }
+                onSeeMoreClick = {
+                    onNavigateToSectionList(
+                        SectionType.AIRING_NOW,
+                        MediaType.ANIME,
+                        airingNowTitle
+                    )
+                },
+                onItemClick = { item -> onAnimeClick(item.id) },
+                onItemLongClick = onAnimeLongClick
             )
         }
 
         item {
+            val upcomingTitle = stringResource(Res.string.upcoming_releases)
             AnimeSection(
-                title = stringResource(Res.string.upcoming_releases),
+                title = upcomingTitle,
                 items = state.nextSeasonAnime,
-                onSeeMoreClick = { /* TODO: Navigate to Next Season list */ },
-                onItemClick = { item -> onAnimeClick(item.id) }
+                onSeeMoreClick = {
+                    onNavigateToSectionList(
+                        SectionType.NEXT_SEASON,
+                        MediaType.ANIME,
+                        upcomingTitle
+                    )
+                },
+                onItemClick = { item -> onAnimeClick(item.id) },
+                onItemLongClick = onAnimeLongClick
             )
         }
 
         item {
+            val topRatedTitle = stringResource(Res.string.top_rated)
             AnimeSection(
-                title = stringResource(Res.string.top_rated),
+                title = topRatedTitle,
                 items = state.topRatedAnime,
-                onSeeMoreClick = { /* TODO: Navigate to Top Rated list */ },
-                onItemClick = { item -> onAnimeClick(item.id) }
+                onSeeMoreClick = {
+                    onNavigateToSectionList(
+                        SectionType.TOP_RATED_ANIME,
+                        MediaType.ANIME,
+                        topRatedTitle
+                    )
+                },
+                onItemClick = { item -> onAnimeClick(item.id) },
+                onItemLongClick = onAnimeLongClick
             )
         }
 
             item { Spacer(modifier = Modifier.height(80.dp)) }
+        }
+
+        if (state.isBottomSheetVisible && state.selectedMediaDetail != null) {
+            val mediaDetail = state.selectedMediaDetail
+            val listEntry = state.selectedMediaListEntry
+
+            AddToListBottomSheet(
+                mediaTitle = mediaDetail.title,
+                mediaType = mediaDetail.type.toCore(),
+                mediaStatus = mediaDetail.status,
+                totalEpisodes = mediaDetail.episodes,
+                totalChapters = null,
+                currentProgress = listEntry?.progress ?: 0,
+                currentScore = listEntry?.score,
+                currentStatus = listEntry?.status,
+                currentNote = listEntry?.notes ?: "",
+                currentStartDate = listEntry?.startDate,
+                currentRewatches = listEntry?.repeatCount ?: 0,
+                currentPriority = listEntry?.priority ?: com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority.MEDIUM,
+                onDismiss = { viewModel.dismissBottomSheet() },
+                onSave = { status, progress, score, note, startDate, rewatches, priority ->
+                    viewModel.saveToList(status, progress, score, note, startDate, rewatches, priority)
+                }
+            )
         }
     }
 }
@@ -319,6 +439,7 @@ private fun AnimeTabContent(
 private fun MangaTabContent(
     scrollState: LazyListState,
     state: MangaHomeState,
+    viewModel: MangaHomeViewModel,
     onRefresh: () -> Unit,
     onFeaturedRetry: () -> Unit,
     onFeaturedInteraction: () -> Unit,
@@ -327,7 +448,9 @@ private fun MangaTabContent(
     onTopRatedRetry: () -> Unit,
     onRecentlyAddedRetry: () -> Unit,
     onManhwaRetry: () -> Unit,
-    onMangaClick: (Int) -> Unit
+    onMangaClick: (Int) -> Unit,
+    onMangaLongClick: (com.yumedev.seijakulistkmp.features.home.presentation.model.MangaCardItem) -> Unit,
+    onNavigateToSectionList: (SectionType, MediaType, String) -> Unit
 ) {
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
@@ -428,55 +551,119 @@ private fun MangaTabContent(
 
         // Publishing Now Section
         item {
+            val publishingNowTitle = stringResource(Res.string.publishing_now)
             MangaSection(
-                title = stringResource(Res.string.publishing_now),
+                title = publishingNowTitle,
                 items = state.publishingManga,
-                onSeeMoreClick = { /* TODO: Navigate to Publishing list */ },
-                onItemClick = { item -> onMangaClick(item.id) }
+                onSeeMoreClick = {
+                    onNavigateToSectionList(
+                        SectionType.PUBLISHING_MANGA,
+                        MediaType.MANGA,
+                        publishingNowTitle
+                    )
+                },
+                onItemClick = { item -> onMangaClick(item.id) },
+                onItemLongClick = onMangaLongClick
             )
         }
 
         // Popular Manga Section
         item {
+            val popularMangaTitle = stringResource(Res.string.popular_manga)
             MangaSection(
-                title = stringResource(Res.string.popular_manga),
+                title = popularMangaTitle,
                 items = state.popularManga,
-                onSeeMoreClick = { /* TODO: Navigate to Popular list */ },
-                onItemClick = { item -> onMangaClick(item.id) }
+                onSeeMoreClick = {
+                    onNavigateToSectionList(
+                        SectionType.POPULAR_MANGA,
+                        MediaType.MANGA,
+                        popularMangaTitle
+                    )
+                },
+                onItemClick = { item -> onMangaClick(item.id) },
+                onItemLongClick = onMangaLongClick
             )
         }
 
         // Top Rated Section
         item {
+            val topRatedMangaTitle = stringResource(Res.string.top_rated_manga)
             MangaSection(
-                title = stringResource(Res.string.top_rated_manga),
+                title = topRatedMangaTitle,
                 items = state.topRatedManga,
-                onSeeMoreClick = { /* TODO: Navigate to Top Rated list */ },
-                onItemClick = { item -> onMangaClick(item.id) }
+                onSeeMoreClick = {
+                    onNavigateToSectionList(
+                        SectionType.TOP_RATED_MANGA,
+                        MediaType.MANGA,
+                        topRatedMangaTitle
+                    )
+                },
+                onItemClick = { item -> onMangaClick(item.id) },
+                onItemLongClick = onMangaLongClick
             )
         }
 
         // Recently Added Section
         item {
+            val recentlyAddedTitle = stringResource(Res.string.recently_added)
             MangaSection(
-                title = stringResource(Res.string.recently_added),
+                title = recentlyAddedTitle,
                 items = state.recentlyAddedManga,
-                onSeeMoreClick = { /* TODO: Navigate to Recently Added list */ },
-                onItemClick = { item -> onMangaClick(item.id) }
+                onSeeMoreClick = {
+                    onNavigateToSectionList(
+                        SectionType.RECENTLY_ADDED,
+                        MediaType.MANGA,
+                        recentlyAddedTitle
+                    )
+                },
+                onItemClick = { item -> onMangaClick(item.id) },
+                onItemLongClick = onMangaLongClick
             )
         }
 
         // Manhwa & Manhua Section
         item {
+            val manhwaTitle = stringResource(Res.string.manhwa)
             MangaSection(
-                title = stringResource(Res.string.manhwa),
+                title = manhwaTitle,
                 items = state.manhwaManga,
-                onSeeMoreClick = { /* TODO: Navigate to Manhwa list */ },
-                onItemClick = { item -> onMangaClick(item.id) }
+                onSeeMoreClick = {
+                    onNavigateToSectionList(
+                        SectionType.MANHWA,
+                        MediaType.MANGA,
+                        manhwaTitle
+                    )
+                },
+                onItemClick = { item -> onMangaClick(item.id) },
+                onItemLongClick = onMangaLongClick
             )
         }
 
             item { Spacer(modifier = Modifier.height(80.dp)) }
+        }
+
+        if (state.isBottomSheetVisible && state.selectedMediaDetail != null) {
+            val mediaDetail = state.selectedMediaDetail
+            val listEntry = state.selectedMediaListEntry
+
+            AddToListBottomSheet(
+                mediaTitle = mediaDetail.title,
+                mediaType = mediaDetail.type.toCore(),
+                mediaStatus = mediaDetail.status,
+                totalEpisodes = null,
+                totalChapters = mediaDetail.chapters,
+                currentProgress = listEntry?.progress ?: 0,
+                currentScore = listEntry?.score,
+                currentStatus = listEntry?.status,
+                currentNote = listEntry?.notes ?: "",
+                currentStartDate = listEntry?.startDate,
+                currentRewatches = listEntry?.repeatCount ?: 0,
+                currentPriority = listEntry?.priority ?: com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority.MEDIUM,
+                onDismiss = { viewModel.dismissBottomSheet() },
+                onSave = { status, progress, score, note, startDate, rewatches, priority ->
+                    viewModel.saveToList(status, progress, score, note, startDate, rewatches, priority)
+                }
+            )
         }
     }
 }
@@ -587,19 +774,10 @@ private fun SearchBarMode(
         },
         actions = {
             IconButton(onClick = onProfileClick) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(color = MaterialTheme.colorScheme.primaryContainer),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Y",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
+                Icon(
+                    imageVector = TablerIcons.Outlined.Bell,
+                    contentDescription = stringResource(Res.string.notifications)
+                )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(

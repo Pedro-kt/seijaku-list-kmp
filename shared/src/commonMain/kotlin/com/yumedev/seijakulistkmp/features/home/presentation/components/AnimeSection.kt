@@ -19,6 +19,7 @@ fun AnimeSection(
     items: List<AnimeCardItem>,
     onSeeMoreClick: () -> Unit,
     onItemClick: (AnimeCardItem) -> Unit,
+    onItemLongClick: (AnimeCardItem) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     if (items.isEmpty()) return
@@ -55,7 +56,8 @@ fun AnimeSection(
             items(items) { item ->
                 AnimeCard(
                     item = item,
-                    onClick = { onItemClick(item) }
+                    onClick = { onItemClick(item) },
+                    onLongClick = { onItemLongClick(item) }
                 )
             }
         }

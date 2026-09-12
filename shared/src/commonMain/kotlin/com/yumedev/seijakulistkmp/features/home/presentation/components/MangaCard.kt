@@ -1,6 +1,6 @@
 package com.yumedev.seijakulistkmp.features.home.presentation.components
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -22,6 +22,7 @@ import dev.seyfarth.tablericons.filled.Star
 fun MangaCard(
     item: MangaCardItem,
     onClick: () -> Unit,
+    onLongClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column (
@@ -36,7 +37,10 @@ fun MangaCard(
                     .fillMaxWidth()
                     .height(170.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .clickable(onClick = onClick)
+                    .combinedClickable(
+                        onClick = onClick,
+                        onLongClick = onLongClick
+                    )
             ) {
                 item.coverImageUrl?.let { imageUrl ->
                     AsyncImage(
@@ -65,56 +69,27 @@ fun MangaCard(
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(3.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        item.rating?.let { rating ->
-                            Icon(
-                                imageVector = TablerIcons.Filled.Star,
-                                contentDescription = null,
-                                modifier = Modifier.size(11.dp),
-                                tint = Color.Gray
-                            )
-                            Text(
-                                text = rating,
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        item.format?.let { format ->
-                            if (item.rating != null) {
-                                Text(
-                                    text = "·",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                                    fontWeight = FontWeight.Bold
-                                )
+                    Text(
+                        text = buildString {
+                            item.rating?.let { rating ->
+                                append(rating)
                             }
-                            Text(
-                                text = format,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        item.volumesOrChapters?.let { info ->
-                            if (item.format != null || item.rating != null) {
-                                Text(
-                                    text = "·",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                                    fontWeight = FontWeight.Bold
-                                )
+                            item.format?.let { format ->
+                                if (isNotEmpty()) append(" · ")
+                                append(format)
                             }
-                            Text(
-                                text = info,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
+                            item.volumesOrChapters?.let { info ->
+                                if (isNotEmpty()) append(" · ")
+                                append(info)
+                            }
+                        },
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
                     if (item.genres.isNotEmpty()) {
                         Row(
