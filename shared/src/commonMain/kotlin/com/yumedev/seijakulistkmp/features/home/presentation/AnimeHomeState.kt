@@ -22,5 +22,11 @@ data class AnimeHomeState(
     val isLoadingTopRated: Boolean = false,
     val topRatedError: String? = null,
 
-    val isRefreshing: Boolean = false
-)
+    val isRefreshing: Boolean = false,
+    val isInitialLoading: Boolean = true
+) {
+    val hasInitialData: Boolean
+        get() = featuredAnime.isNotEmpty() &&
+                airingNowAnime.isNotEmpty() &&
+                nextSeasonAnime.isNotEmpty()
+}

@@ -30,5 +30,11 @@ data class MangaHomeState(
     val isLoadingManhwaManga: Boolean = false,
     val manhwaMangaError: String? = null,
 
-    val isRefreshing: Boolean = false
-)
+    val isRefreshing: Boolean = false,
+    val isInitialLoading: Boolean = true
+) {
+    val hasInitialData: Boolean
+        get() = featuredManga.isNotEmpty() &&
+                publishingManga.isNotEmpty() &&
+                popularManga.isNotEmpty()
+}

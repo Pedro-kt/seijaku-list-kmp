@@ -17,9 +17,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.yumedev.seijakulistkmp.core.utils.rememberImageColors
 import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
@@ -109,6 +111,13 @@ private fun FeaturedCarouselItem(
     item: FeaturedMediaItem,
     onClick: () -> Unit
 ) {
+    val imageUrl = item.coverImageUrl
+
+    val imageColors = rememberImageColors(
+        imageUrl = imageUrl,
+        fallbackColor = MaterialTheme.colorScheme.surfaceContainer
+    )
+
     Card(
         onClick = onClick,
         modifier = Modifier
@@ -119,71 +128,70 @@ private fun FeaturedCarouselItem(
             containerColor = Color(0xFF1C1C1E)
         )
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(220.dp)
+        ) {
+            imageUrl?.let { url ->
+                AsyncImage(
+                    model = url,
+                    contentDescription = item.title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(170.dp)
-            ) {
-                item.coverImageUrl?.let { imageUrl ->
-                    AsyncImage(
-                        model = imageUrl,
-                        contentDescription = item.title,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                imageColors.value.dominant
+                            ),
+                            startY = 0f,
+                            endY = 440f
+                        )
+                    )
+            )
+
+            item.status?.let { rawStatus ->
+                val statusText = when (rawStatus) {
+                    "RELEASING" -> if (item.isManga) {
+                        stringResource(Res.string.status_publishing)
+                    } else {
+                        stringResource(Res.string.status_airing)
+                    }
+                    "FINISHED" -> stringResource(Res.string.status_finished)
+                    "NOT_YET_RELEASED" -> if (item.isManga) {
+                        stringResource(Res.string.status_not_yet_released)
+                    } else {
+                        stringResource(Res.string.status_not_yet_aired)
+                    }
+                    "CANCELLED" -> stringResource(Res.string.status_cancelled)
+                    "HIATUS" -> stringResource(Res.string.status_hiatus)
+                    else -> rawStatus
+                }
+
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(12.dp),
+                    shape = RoundedCornerShape(100.dp),
+                    color = imageColors.value.vibrant
+                ) {
+                    Text(
+                        text = statusText,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = imageColors.value.vibrant.getContrastColor(),
+                        fontWeight = FontWeight.Normal,
+                        letterSpacing = 1.sp
                     )
                 }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color.Black.copy(alpha = 0.6f)
-                                ),
-                                startY = 0f,
-                                endY = 500f
-                            )
-                        )
-                )
-
-                item.status?.let { rawStatus ->
-                    val statusText = when (rawStatus) {
-                        "RELEASING" -> if (item.isManga) {
-                            stringResource(Res.string.status_publishing)
-                        } else {
-                            stringResource(Res.string.status_airing)
-                        }
-                        "FINISHED" -> stringResource(Res.string.status_finished)
-                        "NOT_YET_RELEASED" -> if (item.isManga) {
-                            stringResource(Res.string.status_not_yet_released)
-                        } else {
-                            stringResource(Res.string.status_not_yet_aired)
-                        }
-                        "CANCELLED" -> stringResource(Res.string.status_cancelled)
-                        "HIATUS" -> stringResource(Res.string.status_hiatus)
-                        else -> rawStatus
-                    }
-
-                    Surface(
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(12.dp),
-                        shape = RoundedCornerShape(100.dp),
-                        color = MaterialTheme.colorScheme.primary
-                    ) {
-                        Text(
-                            text = statusText,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp
-                        )
-                    }
-                }
+            }
 
                 item.rating?.let { rating ->
                     Surface(
@@ -207,50 +215,29 @@ private fun FeaturedCarouselItem(
                             Text(
                                 text = rating,
                                 style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Normal
                             )
                         }
                     }
                 }
 
-                Text(
-                    text = item.title,
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    maxLines = 2
-                )
-            }
-
-            if (item.metadata.isNotEmpty()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surfaceContainer)
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    item.metadata.split(" · ").forEach { metaItem ->
-                        Surface(
-                            shape = RoundedCornerShape(100.dp),
-                            color = MaterialTheme.colorScheme.surfaceContainerHighest
-                        ) {
-                            Text(
-                                text = metaItem.trim(),
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-                }
-            }
+            Text(
+                text = item.title,
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = imageColors.value.dominant.getContrastColor(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
+}
+
+private fun Color.getContrastColor(): Color {
+    val luminance = (0.299 * red + 0.587 * green + 0.114 * blue)
+    return if (luminance > 0.5f) Color.Black else Color.White
 }

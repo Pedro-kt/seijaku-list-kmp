@@ -1,0 +1,106 @@
+query GetAnimeHomeData(
+    $featuredPage: Int,
+    $featuredPerPage: Int,
+    $airingPage: Int,
+    $airingPerPage: Int,
+    $nextSeasonPage: Int,
+    $nextSeasonPerPage: Int,
+    $nextSeason: MediaSeason,
+    $nextSeasonYear: Int,
+    $topRatedPage: Int,
+    $topRatedPerPage: Int,
+    $isAdult: Boolean
+) {
+    featured: Page(page: $featuredPage, perPage: $featuredPerPage) {
+        media(type: ANIME, sort: TRENDING_DESC, isAdult: $isAdult) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            bannerImage
+            averageScore
+            status
+            format
+            episodes
+            season
+            seasonYear
+            genres
+            isAdult
+        }
+    }
+
+    airingNow: Page(page: $airingPage, perPage: $airingPerPage) {
+        media(type: ANIME, status: RELEASING, sort: POPULARITY_DESC, isAdult: $isAdult) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            format
+            episodes
+            genres
+            isAdult
+        }
+    }
+
+    nextSeason: Page(page: $nextSeasonPage, perPage: $nextSeasonPerPage) {
+        media(type: ANIME, season: $nextSeason, seasonYear: $nextSeasonYear, sort: POPULARITY_DESC, isAdult: $isAdult) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            format
+            episodes
+            genres
+            isAdult
+        }
+    }
+
+    topRated: Page(page: $topRatedPage, perPage: $topRatedPerPage) {
+        media(type: ANIME, sort: SCORE_DESC, isAdult: $isAdult) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            coverImage {
+                extraLarge
+                large
+                medium
+                color
+            }
+            averageScore
+            format
+            status
+            episodes
+            genres
+            isAdult
+        }
+    }
+}

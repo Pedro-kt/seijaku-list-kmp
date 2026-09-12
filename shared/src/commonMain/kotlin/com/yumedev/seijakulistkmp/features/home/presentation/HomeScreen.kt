@@ -74,6 +74,16 @@ fun HomeScreenContent(
         pagerState.animateScrollToPage(selectedTabIndex)
     }
 
+    LaunchedEffect(Unit) {
+        animeViewModel.loadAllSections()
+    }
+
+    LaunchedEffect(selectedTabIndex) {
+        if (selectedTabIndex == 1) {
+            mangaViewModel.loadAllSections()
+        }
+    }
+
     Scaffold(
         topBar = {
             HomeTopAppBar(
@@ -139,36 +149,51 @@ fun HomeScreenContent(
                 )
             }
 
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize(),
-                userScrollEnabled = false
-            ) { page ->
-                when (page) {
-                    0 -> AnimeTabContent(
-                        scrollState = animeScrollState,
-                        state = animeState,
-                        onRefresh = { animeViewModel.refreshAll() },
-                        onFeaturedRetry = { animeViewModel.retryAllAnime() },
-                        onFeaturedInteraction = { animeViewModel.onFeaturedAnimeInteraction() },
-                        onAiringNowRetry = { animeViewModel.retryLoadAiringNow() },
-                        onNextSeasonRetry = { animeViewModel.retryLoadNextSeason() },
-                        onTopRatedRetry = { animeViewModel.retryLoadTopRated() },
-                        onAnimeClick = onNavigateToAnimeDetail
-                    )
-                    1 -> MangaTabContent(
-                        scrollState = mangaScrollState,
-                        state = mangaState,
-                        onRefresh = { mangaViewModel.refreshAll() },
-                        onFeaturedRetry = { mangaViewModel.retryAllManga() },
-                        onFeaturedInteraction = { mangaViewModel.onFeaturedMangaInteraction() },
-                        onPublishingRetry = { mangaViewModel.retryLoadPublishingManga() },
-                        onPopularRetry = { mangaViewModel.retryLoadPopularManga() },
-                        onTopRatedRetry = { mangaViewModel.retryLoadTopRatedManga() },
-                        onRecentlyAddedRetry = { mangaViewModel.retryLoadRecentlyAddedManga() },
-                        onManhwaRetry = { mangaViewModel.retryLoadManhwaManga() },
-                        onMangaClick = onNavigateToMangaDetail
-                    )
+            val showInitialLoading = if (selectedTabIndex == 0) {
+                animeState.isInitialLoading
+            } else {
+                mangaState.isInitialLoading
+            }
+
+            if (showInitialLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize(),
+                    userScrollEnabled = false
+                ) { page ->
+                    when (page) {
+                        0 -> AnimeTabContent(
+                            scrollState = animeScrollState,
+                            state = animeState,
+                            onRefresh = { animeViewModel.refreshAll() },
+                            onFeaturedRetry = { animeViewModel.retryAllAnime() },
+                            onFeaturedInteraction = { animeViewModel.onFeaturedAnimeInteraction() },
+                            onAiringNowRetry = { animeViewModel.retryAllAnime() },
+                            onNextSeasonRetry = { animeViewModel.retryAllAnime() },
+                            onTopRatedRetry = { animeViewModel.retryAllAnime() },
+                            onAnimeClick = onNavigateToAnimeDetail
+                        )
+                        1 -> MangaTabContent(
+                            scrollState = mangaScrollState,
+                            state = mangaState,
+                            onRefresh = { mangaViewModel.refreshAll() },
+                            onFeaturedRetry = { mangaViewModel.retryAllManga() },
+                            onFeaturedInteraction = { mangaViewModel.onFeaturedMangaInteraction() },
+                            onPublishingRetry = { mangaViewModel.retryAllManga() },
+                            onPopularRetry = { mangaViewModel.retryAllManga() },
+                            onTopRatedRetry = { mangaViewModel.retryAllManga() },
+                            onRecentlyAddedRetry = { mangaViewModel.retryAllManga() },
+                            onManhwaRetry = { mangaViewModel.retryAllManga() },
+                            onMangaClick = onNavigateToMangaDetail
+                        )
+                    }
                 }
             }
         }
