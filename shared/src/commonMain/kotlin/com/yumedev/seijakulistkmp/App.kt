@@ -11,7 +11,6 @@ import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
-import com.yumedev.seijakulistkmp.di.animeModule
 import com.yumedev.seijakulistkmp.di.characterModule
 import com.yumedev.seijakulistkmp.di.coreModule
 import com.yumedev.seijakulistkmp.di.detailModule
@@ -43,7 +42,6 @@ fun App() {
         modules(
             coreModule,
             networkModule,
-            animeModule,
             homeModule,
             searchModule,
             detailModule,

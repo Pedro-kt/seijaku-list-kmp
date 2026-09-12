@@ -708,19 +708,10 @@ private fun SearchBarMode(
         },
         actions = {
             IconButton(onClick = onProfileClick) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(color = MaterialTheme.colorScheme.primaryContainer),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Y",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
+                Icon(
+                    imageVector = TablerIcons.Outlined.Bell,
+                    contentDescription = stringResource(Res.string.notifications)
+                )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
