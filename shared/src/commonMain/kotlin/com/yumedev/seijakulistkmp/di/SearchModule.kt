@@ -14,7 +14,11 @@ val searchModule = module {
             apolloClient = get(),
             mediaStringFormatter = get(),
             recentSearchRepository = get(),
-            settingsRepository = get()
+            settingsRepository = get(),
+            addToListUseCase = get(),
+            updateListEntryUseCase = get(),
+            checkInListUseCase = get(),
+            getListEntryUseCase = get()
         )
     }
 }

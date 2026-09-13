@@ -322,6 +322,8 @@
     <string name="list_note_placeholder">Tu opinión...</string>
     <string name="list_start_date">Inicio</string>
     <string name="list_rewatches">Reinicios</string>
+    <string name="list_rewatches_count">Revisto %1$dx</string>
+    <string name="list_score_label">Puntuación: %1$d</string>
     <string name="list_cancel">Cancelar</string>
     <string name="list_save">Guardar</string>
     <string name="list_delete">Eliminar de la lista</string>
