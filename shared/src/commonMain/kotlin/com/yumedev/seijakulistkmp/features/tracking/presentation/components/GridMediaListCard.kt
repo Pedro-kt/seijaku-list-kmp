@@ -24,7 +24,6 @@ import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.DotsVertical
 import dev.seyfarth.tablericons.outlined.Edit
 import dev.seyfarth.tablericons.outlined.Plus
-import dev.seyfarth.tablericons.outlined.Refresh
 import dev.seyfarth.tablericons.outlined.Trash
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
@@ -41,7 +40,6 @@ fun GridMediaListCard(
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var showChangeStatusSheet by remember { mutableStateOf(false) }
 
     val imageColors = rememberImageColors(
         imageUrl = entry.mediaInfo?.coverImage,
@@ -136,19 +134,6 @@ fun GridMediaListCard(
                                     leadingIcon = {
                                         Icon(
                                             imageVector = TablerIcons.Outlined.Edit,
-                                            contentDescription = null
-                                        )
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(Res.string.list_change_status)) },
-                                    onClick = {
-                                        showMenu = false
-                                        showChangeStatusSheet = true
-                                    },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = TablerIcons.Outlined.Refresh,
                                             contentDescription = null
                                         )
                                     }
@@ -264,17 +249,6 @@ fun GridMediaListCard(
                 TextButton(onClick = { showDeleteDialog = false }) {
                     Text(stringResource(Res.string.list_cancel))
                 }
-            }
-        )
-    }
-
-    if (showChangeStatusSheet) {
-        ChangeStatusBottomSheet(
-            currentStatus = entry.status,
-            mediaType = entry.mediaType,
-            onDismiss = { showChangeStatusSheet = false },
-            onStatusSelected = { newStatus ->
-                onStatusChange(newStatus)
             }
         )
     }

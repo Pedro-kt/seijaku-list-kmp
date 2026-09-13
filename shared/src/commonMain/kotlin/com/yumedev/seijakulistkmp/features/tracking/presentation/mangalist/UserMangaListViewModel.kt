@@ -543,7 +543,7 @@ data class UserMangaListUiState(
     val filteredEntries: List<MediaListEntry> = emptyList(),
     val selectedStatus: MediaListStatus? = null,
     val stats: MediaListStats? = null,
-    val sortBy: MediaListSortOption = MediaListSortOption.UPDATED_AT,
+    val sortBy: MediaListSortOption = MediaListSortOption.TITLE,
     val ascending: Boolean = false,
     val searchQuery: String = "",
     val isSearchVisible: Boolean = false,
