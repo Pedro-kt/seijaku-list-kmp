@@ -23,6 +23,7 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ResolveAllImp
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ResolveImportConflictUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.UpdateListEntryUseCase
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCardType
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,6 +45,10 @@ class UserMangaListViewModel(
 
     private val _uiState = MutableStateFlow(UserMangaListUiState())
     val uiState: StateFlow<UserMangaListUiState> = _uiState.asStateFlow()
+
+    private val updatingMediaIds = mutableSetOf<Int>()
+
+    private var listObservationJob: Job? = null
 
     init {
         loadMangaList()
@@ -98,7 +103,9 @@ class UserMangaListViewModel(
     }
 
     private fun loadMangaList() {
-        viewModelScope.launch {
+        listObservationJob?.cancel()
+
+        listObservationJob = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
             getMediaListUseCase(MediaType.MANGA, _uiState.value.selectedStatus)
@@ -253,16 +260,55 @@ class UserMangaListViewModel(
 
     private fun incrementProgress(mediaId: Int) {
         viewModelScope.launch {
-            val entry = _uiState.value.entries.find { it.mediaId == mediaId } ?: return@launch
-            val maxProgress = entry.mediaInfo?.totalChapters
+            synchronized(updatingMediaIds) {
+                if (updatingMediaIds.contains(mediaId)) {
+                    return@launch
+                }
+                updatingMediaIds.add(mediaId)
+            }
 
-            if (maxProgress == null || entry.progress < maxProgress) {
-                val newProgress = entry.progress + 1
-                updateListEntryUseCase(
-                    mediaId = mediaId,
-                    mediaType = MediaType.MANGA,
-                    progress = newProgress
-                )
+            try {
+                val entry = _uiState.value.entries.find { it.mediaId == mediaId }
+                if (entry == null) {
+                    synchronized(updatingMediaIds) {
+                        updatingMediaIds.remove(mediaId)
+                    }
+                    return@launch
+                }
+                if (entry.status != MediaListStatus.CURRENT && entry.status != MediaListStatus.REPEATING) {
+                    synchronized(updatingMediaIds) {
+                        updatingMediaIds.remove(mediaId)
+                    }
+                    return@launch
+                }
+
+                val maxProgress = entry.mediaInfo?.totalChapters
+
+                if (maxProgress == null || entry.progress < maxProgress) {
+                    val newProgress = entry.progress + 1
+
+                    val shouldComplete = maxProgress != null && newProgress >= maxProgress
+                    val newStatus = if (shouldComplete) MediaListStatus.COMPLETED else null
+
+                    when (val result = updateListEntryUseCase(
+                        mediaId = mediaId,
+                        mediaType = MediaType.MANGA,
+                        progress = newProgress,
+                        status = newStatus
+                    )) {
+                        is Result.Success -> {
+                        }
+                        is Result.Failure -> {
+                            _uiState.update {
+                                it.copy(error = result.exception.message ?: "Failed to update progress")
+                            }
+                        }
+                    }
+                }
+            } finally {
+                synchronized(updatingMediaIds) {
+                    updatingMediaIds.remove(mediaId)
+                }
             }
         }
     }
@@ -497,7 +543,7 @@ data class UserMangaListUiState(
     val filteredEntries: List<MediaListEntry> = emptyList(),
     val selectedStatus: MediaListStatus? = null,
     val stats: MediaListStats? = null,
-    val sortBy: MediaListSortOption = MediaListSortOption.UPDATED_AT,
+    val sortBy: MediaListSortOption = MediaListSortOption.TITLE,
     val ascending: Boolean = false,
     val searchQuery: String = "",
     val isSearchVisible: Boolean = false,
