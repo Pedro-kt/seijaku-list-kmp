@@ -195,17 +195,27 @@ fun CompactMediaListCard(
 
                     Spacer(modifier = Modifier.width(12.dp))
 
+                    val canIncrement = entry.status == MediaListStatus.CURRENT ||
+                                       entry.status == MediaListStatus.REPEATING
+
                     FilledIconButton(
                         onClick = onIncrementProgress,
+                        enabled = canIncrement,
                         modifier = Modifier.size(32.dp),
                         colors = IconButtonDefaults.filledIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
                         )
                     ) {
                         Icon(
                             imageVector = TablerIcons.Outlined.Plus,
                             contentDescription = stringResource(Res.string.list_increase),
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(18.dp),
+                            tint = if (canIncrement) {
+                                MaterialTheme.colorScheme.onPrimary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
+                            }
                         )
                     }
                 }

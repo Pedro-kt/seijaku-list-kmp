@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
+import com.yumedev.seijakulistkmp.core.utils.rememberImageColors
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import dev.seyfarth.tablericons.TablerIcons
@@ -41,6 +42,11 @@ fun GridMediaListCard(
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showChangeStatusSheet by remember { mutableStateOf(false) }
+
+    val imageColors = rememberImageColors(
+        imageUrl = entry.mediaInfo?.coverImage,
+        fallbackColor = MaterialTheme.colorScheme.surfaceVariant
+    )
 
     Column(
         modifier = modifier.fillMaxWidth()
@@ -73,12 +79,11 @@ fun GridMediaListCard(
                         .background(
                             Brush.verticalGradient(
                                 colors = listOf(
-                                    Color.Black.copy(alpha = 0.3f),
                                     Color.Transparent,
-                                    Color.Transparent
+                                    imageColors.value.dominant
                                 ),
                                 startY = 0f,
-                                endY = Float.POSITIVE_INFINITY
+                                endY = 450f
                             )
                         )
                 )
@@ -175,17 +180,27 @@ fun GridMediaListCard(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
                     ) {
+                        val canIncrement = entry.status == MediaListStatus.CURRENT ||
+                                           entry.status == MediaListStatus.REPEATING
+
                         FilledIconButton(
                             onClick = onIncrementProgress,
+                            enabled = canIncrement,
                             modifier = Modifier.size(32.dp),
                             colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
                             )
                         ) {
                             Icon(
                                 imageVector = TablerIcons.Outlined.Plus,
                                 contentDescription = stringResource(Res.string.list_increase),
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(18.dp),
+                                tint = if (canIncrement) {
+                                    MaterialTheme.colorScheme.onPrimary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
+                                }
                             )
                         }
                     }
@@ -195,7 +210,7 @@ fun GridMediaListCard(
 
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surfaceVariant,
+            color = imageColors.value.dominant,
             shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
         ) {
             Column(
@@ -207,7 +222,7 @@ fun GridMediaListCard(
                     style = MaterialTheme.typography.labelLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = imageColors.value.dominant.getContrastColor()
                 )
 
                 GridProgressIndicator(
@@ -215,7 +230,9 @@ fun GridMediaListCard(
                     total = when (entry.mediaType) {
                         MediaType.ANIME -> entry.mediaInfo?.totalEpisodes
                         MediaType.MANGA -> entry.mediaInfo?.totalChapters
-                    }
+                    },
+                    progressColor = imageColors.value.dominant.getContrastColor(),
+                    textColor = imageColors.value.dominant.getContrastColor()
                 )
             }
         }
@@ -302,24 +319,14 @@ private fun GridStatusChip(
     Surface(
         modifier = modifier,
         shape = CircleShape,
-        color = MaterialTheme.colorScheme.primary
+        color = statusIndicatorColor
     ) {
-        Row(
+        Text(
+            text = statusText,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(6.dp)
-                    .background(statusIndicatorColor, CircleShape)
-            )
-            Text(
-                text = statusText,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-        }
+            style = MaterialTheme.typography.labelSmall,
+            color = statusIndicatorColor.getContrastColor()
+        )
     }
 }
 
@@ -327,6 +334,8 @@ private fun GridStatusChip(
 private fun GridProgressIndicator(
     progress: Int,
     total: Int?,
+    progressColor: Color,
+    textColor: Color,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -346,8 +355,8 @@ private fun GridProgressIndicator(
                 .weight(1f)
                 .height(4.dp)
                 .clip(RoundedCornerShape(2.dp)),
-            color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.surfaceVariant
+            color = progressColor,
+            trackColor = progressColor.copy(alpha = 0.3f)
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -355,7 +364,12 @@ private fun GridProgressIndicator(
         Text(
             text = if (total != null) "$progress/$total" else "$progress",
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = textColor
         )
     }
+}
+
+private fun Color.getContrastColor(): Color {
+    val luminance = (0.299 * red + 0.587 * green + 0.114 * blue)
+    return if (luminance > 0.5f) Color.Black else Color.White
 }
