@@ -62,6 +62,8 @@ fun SearchScreenContent(
                 characterResults = state.characterResults,
                 isLoading = state.isSearching,
                 error = state.searchError,
+                state = state,
+                viewModel = viewModel,
                 onResultClick = { result ->
                     when (result.mediaType) {
                         SearchMediaType.ANIME -> {
@@ -80,6 +82,9 @@ fun SearchScreenContent(
                 },
                 onRetry = {
                     viewModel.retrySearch()
+                },
+                onSaveClick = { item ->
+                    viewModel.showAddToListBottomSheet(item)
                 }
             )
         }

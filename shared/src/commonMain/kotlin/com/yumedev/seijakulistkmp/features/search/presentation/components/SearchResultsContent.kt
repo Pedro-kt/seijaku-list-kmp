@@ -10,10 +10,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.core.domain.model.MediaType as CoreMediaType
 import com.yumedev.seijakulistkmp.core.error.ErrorType
 import com.yumedev.seijakulistkmp.core.error.ErrorUiMapper
+import com.yumedev.seijakulistkmp.features.detail.presentation.components.AddToListBottomSheet
+import com.yumedev.seijakulistkmp.features.search.presentation.SearchState
+import com.yumedev.seijakulistkmp.features.search.presentation.SearchViewModel
 import com.yumedev.seijakulistkmp.features.search.presentation.model.CharacterResultItem
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchResultItem
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowLeft
 import dev.seyfarth.tablericons.outlined.MoodEmpty
@@ -28,10 +33,13 @@ fun SearchResultsContent(
     characterResults: List<CharacterResultItem> = emptyList(),
     isLoading: Boolean,
     error: ErrorType?,
+    state: SearchState,
+    viewModel: SearchViewModel,
     onResultClick: (SearchResultItem) -> Unit,
     onCharacterClick: (CharacterResultItem) -> Unit = {},
     onBackClick: () -> Unit,
     onRetry: () -> Unit,
+    onSaveClick: (SearchResultItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -192,7 +200,7 @@ fun SearchResultsContent(
                             item = result,
                             onClick = { onResultClick(result) },
                             onSaveClick = { item ->
-                                // TODO: Implement save for later functionality
+                                onSaveClick(item)
                             },
                             isSaved = false // TODO: Check if item is saved
                         )
@@ -207,6 +215,31 @@ fun SearchResultsContent(
                 }
             }
         }
+    }
+
+    if (state.showAddToListBottomSheet && state.selectedItemForList != null) {
+        val selectedItem = state.selectedItemForList
+        AddToListBottomSheet(
+            mediaTitle = selectedItem.title,
+            mediaType = when (selectedItem.mediaType) {
+                com.yumedev.seijakulistkmp.features.search.presentation.model.MediaType.ANIME -> CoreMediaType.ANIME
+                com.yumedev.seijakulistkmp.features.search.presentation.model.MediaType.MANGA -> CoreMediaType.MANGA
+            },
+            mediaStatus = selectedItem.status,
+            totalEpisodes = selectedItem.episodes,
+            totalChapters = selectedItem.chapters,
+            currentProgress = 0,
+            currentScore = null,
+            currentNote = "",
+            currentStatus = null,
+            currentStartDate = null,
+            currentRewatches = 0,
+            currentPriority = MediaListPriority.MEDIUM,
+            onDismiss = { viewModel.hideAddToListBottomSheet() },
+            onSave = { status, progress, score, note, startDate, rewatches, priority ->
+                viewModel.saveToList(status, progress, score, note, startDate, rewatches, priority)
+            }
+        )
     }
 }
 

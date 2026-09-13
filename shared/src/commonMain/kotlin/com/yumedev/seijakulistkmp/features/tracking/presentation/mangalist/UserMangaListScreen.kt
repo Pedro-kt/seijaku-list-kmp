@@ -381,8 +381,8 @@ private fun MangaListContent(
         MediaListCardType.Compact -> {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 100.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                contentPadding = PaddingValues(top = 16.dp, bottom = 100.dp),
+                verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
                 items(entries, key = { it.id }) { entry ->
                     MediaListCard(
@@ -403,6 +403,9 @@ private fun MangaListContent(
                         onClick = {
                             onNavigateToDetail(entry.mediaId)
                         }
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
             }

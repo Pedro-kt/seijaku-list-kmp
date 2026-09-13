@@ -54,12 +54,12 @@ class SettingsRepositoryImpl(
     }
 
     override fun getCardType(): Flow<MediaListCardType> {
-        return flowSettings.getStringFlow(KEY_CARD_TYPE, "Grid")
+        return flowSettings.getStringFlow(KEY_CARD_TYPE, "Compact")
             .map { cardTypeName ->
                 when (cardTypeName) {
                     "Compact" -> MediaListCardType.Compact
                     "Grid" -> MediaListCardType.Grid
-                    else -> MediaListCardType.Grid
+                    else -> MediaListCardType.Compact
                 }
             }
     }

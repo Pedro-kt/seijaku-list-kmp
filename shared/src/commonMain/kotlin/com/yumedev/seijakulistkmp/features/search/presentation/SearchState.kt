@@ -17,14 +17,14 @@ data class SearchState(
     val trendingAnimes: List<TrendingAnime> = emptyList(),
     val isLoadingTrending: Boolean = false,
     val trendingError: ErrorType? = null,
-    // Search results
     val searchResults: List<SearchResultItem> = emptyList(),
     val characterResults: List<CharacterResultItem> = emptyList(),
     val isSearching: Boolean = false,
     val searchError: ErrorType? = null,
     val hasSearched: Boolean = false,
-    // Filters
     val filterStatus: MediaStatus = MediaStatus.ALL,
     val filterFormat: MediaFormat = MediaFormat.ALL,
-    val filterMinScore: Int? = null
+    val filterMinScore: Int? = null,
+    val showAddToListBottomSheet: Boolean = false,
+    val selectedItemForList: SearchResultItem? = null
 )

@@ -16,7 +16,7 @@ fun MediaListCard(
     cardType: MediaListCardType = MediaListCardType.Compact
 ) {
     when (cardType) {
-        is MediaListCardType.Compact -> CompactMediaListCard(
+        is MediaListCardType.Compact -> ListMediaListCard(
             entry = entry,
             onIncrementProgress = onIncrementProgress,
             onEditClick = onEditClick,

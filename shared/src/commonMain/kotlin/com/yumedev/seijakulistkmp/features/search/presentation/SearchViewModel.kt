@@ -4,8 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.yumedev.seijakulistkmp.core.domain.model.MediaType as CoreMediaType
+import com.yumedev.seijakulistkmp.core.domain.model.Result
 import com.yumedev.seijakulistkmp.core.error.ErrorMapper
 import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.CachedMediaInfo
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.AddToListUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.CheckInListUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListEntryUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.UpdateListEntryUseCase
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchAnimeQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchMangaQuery
 import com.yumedev.seijakulistkmp.data.remote.graphql.SearchCharacterQuery
@@ -32,6 +41,7 @@ import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaStatus
 import com.yumedev.seijakulistkmp.features.search.presentation.model.QuickFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
+import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchResultItem
 import com.yumedev.seijakulistkmp.features.search.presentation.model.TrendingAnime
 import com.yumedev.seijakulistkmp.features.search.presentation.model.toApiValue
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +56,11 @@ class SearchViewModel(
     private val apolloClient: ApolloClient,
     private val mediaStringFormatter: MediaStringFormatter,
     private val recentSearchRepository: RecentSearchRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val addToListUseCase: AddToListUseCase,
+    private val updateListEntryUseCase: UpdateListEntryUseCase,
+    private val checkInListUseCase: CheckInListUseCase,
+    private val getListEntryUseCase: GetListEntryUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SearchState())
@@ -686,5 +700,97 @@ class SearchViewModel(
         ).toInstant(timeZone).epochSeconds.toInt()
 
         return Pair(startOfDay, endOfDay)
+    }
+
+    fun showAddToListBottomSheet(item: SearchResultItem) {
+        _state.update {
+            it.copy(
+                showAddToListBottomSheet = true,
+                selectedItemForList = item
+            )
+        }
+    }
+
+    fun hideAddToListBottomSheet() {
+        _state.update {
+            it.copy(
+                showAddToListBottomSheet = false,
+                selectedItemForList = null
+            )
+        }
+    }
+
+    fun saveToList(
+        status: MediaListStatus,
+        progress: Int,
+        score: Float?,
+        note: String,
+        startDate: String?,
+        rewatches: Int,
+        priority: MediaListPriority
+    ) {
+        viewModelScope.launch {
+            val selectedItem = _state.value.selectedItemForList ?: return@launch
+
+            val mediaType = when (selectedItem.mediaType) {
+                com.yumedev.seijakulistkmp.features.search.presentation.model.MediaType.ANIME -> CoreMediaType.ANIME
+                com.yumedev.seijakulistkmp.features.search.presentation.model.MediaType.MANGA -> CoreMediaType.MANGA
+            }
+
+            val isInList = checkInListUseCase(selectedItem.id, mediaType)
+
+            val mediaInfo = CachedMediaInfo(
+                title = selectedItem.title,
+                coverImage = selectedItem.coverImage,
+                totalEpisodes = selectedItem.episodes,
+                totalChapters = selectedItem.chapters,
+                totalVolumes = null,
+                mediaStatus = selectedItem.status
+            )
+
+            val result = if (isInList) {
+                updateListEntryUseCase(
+                    mediaId = selectedItem.id,
+                    mediaType = mediaType,
+                    status = status,
+                    progress = progress,
+                    score = score,
+                    notes = note.takeIf { it.isNotBlank() },
+                    startDate = startDate,
+                    repeatCount = rewatches,
+                    priority = priority
+                )
+            } else {
+                addToListUseCase(
+                    mediaId = selectedItem.id,
+                    mediaType = mediaType,
+                    status = status,
+                    mediaInfo = mediaInfo
+                ).also {
+                    if (it is Result.Success) {
+                        updateListEntryUseCase(
+                            mediaId = selectedItem.id,
+                            mediaType = mediaType,
+                            progress = progress,
+                            score = score,
+                            notes = note.takeIf { it.isNotBlank() },
+                            startDate = startDate,
+                            repeatCount = rewatches,
+                            priority = priority
+                        )
+                    }
+                }
+            }
+
+            when (result) {
+                is Result.Success -> {
+                    hideAddToListBottomSheet()
+                    // TODO: Show success message if needed
+                }
+                is Result.Failure -> {
+                    // TODO: Show error message
+                }
+            }
+        }
     }
 }

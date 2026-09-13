@@ -325,6 +325,8 @@
     <string name="list_note_placeholder">Your opinion...</string>
     <string name="list_start_date">Start date</string>
     <string name="list_rewatches">Rewatches</string>
+    <string name="list_rewatches_count">Rewatched %1$dx</string>
+    <string name="list_score_label">Score: %1$d</string>
     <string name="list_cancel">Cancel</string>
     <string name="list_save">Save</string>
     <string name="list_delete">Delete from list</string>
