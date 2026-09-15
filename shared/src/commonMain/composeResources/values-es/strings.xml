@@ -414,4 +414,31 @@
     <string name="welcome_page4_description">Mantén un seguimiento de lo que estás viendo, planeando o has completado</string>
     <string name="welcome_page5_title">Sincroniza con AniList</string>
     <string name="welcome_page5_description">Si quieres, sincroniza tus listas con AniList y nunca pierdas tu progreso en todos tus dispositivos</string>
+
+    <!-- Auth Screen -->
+    <string name="auth_title">Bienvenido</string>
+    <string name="auth_tab_login">Iniciar sesión</string>
+    <string name="auth_tab_register">Registrarse</string>
+    <string name="auth_email">Correo electrónico</string>
+    <string name="auth_email_placeholder">Ingresa tu correo</string>
+    <string name="auth_password">Contraseña</string>
+    <string name="auth_password_placeholder">Ingresa tu contraseña</string>
+    <string name="auth_confirm_password">Confirmar contraseña</string>
+    <string name="auth_confirm_password_placeholder">Confirma tu contraseña</string>
+    <string name="auth_login_button">Iniciar sesión</string>
+    <string name="auth_register_button">Crear cuenta</string>
+    <string name="auth_continue_without_account">Continuar sin cuenta</string>
+    <string name="auth_or_continue_with">O continuar con</string>
+    <string name="auth_google">Google</string>
+    <string name="auth_anilist">AniList</string>
+    <string name="auth_forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="auth_already_have_account">¿Ya tienes una cuenta?</string>
+    <string name="auth_dont_have_account">¿No tienes una cuenta?</string>
+    <string name="auth_password_mismatch">Las contraseñas no coinciden</string>
+    <string name="auth_show_password">Mostrar contraseña</string>
+    <string name="auth_hide_password">Ocultar contraseña</string>
+    <string name="auth_forgot_password_title">Restablecer Contraseña</string>
+    <string name="auth_forgot_password_description">Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña</string>
+    <string name="auth_cancel">Cancelar</string>
+    <string name="auth_send">Enviar</string>
 </resources>

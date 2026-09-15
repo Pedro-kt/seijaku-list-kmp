@@ -1,0 +1,15 @@
+## This file is an example template for local.properties
+# Copy this file to local.properties and fill in your actual values
+# local.properties is git-ignored and will not be committed
+
+# Android SDK location
+# Usually auto-detected by Android Studio
+sdk.dir=/path/to/your/Android/Sdk
+
+# Google OAuth 2.0 Web Client ID (Firebase Console)
+# Get this from:
+# 1. Firebase Console > Project Settings > General
+# 2. Your apps section > Web app
+# 3. Copy the Web client ID
+# Or from google-services.json under "client" > "oauth_client" > "client_id" (type: 3)
+GOOGLE_WEB_CLIENT_ID=YOUR_WEB_CLIENT_ID_HERE.apps.googleusercontent.com
