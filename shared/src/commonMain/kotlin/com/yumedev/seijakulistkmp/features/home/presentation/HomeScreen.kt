@@ -32,6 +32,8 @@ import com.yumedev.seijakulistkmp.features.detail.presentation.utils.toCore
 import com.yumedev.seijakulistkmp.features.home.domain.model.SectionType
 import com.yumedev.seijakulistkmp.features.home.presentation.components.AnimeSection
 import com.yumedev.seijakulistkmp.features.home.presentation.components.FeaturedCarousel
+import com.yumedev.seijakulistkmp.features.home.presentation.components.FeaturedCarouselSkeleton
+import com.yumedev.seijakulistkmp.features.home.presentation.components.HomeLoadingSkeleton
 import com.yumedev.seijakulistkmp.features.home.presentation.components.MangaSection
 import com.yumedev.seijakulistkmp.features.home.presentation.model.AnimeCardItem
 import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
@@ -194,12 +196,7 @@ fun HomeScreenContent(
             }
 
             if (showInitialLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                HomeLoadingSkeleton()
             } else {
                 HorizontalPager(
                     state = pagerState,
@@ -273,15 +270,7 @@ private fun AnimeTabContent(
         item {
             when {
                 state.isLoadingFeaturedAnime -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(220.dp)
-                            .padding(horizontal = 16.dp, vertical = 16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+                    FeaturedCarouselSkeleton(modifier = Modifier.padding(top = 16.dp))
                 }
                 state.featuredAnimeError != null -> {
                     val title = state.featuredAnimeError.title
@@ -467,15 +456,7 @@ private fun MangaTabContent(
         item {
             when {
                 state.isLoadingFeaturedManga -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(220.dp)
-                            .padding(horizontal = 16.dp, vertical = 16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+                    FeaturedCarouselSkeleton(modifier = Modifier.padding(top = 16.dp))
                 }
                 state.featuredMangaError != null -> {
                     val title = state.featuredMangaError.title
