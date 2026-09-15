@@ -437,4 +437,8 @@
     <string name="auth_password_mismatch">Las contraseñas no coinciden</string>
     <string name="auth_show_password">Mostrar contraseña</string>
     <string name="auth_hide_password">Ocultar contraseña</string>
+    <string name="auth_forgot_password_title">Restablecer Contraseña</string>
+    <string name="auth_forgot_password_description">Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña</string>
+    <string name="auth_cancel">Cancelar</string>
+    <string name="auth_send">Enviar</string>
 </resources>

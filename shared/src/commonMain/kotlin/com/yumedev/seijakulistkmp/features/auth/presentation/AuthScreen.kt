@@ -13,23 +13,56 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.features.auth.presentation.components.LoginTab
 import com.yumedev.seijakulistkmp.features.auth.presentation.components.RegisterTab
 import com.yumedev.seijakulistkmp.features.main.presentation.MainScreen
+import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import seijakulistkmp.shared.generated.resources.*
 
 class AuthScreen : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val viewModel: AuthViewModel = koinInject()
+        val state by viewModel.uiState.collectAsState()
+        val snackbarHostState = remember { SnackbarHostState() }
+
+        LaunchedEffect(Unit) {
+            viewModel.events.collectLatest { event ->
+                when (event) {
+                    is AuthEvent.NavigateToMain -> {
+                        navigator.popUntilRoot()
+                        navigator.replace(MainScreen())
+                    }
+                    is AuthEvent.ShowError -> {
+                        snackbarHostState.showSnackbar(
+                            message = event.message,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                    is AuthEvent.ShowSuccess -> {
+                        snackbarHostState.showSnackbar(
+                            message = event.message,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                    else -> { /* Handle other events if needed */ }
+                }
+            }
+        }
+
         AuthScreenContent(
+            state = state,
+            snackbarHostState = snackbarHostState,
+            onEmailChange = viewModel::onEmailChange,
+            onPasswordChange = viewModel::onPasswordChange,
+            onConfirmPasswordChange = viewModel::onConfirmPasswordChange,
+            onTogglePasswordVisibility = viewModel::onTogglePasswordVisibility,
+            onToggleConfirmPasswordVisibility = viewModel::onToggleConfirmPasswordVisibility,
+            onLogin = viewModel::onLogin,
+            onRegister = viewModel::onRegister,
+            onGoogleSignIn = viewModel::onGoogleSignIn,
+            onForgotPassword = viewModel::onForgotPassword,
             onContinueWithoutAccount = {
-                navigator.popUntilRoot()
-                navigator.replace(MainScreen())
-            },
-            onLoginSuccess = {
-                navigator.popUntilRoot()
-                navigator.replace(MainScreen())
-            },
-            onRegisterSuccess = {
                 navigator.popUntilRoot()
                 navigator.replace(MainScreen())
             }
@@ -39,9 +72,18 @@ class AuthScreen : Screen {
 
 @Composable
 fun AuthScreenContent(
+    state: AuthState,
+    snackbarHostState: SnackbarHostState,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onConfirmPasswordChange: (String) -> Unit,
+    onTogglePasswordVisibility: () -> Unit,
+    onToggleConfirmPasswordVisibility: () -> Unit,
+    onLogin: () -> Unit,
+    onRegister: () -> Unit,
+    onGoogleSignIn: (Any?) -> Unit,
+    onForgotPassword: (String) -> Unit,
     onContinueWithoutAccount: () -> Unit,
-    onLoginSuccess: () -> Unit,
-    onRegisterSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
@@ -53,6 +95,7 @@ fun AuthScreenContent(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             Column(
                 modifier = Modifier
@@ -123,11 +166,24 @@ fun AuthScreenContent(
 
             when (selectedTabIndex) {
                 0 -> LoginTab(
-                    onLoginSuccess = onLoginSuccess,
+                    state = state,
+                    onEmailChange = onEmailChange,
+                    onPasswordChange = onPasswordChange,
+                    onTogglePasswordVisibility = onTogglePasswordVisibility,
+                    onLogin = onLogin,
+                    onGoogleSignIn = onGoogleSignIn,
+                    onForgotPassword = onForgotPassword,
                     modifier = Modifier.fillMaxSize()
                 )
                 1 -> RegisterTab(
-                    onRegisterSuccess = onRegisterSuccess,
+                    state = state,
+                    onEmailChange = onEmailChange,
+                    onPasswordChange = onPasswordChange,
+                    onConfirmPasswordChange = onConfirmPasswordChange,
+                    onTogglePasswordVisibility = onTogglePasswordVisibility,
+                    onToggleConfirmPasswordVisibility = onToggleConfirmPasswordVisibility,
+                    onRegister = onRegister,
+                    onGoogleSignIn = onGoogleSignIn,
                     modifier = Modifier.fillMaxSize()
                 )
             }

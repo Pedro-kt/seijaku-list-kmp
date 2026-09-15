@@ -17,6 +17,9 @@ import seijakulistkmp.shared.generated.resources.*
 
 @Composable
 fun SocialAuthButtons(
+    isGoogleLoading: Boolean,
+    onGoogleSignIn: () -> Unit,
+    enabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -24,7 +27,7 @@ fun SocialAuthButtons(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         OutlinedButton(
-            onClick = { },
+            onClick = onGoogleSignIn,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -32,18 +35,26 @@ fun SocialAuthButtons(
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = MaterialTheme.colorScheme.onSurface
-            )
+            ),
+            enabled = enabled && !isGoogleLoading
         ) {
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    imageVector = TablerIcons.Outlined.BrandGoogle,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
+                if (isGoogleLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        imageVector = TablerIcons.Outlined.BrandGoogle,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = stringResource(Res.string.auth_google),
@@ -54,7 +65,7 @@ fun SocialAuthButtons(
         }
 
         OutlinedButton(
-            onClick = { },
+            onClick = { /* TODO: Implement Anilist OAuth */ },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -62,7 +73,8 @@ fun SocialAuthButtons(
             border = BorderStroke(1.dp, Color(0xFF02A9FF)),
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = Color(0xFF02A9FF)
-            )
+            ),
+            enabled = false
         ) {
             Row(
                 horizontalArrangement = Arrangement.Center,

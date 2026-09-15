@@ -4,11 +4,20 @@ import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
+import com.yumedev.seijakulistkmp.di.initKoin
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import java.util.Locale
 
 class SeijakuApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+
+        initKoin(googleWebClientId = BuildConfig.GOOGLE_WEB_CLIENT_ID) {
+            androidLogger()
+            androidContext(this@SeijakuApplication)
+        }
+
         applyLanguage()
     }
 

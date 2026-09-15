@@ -18,6 +18,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.core.utils.getPlatformContext
+import com.yumedev.seijakulistkmp.features.auth.presentation.AuthState
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Eye
 import dev.seyfarth.tablericons.outlined.EyeOff
@@ -26,13 +28,17 @@ import seijakulistkmp.shared.generated.resources.*
 
 @Composable
 fun LoginTab(
-    onLoginSuccess: () -> Unit,
+    state: AuthState,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onTogglePasswordVisibility: () -> Unit,
+    onLogin: () -> Unit,
+    onGoogleSignIn: (Any?) -> Unit,
+    onForgotPassword: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
+    var showForgotPasswordDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier.fillMaxSize(),
@@ -45,105 +51,140 @@ fun LoginTab(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text(stringResource(Res.string.auth_email)) },
-            placeholder = { Text(stringResource(Res.string.auth_email_placeholder)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { focusManager.moveFocus(FocusDirection.Down) }
-            ),
-            shape = RoundedCornerShape(12.dp)
-        )
+            OutlinedTextField(
+                value = state.email,
+                onValueChange = onEmailChange,
+                label = { Text(stringResource(Res.string.auth_email)) },
+                placeholder = { Text(stringResource(Res.string.auth_email_placeholder)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                isError = state.emailError != null,
+                supportingText = state.emailError?.let { { Text(it) } },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
+                shape = RoundedCornerShape(12.dp),
+                enabled = !state.isLoading
+            )
 
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text(stringResource(Res.string.auth_password)) },
-            placeholder = { Text(stringResource(Res.string.auth_password_placeholder)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            visualTransformation = if (passwordVisible)
-                VisualTransformation.None
-            else
-                PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
-            ),
-            trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(
-                        imageVector = if (passwordVisible)
-                            TablerIcons.Outlined.EyeOff
-                        else
-                            TablerIcons.Outlined.Eye,
-                        contentDescription = if (passwordVisible)
-                            stringResource(Res.string.auth_hide_password)
-                        else
-                            stringResource(Res.string.auth_show_password)
+            OutlinedTextField(
+                value = state.password,
+                onValueChange = onPasswordChange,
+                label = { Text(stringResource(Res.string.auth_password)) },
+                placeholder = { Text(stringResource(Res.string.auth_password_placeholder)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                isError = state.passwordError != null,
+                supportingText = state.passwordError?.let { { Text(it) } },
+                visualTransformation = if (state.passwordVisible)
+                    VisualTransformation.None
+                else
+                    PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                        if (state.isLoginFormValid) onLogin()
+                    }
+                ),
+                trailingIcon = {
+                    IconButton(onClick = onTogglePasswordVisibility) {
+                        Icon(
+                            imageVector = if (state.passwordVisible)
+                                TablerIcons.Outlined.EyeOff
+                            else
+                                TablerIcons.Outlined.Eye,
+                            contentDescription = if (state.passwordVisible)
+                                stringResource(Res.string.auth_hide_password)
+                            else
+                                stringResource(Res.string.auth_show_password)
+                        )
+                    }
+                },
+                shape = RoundedCornerShape(12.dp),
+                enabled = !state.isLoading
+            )
+
+            TextButton(
+                onClick = { showForgotPasswordDialog = true },
+                modifier = Modifier.align(Alignment.End),
+                enabled = !state.isLoading
+            ) {
+                Text(
+                    text = stringResource(Res.string.auth_forgot_password),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = onLogin,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(12.dp),
+                enabled = state.isLoginFormValid && !state.isLoading
+            ) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text(
+                        text = stringResource(Res.string.auth_login_button),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
-            },
-            shape = RoundedCornerShape(12.dp)
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                HorizontalDivider(modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(Res.string.auth_or_continue_with),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                HorizontalDivider(modifier = Modifier.weight(1f))
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            val platformContext = getPlatformContext()
+
+            SocialAuthButtons(
+                isGoogleLoading = state.isGoogleSignInLoading,
+                onGoogleSignIn = { onGoogleSignIn(platformContext) },
+                enabled = !state.isLoading
+            )
+        }
+    }
+
+    if (showForgotPasswordDialog) {
+        ForgotPasswordDialog(
+            initialEmail = state.email,
+            isLoading = state.isLoading,
+            onDismiss = { showForgotPasswordDialog = false },
+            onSendResetEmail = { email ->
+                onForgotPassword(email)
+                showForgotPasswordDialog = false
+            }
         )
-
-        TextButton(
-            onClick = { },
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Text(
-                text = stringResource(Res.string.auth_forgot_password),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(
-            onClick = onLoginSuccess,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(12.dp),
-            enabled = email.isNotBlank() && password.isNotBlank()
-        ) {
-            Text(
-                text = stringResource(Res.string.auth_login_button),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            HorizontalDivider(modifier = Modifier.weight(1f))
-            Text(
-                text = stringResource(Res.string.auth_or_continue_with),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-            HorizontalDivider(modifier = Modifier.weight(1f))
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        SocialAuthButtons()
-        }
     }
 }

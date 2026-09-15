@@ -30,7 +30,7 @@ kotlin {
        minSdk = libs.versions.android.minSdk.get().toInt()
 
        compilerOptions {
-           jvmTarget = JvmTarget.JVM_11
+           jvmTarget = JvmTarget.JVM_17
        }
        androidResources {
            enable = true
@@ -101,12 +101,9 @@ kotlin {
             implementation(libs.multiplatform.settings.coroutines)
             implementation(libs.multiplatform.settings.no.arg)
 
-            // TODO: Firebase KMP - Descomentar cuando implementemos autenticación
-            // Requiere: google-services.json (Android), GoogleService-Info.plist (iOS)
-            // implementation(libs.firebase.auth)
-            // implementation(libs.firebase.firestore)
-            // implementation(libs.firebase.storage)
-            // implementation(libs.firebase.common)
+            implementation(libs.firebase.auth)
+            implementation(libs.firebase.firestore)
+            implementation(libs.firebase.common)
 
             // TODO: OAuth 2.0 - Descomentar cuando implementemos login AniList/MAL
             // Requiere: manifestPlaceholders["oidcRedirectScheme"] en androidMain
@@ -133,6 +130,16 @@ kotlin {
 
             // Apollo SQLite Cache
             implementation(libs.apollo.normalized.cache.sqlite)
+
+            // Firebase Android Native SDKs (required by GitLive Firebase)
+            implementation("com.google.firebase:firebase-auth:23.1.0")
+            implementation("com.google.firebase:firebase-firestore:25.1.1")
+            implementation("com.google.firebase:firebase-common:21.0.0")
+
+            // Google Credential Manager for Google Sign-In
+            implementation("androidx.credentials:credentials:1.3.0")
+            implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+            implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
             // Android-only Libraries
             implementation(libs.lottie.compose)

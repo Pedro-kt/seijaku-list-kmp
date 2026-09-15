@@ -94,3 +94,6 @@ yarn-error.log
 .cache/
 tmp/
 temp/
+
+# Documentation
+docs/

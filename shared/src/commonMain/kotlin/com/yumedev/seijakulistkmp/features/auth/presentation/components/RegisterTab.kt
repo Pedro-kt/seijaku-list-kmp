@@ -18,6 +18,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.core.utils.getPlatformContext
+import com.yumedev.seijakulistkmp.features.auth.presentation.AuthState
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Eye
 import dev.seyfarth.tablericons.outlined.EyeOff
@@ -26,20 +28,17 @@ import seijakulistkmp.shared.generated.resources.*
 
 @Composable
 fun RegisterTab(
-    onRegisterSuccess: () -> Unit,
+    state: AuthState,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onConfirmPasswordChange: (String) -> Unit,
+    onTogglePasswordVisibility: () -> Unit,
+    onToggleConfirmPasswordVisibility: () -> Unit,
+    onRegister: () -> Unit,
+    onGoogleSignIn: (Any?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var confirmPasswordVisible by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-
-    val isFormValid = email.isNotBlank() &&
-            password.isNotBlank() &&
-            confirmPassword.isNotBlank() &&
-            password == confirmPassword
 
     Box(
         modifier = modifier.fillMaxSize(),
@@ -52,139 +51,154 @@ fun RegisterTab(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text(stringResource(Res.string.auth_email)) },
-            placeholder = { Text(stringResource(Res.string.auth_email_placeholder)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { focusManager.moveFocus(FocusDirection.Down) }
-            ),
-            shape = RoundedCornerShape(12.dp)
-        )
+            OutlinedTextField(
+                value = state.email,
+                onValueChange = onEmailChange,
+                label = { Text(stringResource(Res.string.auth_email)) },
+                placeholder = { Text(stringResource(Res.string.auth_email_placeholder)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                isError = state.emailError != null,
+                supportingText = state.emailError?.let { { Text(it) } },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
+                shape = RoundedCornerShape(12.dp),
+                enabled = !state.isLoading
+            )
 
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text(stringResource(Res.string.auth_password)) },
-            placeholder = { Text(stringResource(Res.string.auth_password_placeholder)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            visualTransformation = if (passwordVisible)
-                VisualTransformation.None
-            else
-                PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { focusManager.moveFocus(FocusDirection.Down) }
-            ),
-            trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(
-                        imageVector = if (passwordVisible)
-                            TablerIcons.Outlined.EyeOff
-                        else
-                            TablerIcons.Outlined.Eye,
-                        contentDescription = if (passwordVisible)
-                            stringResource(Res.string.auth_hide_password)
-                        else
-                            stringResource(Res.string.auth_show_password)
+            OutlinedTextField(
+                value = state.password,
+                onValueChange = onPasswordChange,
+                label = { Text(stringResource(Res.string.auth_password)) },
+                placeholder = { Text(stringResource(Res.string.auth_password_placeholder)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                isError = state.passwordError != null,
+                supportingText = state.passwordError?.let { { Text(it) } },
+                visualTransformation = if (state.passwordVisible)
+                    VisualTransformation.None
+                else
+                    PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
+                trailingIcon = {
+                    IconButton(onClick = onTogglePasswordVisibility) {
+                        Icon(
+                            imageVector = if (state.passwordVisible)
+                                TablerIcons.Outlined.EyeOff
+                            else
+                                TablerIcons.Outlined.Eye,
+                            contentDescription = if (state.passwordVisible)
+                                stringResource(Res.string.auth_hide_password)
+                            else
+                                stringResource(Res.string.auth_show_password)
+                        )
+                    }
+                },
+                shape = RoundedCornerShape(12.dp),
+                enabled = !state.isLoading
+            )
+
+            OutlinedTextField(
+                value = state.confirmPassword,
+                onValueChange = onConfirmPasswordChange,
+                label = { Text(stringResource(Res.string.auth_confirm_password)) },
+                placeholder = { Text(stringResource(Res.string.auth_confirm_password_placeholder)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                isError = state.confirmPasswordError != null,
+                supportingText = state.confirmPasswordError?.let { { Text(it) } },
+                visualTransformation = if (state.confirmPasswordVisible)
+                    VisualTransformation.None
+                else
+                    PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                        if (state.isRegisterFormValid) onRegister()
+                    }
+                ),
+                trailingIcon = {
+                    IconButton(onClick = onToggleConfirmPasswordVisibility) {
+                        Icon(
+                            imageVector = if (state.confirmPasswordVisible)
+                                TablerIcons.Outlined.EyeOff
+                            else
+                                TablerIcons.Outlined.Eye,
+                            contentDescription = if (state.confirmPasswordVisible)
+                                stringResource(Res.string.auth_hide_password)
+                            else
+                                stringResource(Res.string.auth_show_password)
+                        )
+                    }
+                },
+                shape = RoundedCornerShape(12.dp),
+                enabled = !state.isLoading
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = onRegister,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(12.dp),
+                enabled = state.isRegisterFormValid && !state.isLoading
+            ) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text(
+                        text = stringResource(Res.string.auth_register_button),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
-            },
-            shape = RoundedCornerShape(12.dp)
-        )
+            }
 
-        OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
-            label = { Text(stringResource(Res.string.auth_confirm_password)) },
-            placeholder = { Text(stringResource(Res.string.auth_confirm_password_placeholder)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            visualTransformation = if (confirmPasswordVisible)
-                VisualTransformation.None
-            else
-                PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
-            ),
-            trailingIcon = {
-                IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
-                    Icon(
-                        imageVector = if (confirmPasswordVisible)
-                            TablerIcons.Outlined.EyeOff
-                        else
-                            TablerIcons.Outlined.Eye,
-                        contentDescription = if (confirmPasswordVisible)
-                            stringResource(Res.string.auth_hide_password)
-                        else
-                            stringResource(Res.string.auth_show_password)
-                    )
-                }
-            },
-            isError = confirmPassword.isNotBlank() && password != confirmPassword,
-            shape = RoundedCornerShape(12.dp)
-        )
+            Spacer(modifier = Modifier.height(8.dp))
 
-        if (confirmPassword.isNotBlank() && password != confirmPassword) {
-            Text(
-                text = stringResource(Res.string.auth_password_mismatch),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(start = 16.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                HorizontalDivider(modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(Res.string.auth_or_continue_with),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                HorizontalDivider(modifier = Modifier.weight(1f))
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            val platformContext = getPlatformContext()
+
+            SocialAuthButtons(
+                isGoogleLoading = state.isGoogleSignInLoading,
+                onGoogleSignIn = { onGoogleSignIn(platformContext) },
+                enabled = !state.isLoading
             )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(
-            onClick = onRegisterSuccess,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(12.dp),
-            enabled = isFormValid
-        ) {
-            Text(
-                text = stringResource(Res.string.auth_register_button),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            HorizontalDivider(modifier = Modifier.weight(1f))
-            Text(
-                text = stringResource(Res.string.auth_or_continue_with),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-            HorizontalDivider(modifier = Modifier.weight(1f))
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        SocialAuthButtons()
         }
     }
 }

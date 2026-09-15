@@ -11,19 +11,11 @@ import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
-import com.yumedev.seijakulistkmp.di.characterModule
-import com.yumedev.seijakulistkmp.di.coreModule
-import com.yumedev.seijakulistkmp.di.detailModule
-import com.yumedev.seijakulistkmp.di.homeModule
-import com.yumedev.seijakulistkmp.di.networkModule
-import com.yumedev.seijakulistkmp.di.searchModule
-import com.yumedev.seijakulistkmp.di.settingsModule
-import com.yumedev.seijakulistkmp.di.trackingModule
 import com.yumedev.seijakulistkmp.features.main.presentation.MainScreen
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeModeUseCase
 import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
-import org.koin.compose.KoinApplication
+import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
 
 @Composable
@@ -38,19 +30,9 @@ fun App() {
             .build()
     }
 
-    KoinApplication(application = {
-        modules(
-            coreModule,
-            networkModule,
-            homeModule,
-            searchModule,
-            detailModule,
-            characterModule,
-            settingsModule,
-            trackingModule
-        )
-    }) {
+    KoinContext {
         val getThemeModeUseCase: GetThemeModeUseCase = koinInject()
+
         val themeMode by getThemeModeUseCase().collectAsState(initial = ThemeMode.SYSTEM)
         val isSystemInDark = isSystemInDarkTheme()
 
