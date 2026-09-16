@@ -97,3 +97,5 @@ temp/
 
 # Documentation
 docs/
+
+.agents/
