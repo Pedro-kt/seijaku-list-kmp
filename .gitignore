@@ -98,4 +98,6 @@ temp/
 # Documentation
 docs/
 
-.agents/
+.claude/.agents/
+
+.claude/.agents
