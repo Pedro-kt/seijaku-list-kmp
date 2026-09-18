@@ -48,7 +48,7 @@ import com.yumedev.seijakulistkmp.features.home.presentation.sectionlist.Section
 import com.yumedev.seijakulistkmp.features.search.presentation.SearchScreen
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AlertCircle
-import dev.seyfarth.tablericons.outlined.Bell
+import dev.seyfarth.tablericons.outlined.Calendar
 import dev.seyfarth.tablericons.outlined.Book
 import dev.seyfarth.tablericons.outlined.DeviceTv
 import dev.seyfarth.tablericons.outlined.Search
@@ -735,7 +735,7 @@ private fun HomeTopAppBar(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         Icon(
-                            imageVector = TablerIcons.Outlined.Bell,
+                            imageVector = TablerIcons.Outlined.Calendar,
                             contentDescription = stringResource(Res.string.notifications),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
