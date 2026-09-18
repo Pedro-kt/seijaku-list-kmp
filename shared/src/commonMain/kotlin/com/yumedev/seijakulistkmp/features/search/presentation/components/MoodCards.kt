@@ -90,7 +90,7 @@ private fun MoodCard(
 
     Surface(
         onClick = onClick,
-        shape = SeijakuTheme.shapes.cardAsymmetric, // Forma asimétrica expresiva
+        shape = RoundedCornerShape(24.dp),
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
         modifier = modifier
             .height(110.dp)

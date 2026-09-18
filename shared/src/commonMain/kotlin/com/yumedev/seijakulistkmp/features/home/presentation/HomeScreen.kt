@@ -40,9 +40,12 @@ import com.yumedev.seijakulistkmp.features.home.presentation.components.Featured
 import com.yumedev.seijakulistkmp.features.home.presentation.components.FeaturedCarouselSkeleton
 import com.yumedev.seijakulistkmp.features.home.presentation.components.HomeLoadingSkeleton
 import com.yumedev.seijakulistkmp.features.home.presentation.components.MangaSection
+import com.yumedev.seijakulistkmp.features.search.presentation.components.QuickFilterChips
+import com.yumedev.seijakulistkmp.features.search.presentation.model.QuickFilter
 import com.yumedev.seijakulistkmp.features.home.presentation.model.AnimeCardItem
 import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
 import com.yumedev.seijakulistkmp.features.home.presentation.sectionlist.SectionListScreen
+import com.yumedev.seijakulistkmp.features.search.presentation.SearchScreen
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AlertCircle
 import dev.seyfarth.tablericons.outlined.Bell
@@ -275,6 +278,8 @@ private fun AnimeTabContent(
     onAnimeLongClick: (AnimeCardItem) -> Unit,
     onNavigateToSectionList: (SectionType, MediaType, String) -> Unit
 ) {
+    val navigator = LocalNavigator.current
+
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
         onRefresh = onRefresh,
@@ -364,8 +369,20 @@ private fun AnimeTabContent(
         }
 
         item {
+            Spacer(modifier = Modifier.height(8.dp))
+            QuickFilterChips(
+                onFilterClick = { filter, label ->
+                    navigator?.push(
+                        SearchScreen(quickFilter = filter)
+                    )
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        item {
             val airingNowTitle = stringResource(Res.string.airing_now)
-            AnimeSection(
+        AnimeSection(
                 title = airingNowTitle,
                 items = state.airingNowAnime,
                 onSeeMoreClick = {
@@ -460,6 +477,8 @@ private fun MangaTabContent(
     onMangaLongClick: (com.yumedev.seijakulistkmp.features.home.presentation.model.MangaCardItem) -> Unit,
     onNavigateToSectionList: (SectionType, MediaType, String) -> Unit
 ) {
+    val navigator = LocalNavigator.current
+
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
         onRefresh = onRefresh,
@@ -547,6 +566,18 @@ private fun MangaTabContent(
                     )
                 }
             }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
+            QuickFilterChips(
+                onFilterClick = { filter, _ ->
+                    navigator?.push(
+                        SearchScreen(quickFilter = filter)
+                    )
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
         // Publishing Now Section

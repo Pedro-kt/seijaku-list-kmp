@@ -153,7 +153,7 @@ private fun FeaturedCarouselItem(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(220.dp)
+                .height(200.dp)
         ) {
             imageUrl?.let { url ->
                 AsyncImage(
@@ -273,7 +273,7 @@ private fun FeaturedCarouselItem(
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Normal,
                     color = imageColors.value.dominant.getContrastColor(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
