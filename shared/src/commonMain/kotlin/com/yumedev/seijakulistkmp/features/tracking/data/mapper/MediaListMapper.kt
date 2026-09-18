@@ -36,7 +36,8 @@ fun MediaListEntryEntity.toDomain(): MediaListEntry {
                 mediaStatus = mediaStatus
             )
         } else null,
-        mediaStatus = mediaStatus
+        mediaStatus = mediaStatus,
+        favoritePosition = favoritePosition
     )
 }
 
@@ -64,6 +65,7 @@ fun MediaListEntry.toEntity(): MediaListEntryEntity {
         mediaTotalEpisodes = mediaInfo?.totalEpisodes,
         mediaTotalChapters = mediaInfo?.totalChapters,
         mediaTotalVolumes = mediaInfo?.totalVolumes,
-        mediaStatus = mediaStatus
+        mediaStatus = mediaStatus,
+        favoritePosition = favoritePosition
     )
 }

@@ -124,4 +124,39 @@ interface MediaListDao {
 
     @Query("UPDATE media_list_entries SET is_synced = 1, needs_sync = 0")
     suspend fun markAllAsSynced()
+
+    @Query("""
+        SELECT * FROM media_list_entries
+        WHERE media_type = :mediaType AND favorite_position IS NOT NULL
+        ORDER BY favorite_position ASC
+        LIMIT 5
+    """)
+    fun observeFavoritesByType(mediaType: String): Flow<List<MediaListEntryEntity>>
+
+    @Query("""
+        SELECT * FROM media_list_entries
+        WHERE media_type = :mediaType AND favorite_position IS NOT NULL
+        ORDER BY favorite_position ASC
+        LIMIT 5
+    """)
+    suspend fun getFavoritesByType(mediaType: String): List<MediaListEntryEntity>
+
+    @Query("""
+        UPDATE media_list_entries
+        SET favorite_position = :position, updated_at = :updatedAt, needs_sync = 1
+        WHERE media_id = :mediaId AND media_type = :mediaType
+    """)
+    suspend fun updateFavoritePosition(
+        mediaId: Int,
+        mediaType: String,
+        position: Int?,
+        updatedAt: Long
+    )
+
+    @Query("""
+        UPDATE media_list_entries
+        SET favorite_position = NULL, updated_at = :updatedAt, needs_sync = 1
+        WHERE media_id = :mediaId AND media_type = :mediaType
+    """)
+    suspend fun removeFavorite(mediaId: Int, mediaType: String, updatedAt: Long)
 }

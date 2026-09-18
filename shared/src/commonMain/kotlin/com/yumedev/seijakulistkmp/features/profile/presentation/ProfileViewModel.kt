@@ -11,7 +11,11 @@ import com.yumedev.seijakulistkmp.features.profile.domain.usecase.UpdateProfileS
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.UpdateProfileUseCase
 import com.yumedev.seijakulistkmp.features.profile.presentation.model.ProfileError
 import com.yumedev.seijakulistkmp.features.profile.presentation.model.ProfileUiState
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetFavoriteMediaUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListStatsUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.RemoveFavoriteUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ReorderFavoritesUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.SetMediaAsFavoriteUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +29,10 @@ class ProfileViewModel(
     private val ensureLocalProfileExists: EnsureLocalProfileExistsUseCase,
     private val getListStats: GetListStatsUseCase,
     private val getCurrentUser: GetCurrentUserUseCase,
+    private val getFavoriteMedia: GetFavoriteMediaUseCase,
+    private val setMediaAsFavorite: SetMediaAsFavoriteUseCase,
+    private val removeFavorite: RemoveFavoriteUseCase,
+    private val reorderFavorites: ReorderFavoritesUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -33,6 +41,7 @@ class ProfileViewModel(
     init {
         loadProfile()
         loadStats()
+        loadFavorites()
         observeAuthState()
     }
 
@@ -84,6 +93,19 @@ class ProfileViewModel(
         viewModelScope.launch {
             getListStats(MediaType.MANGA).collect { stats ->
                 _uiState.update { it.copy(mangaStats = stats) }
+            }
+        }
+    }
+
+    private fun loadFavorites() {
+        viewModelScope.launch {
+            getFavoriteMedia.observe(MediaType.ANIME).collect { favorites ->
+                _uiState.update { it.copy(favoriteAnime = favorites) }
+            }
+        }
+        viewModelScope.launch {
+            getFavoriteMedia.observe(MediaType.MANGA).collect { favorites ->
+                _uiState.update { it.copy(favoriteManga = favorites) }
             }
         }
     }
@@ -295,5 +317,71 @@ class ProfileViewModel(
     fun onSyncWithAnilist() {
         // TODO: Implement when Anilist authentication is ready
         _uiState.update { it.copy(error = ProfileError.AnilistSyncUnavailable) }
+    }
+
+    fun onOpenFavoriteSelector(position: Int) {
+        _uiState.update {
+            it.copy(
+                showFavoriteSelectorDialog = true,
+                selectedFavoritePosition = position
+            )
+        }
+    }
+
+    fun onDismissFavoriteSelector() {
+        _uiState.update {
+            it.copy(
+                showFavoriteSelectorDialog = false,
+                selectedFavoritePosition = null
+            )
+        }
+    }
+
+    fun onSetFavorite(mediaId: Int, position: Int) {
+        val mediaType = if (_uiState.value.selectedTab == 0) MediaType.ANIME else MediaType.MANGA
+
+        viewModelScope.launch {
+            when (setMediaAsFavorite(mediaId, mediaType, position)) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            showFavoriteSelectorDialog = false,
+                            selectedFavoritePosition = null
+                        )
+                    }
+                }
+                is Result.Failure -> {
+                    _uiState.update { it.copy(error = ProfileError.SavingError) }
+                }
+            }
+        }
+    }
+
+    fun onRemoveFavorite(mediaId: Int) {
+        val mediaType = if (_uiState.value.selectedTab == 0) MediaType.ANIME else MediaType.MANGA
+
+        viewModelScope.launch {
+            when (removeFavorite(mediaId, mediaType)) {
+                is Result.Success -> {
+                }
+                is Result.Failure -> {
+                    _uiState.update { it.copy(error = ProfileError.SavingError) }
+                }
+            }
+        }
+    }
+
+    fun onReorderFavorites(reorderedEntries: List<Pair<Int, Int>>) {
+        val mediaType = if (_uiState.value.selectedTab == 0) MediaType.ANIME else MediaType.MANGA
+
+        viewModelScope.launch {
+            when (reorderFavorites(mediaType, reorderedEntries)) {
+                is Result.Success -> {
+                }
+                is Result.Failure -> {
+                    _uiState.update { it.copy(error = ProfileError.SavingError) }
+                }
+            }
+        }
     }
 }

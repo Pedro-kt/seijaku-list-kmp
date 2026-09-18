@@ -74,4 +74,17 @@ interface MediaListRepository {
     suspend fun syncWithAniList(): Result<Unit>
     suspend fun getUnsyncedEntries(): List<MediaListEntry>
     suspend fun getAllEntries(): List<MediaListEntry>
+
+    fun observeFavorites(mediaType: MediaType): Flow<List<MediaListEntry>>
+    suspend fun getFavorites(mediaType: MediaType): Result<List<MediaListEntry>>
+    suspend fun setFavoritePosition(
+        mediaId: Int,
+        mediaType: MediaType,
+        position: Int
+    ): Result<MediaListEntry>
+    suspend fun removeFavorite(mediaId: Int, mediaType: MediaType): Result<Unit>
+    suspend fun reorderFavorites(
+        mediaType: MediaType,
+        reorderedEntries: List<Pair<Int, Int>>
+    ): Result<Unit>
 }
