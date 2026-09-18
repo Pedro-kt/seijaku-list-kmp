@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -62,13 +64,17 @@ import coil3.compose.AsyncImage
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.core.utils.rememberFilePicker
 import com.yumedev.seijakulistkmp.core.utils.rememberImageManager
 import com.yumedev.seijakulistkmp.features.profile.domain.model.UserProfile
+import com.yumedev.seijakulistkmp.features.profile.presentation.components.FavoriteMediaSelectorBottomSheet
+import com.yumedev.seijakulistkmp.features.profile.presentation.components.ProfileTopFavoritesSection
 import com.yumedev.seijakulistkmp.features.profile.presentation.model.ProfileError
 import com.yumedev.seijakulistkmp.features.profile.presentation.model.ProfileUiState
 import com.yumedev.seijakulistkmp.features.settings.presentation.SettingsScreen
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStats
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetMediaListUseCase
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Camera
 import dev.seyfarth.tablericons.outlined.Edit
@@ -79,6 +85,7 @@ import dev.seyfarth.tablericons.outlined.User
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import seijakulistkmp.shared.generated.resources.Res
@@ -147,6 +154,11 @@ class ProfileScreen : Screen {
             onRemoveBanner = viewModel::onRemoveBanner,
             onRefreshStatistics = viewModel::onRefreshStatistics,
             onTabChanged = viewModel::onTabChanged,
+            onOpenFavoriteSelector = viewModel::onOpenFavoriteSelector,
+            onDismissFavoriteSelector = viewModel::onDismissFavoriteSelector,
+            onSetFavorite = viewModel::onSetFavorite,
+            onRemoveFavorite = viewModel::onRemoveFavorite,
+            onReorderFavorites = viewModel::onReorderFavorites,
         )
     }
 }
@@ -165,6 +177,11 @@ fun ProfileScreenContent(
     onRemoveBanner: () -> Unit,
     onRefreshStatistics: () -> Unit,
     onTabChanged: (Int) -> Unit,
+    onOpenFavoriteSelector: (Int) -> Unit,
+    onDismissFavoriteSelector: () -> Unit,
+    onSetFavorite: (Int, Int) -> Unit,
+    onRemoveFavorite: (Int) -> Unit,
+    onReorderFavorites: (Int, Int, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -195,11 +212,16 @@ fun ProfileScreenContent(
                     profile = uiState.profile,
                     animeStats = uiState.animeStats,
                     mangaStats = uiState.mangaStats,
+                    favoriteAnime = uiState.favoriteAnime,
+                    favoriteManga = uiState.favoriteManga,
                     selectedTab = uiState.selectedTab,
                     isAuthenticated = uiState.isAuthenticated,
                     onTabChanged = onTabChanged,
                     onEditProfile = onEditProfile,
                     onSettingsClick = onSettingsClick,
+                    onAddFavorite = onOpenFavoriteSelector,
+                    onFavoriteClick = { entry -> },
+                    onReorderFavorites = onReorderFavorites,
                     onAvatarClick = {
                         filePicker.pickImage(
                             onImageSelected = { uri ->
@@ -242,6 +264,28 @@ fun ProfileScreenContent(
                         onRemoveBanner = onRemoveBanner,
                     )
                 }
+
+                if (uiState.showFavoriteSelectorDialog && uiState.selectedFavoritePosition != null) {
+                    val getMediaList: GetMediaListUseCase = koinInject()
+                    val mediaType = if (uiState.selectedTab == 0) MediaType.ANIME else MediaType.MANGA
+                    val allEntries by getMediaList(mediaType).collectAsState(initial = emptyList())
+
+                    val excludedMediaIds = if (uiState.selectedTab == 0) {
+                        uiState.favoriteAnime.map { it.mediaId }.toSet()
+                    } else {
+                        uiState.favoriteManga.map { it.mediaId }.toSet()
+                    }
+
+                    FavoriteMediaSelectorBottomSheet(
+                        allEntries = allEntries,
+                        excludedMediaIds = excludedMediaIds,
+                        position = uiState.selectedFavoritePosition,
+                        onDismiss = onDismissFavoriteSelector,
+                        onSelect = { mediaId ->
+                            onSetFavorite(mediaId, uiState.selectedFavoritePosition)
+                        }
+                    )
+                }
             }
         }
     }
@@ -253,6 +297,8 @@ fun ProfileContent(
     profile: UserProfile,
     animeStats: MediaListStats?,
     mangaStats: MediaListStats?,
+    favoriteAnime: List<com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry>,
+    favoriteManga: List<com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry>,
     selectedTab: Int,
     isAuthenticated: Boolean,
     onTabChanged: (Int) -> Unit,
@@ -260,6 +306,9 @@ fun ProfileContent(
     onSettingsClick: () -> Unit,
     onAvatarClick: () -> Unit,
     onRemoveAvatar: () -> Unit,
+    onAddFavorite: (Int) -> Unit,
+    onFavoriteClick: (com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry) -> Unit,
+    onReorderFavorites: (Int, Int, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
@@ -290,9 +339,11 @@ fun ProfileContent(
         // Tabs
         PrimaryTabRow(
             selectedTabIndex = selectedTab,
-            modifier = Modifier.graphicsLayer {
-                translationY = -40.dp.toPx()
-            }
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .graphicsLayer {
+                    translationY = -40.dp.toPx()
+                }
         ) {
             Tab(
                 selected = selectedTab == 0,
@@ -313,21 +364,39 @@ fun ProfileContent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
                 .graphicsLayer {
                     translationY = -40.dp.toPx()
                 },
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (stats != null) {
-                ProfileStatsSection(
-                    stats = stats,
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    ProfileStatsSection(
+                        stats = stats,
+                        isAnime = isAnime,
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    ProfileDistributionSection(stats = stats)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                val favorites = if (isAnime) favoriteAnime else favoriteManga
+                ProfileTopFavoritesSection(
+                    favorites = favorites,
                     isAnime = isAnime,
+                    onAddFavorite = onAddFavorite,
+                    onFavoriteClick = onFavoriteClick,
+                    onReorderFavorites = onReorderFavorites,
+                    modifier = Modifier.fillMaxWidth()
                 )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                ProfileDistributionSection(stats = stats)
             } else {
                 Box(
                     modifier = Modifier

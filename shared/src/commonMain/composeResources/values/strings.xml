@@ -411,6 +411,12 @@
     <string name="profile_select_image">Select image</string>
     <string name="profile_remove_image">Remove</string>
     <string name="profile_add_banner">Add banner</string>
+    <string name="profile_top_anime">Top 5 Anime</string>
+    <string name="profile_top_manga">Top 5 Manga</string>
+    <string name="profile_position_n">Position #%1$d</string>
+    <string name="profile_select_favorite">Select your favorite</string>
+    <string name="profile_no_entries_found">No entries found</string>
+    <string name="profile_score_format">Score: %1$s/10</string>
 
     <!-- Welcome/Onboarding Screen -->
     <string name="welcome_skip">Skip</string>

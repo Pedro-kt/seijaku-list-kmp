@@ -371,15 +371,38 @@ class ProfileViewModel(
         }
     }
 
-    fun onReorderFavorites(reorderedEntries: List<Pair<Int, Int>>) {
-        val mediaType = if (_uiState.value.selectedTab == 0) MediaType.ANIME else MediaType.MANGA
+    fun onReorderFavorites(fromPosition: Int, toPosition: Int, isAnime: Boolean) {
+        val mediaType = if (isAnime) MediaType.ANIME else MediaType.MANGA
+        val currentFavorites = if (isAnime) _uiState.value.favoriteAnime else _uiState.value.favoriteManga
 
-        viewModelScope.launch {
-            when (reorderFavorites(mediaType, reorderedEntries)) {
-                is Result.Success -> {
+        val reorderedEntries = mutableListOf<Pair<Int, Int>>()
+
+        val movedEntry = currentFavorites.find { it.favoritePosition == fromPosition }
+
+        if (movedEntry != null) {
+            reorderedEntries.add(movedEntry.mediaId to toPosition)
+
+            if (fromPosition < toPosition) {
+                for (pos in (fromPosition + 1)..toPosition) {
+                    currentFavorites.find { it.favoritePosition == pos }?.let {
+                        reorderedEntries.add(it.mediaId to (pos - 1))
+                    }
                 }
-                is Result.Failure -> {
-                    _uiState.update { it.copy(error = ProfileError.SavingError) }
+            } else {
+                for (pos in toPosition until fromPosition) {
+                    currentFavorites.find { it.favoritePosition == pos }?.let {
+                        reorderedEntries.add(it.mediaId to (pos + 1))
+                    }
+                }
+            }
+
+            viewModelScope.launch {
+                when (reorderFavorites(mediaType, reorderedEntries)) {
+                    is Result.Success -> {
+                    }
+                    is Result.Failure -> {
+                        _uiState.update { it.copy(error = ProfileError.SavingError) }
+                    }
                 }
             }
         }
