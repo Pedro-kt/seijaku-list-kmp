@@ -178,91 +178,6 @@ private fun FeaturedCarouselItem(
                         )
                     )
             )
-
-            item.status?.let { rawStatus ->
-                val statusText = when (rawStatus) {
-                    "RELEASING" -> if (item.isManga) {
-                        stringResource(Res.string.status_publishing)
-                    } else {
-                        stringResource(Res.string.status_airing)
-                    }
-                    "FINISHED" -> stringResource(Res.string.status_finished)
-                    "NOT_YET_RELEASED" -> if (item.isManga) {
-                        stringResource(Res.string.status_not_yet_released)
-                    } else {
-                        stringResource(Res.string.status_not_yet_aired)
-                    }
-                    "CANCELLED" -> stringResource(Res.string.status_cancelled)
-                    "HIATUS" -> stringResource(Res.string.status_hiatus)
-                    else -> rawStatus
-                }
-
-                val statusIcon = when (rawStatus) {
-                    "RELEASING" -> TablerIcons.Outlined.PlayerPlay
-                    "FINISHED" -> TablerIcons.Outlined.Check
-                    "NOT_YET_RELEASED" -> TablerIcons.Outlined.Clock
-                    "CANCELLED" -> TablerIcons.Outlined.X
-                    "HIATUS" -> TablerIcons.Outlined.PlayerPause
-                    else -> TablerIcons.Outlined.PlayerPlay
-                }
-
-                Surface(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(12.dp),
-                    shape = SeijakuTheme.shapes.chip,
-                    color = imageColors.value.vibrant
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = statusIcon,
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = imageColors.value.vibrant.getContrastColor()
-                        )
-                        Text(
-                            text = statusText,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = imageColors.value.vibrant.getContrastColor(),
-                            fontWeight = FontWeight.Normal,
-                            letterSpacing = 1.sp
-                        )
-                    }
-                }
-            }
-
-                item.rating?.let { rating ->
-                    Surface(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(12.dp),
-                        shape = SeijakuTheme.shapes.chip,
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = TablerIcons.Filled.Star,
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = rating,
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.Normal
-                            )
-                        }
-                    }
-                }
-
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
@@ -270,6 +185,33 @@ private fun FeaturedCarouselItem(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+                item.status?.let { rawStatus ->
+                    val statusText = when (rawStatus) {
+                        "RELEASING" -> if (item.isManga) {
+                            stringResource(Res.string.status_publishing)
+                        } else {
+                            stringResource(Res.string.status_airing)
+                        }
+                        "FINISHED" -> stringResource(Res.string.status_finished)
+                        "NOT_YET_RELEASED" -> if (item.isManga) {
+                            stringResource(Res.string.status_not_yet_released)
+                        } else {
+                            stringResource(Res.string.status_not_yet_aired)
+                        }
+                        "CANCELLED" -> stringResource(Res.string.status_cancelled)
+                        "HIATUS" -> stringResource(Res.string.status_hiatus)
+                        else -> rawStatus
+                    }
+
+                    Text(
+                        text = statusText.uppercase(),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = imageColors.value.dominant.getContrastColor().copy(alpha = 0.7f),
+                        letterSpacing = 1.2.sp
+                    )
+                }
+
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.titleLarge,
