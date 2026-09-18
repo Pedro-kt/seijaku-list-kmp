@@ -36,7 +36,7 @@ fun MangaCard(
     cardWidth: Dp = 120.dp,
     modifier: Modifier = Modifier
 ) {
-    val cardShape = SeijakuTheme.shapes.cardAsymmetric
+    val cardShape = RoundedCornerShape(16.dp)
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 

@@ -3,6 +3,7 @@ package com.yumedev.seijakulistkmp.features.home.presentation.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,6 +14,9 @@ import com.yumedev.seijakulistkmp.features.home.presentation.model.MangaCardItem
 import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ChevronRight
+import org.jetbrains.compose.resources.stringResource
+import seijakulistkmp.shared.generated.resources.Res
+import seijakulistkmp.shared.generated.resources.see_more
 
 @Composable
 fun MangaSection(
@@ -44,11 +48,32 @@ fun MangaSection(
                 fontWeight = FontWeight.Bold
             )
 
-            IconButton(onClick = onSeeMoreClick) {
-                Icon(
-                    imageVector = TablerIcons.Outlined.ChevronRight,
-                    contentDescription = "See more"
-                )
+            Surface(
+                onClick = onSeeMoreClick,
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                modifier = Modifier
+                    .height(32.dp)
+                    .widthIn(min = 32.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(start = 12.dp, end = 8.dp)
+                        .fillMaxHeight(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(Res.string.see_more),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Icon(
+                        imageVector = TablerIcons.Outlined.ChevronRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
         }
 

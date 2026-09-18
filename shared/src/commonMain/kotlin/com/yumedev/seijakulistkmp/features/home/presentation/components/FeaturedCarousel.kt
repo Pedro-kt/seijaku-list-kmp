@@ -39,6 +39,11 @@ import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
 import dev.seyfarth.tablericons.outlined.ChevronRight
+import dev.seyfarth.tablericons.outlined.PlayerPlay
+import dev.seyfarth.tablericons.outlined.Check
+import dev.seyfarth.tablericons.outlined.Clock
+import dev.seyfarth.tablericons.outlined.X
+import dev.seyfarth.tablericons.outlined.PlayerPause
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.Res
@@ -139,7 +144,7 @@ private fun FeaturedCarouselItem(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .scale(scale),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(32.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFF1C1C1E)
         ),
@@ -192,6 +197,15 @@ private fun FeaturedCarouselItem(
                     else -> rawStatus
                 }
 
+                val statusIcon = when (rawStatus) {
+                    "RELEASING" -> TablerIcons.Outlined.PlayerPlay
+                    "FINISHED" -> TablerIcons.Outlined.Check
+                    "NOT_YET_RELEASED" -> TablerIcons.Outlined.Clock
+                    "CANCELLED" -> TablerIcons.Outlined.X
+                    "HIATUS" -> TablerIcons.Outlined.PlayerPause
+                    else -> TablerIcons.Outlined.PlayerPlay
+                }
+
                 Surface(
                     modifier = Modifier
                         .align(Alignment.TopStart)
@@ -199,14 +213,25 @@ private fun FeaturedCarouselItem(
                     shape = SeijakuTheme.shapes.chip,
                     color = imageColors.value.vibrant
                 ) {
-                    Text(
-                        text = statusText,
+                    Row(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = imageColors.value.vibrant.getContrastColor(),
-                        fontWeight = FontWeight.Normal,
-                        letterSpacing = 1.sp
-                    )
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = statusIcon,
+                            contentDescription = null,
+                            modifier = Modifier.size(14.dp),
+                            tint = imageColors.value.vibrant.getContrastColor()
+                        )
+                        Text(
+                            text = statusText,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = imageColors.value.vibrant.getContrastColor(),
+                            fontWeight = FontWeight.Normal,
+                            letterSpacing = 1.sp
+                        )
+                    }
                 }
             }
 
@@ -238,18 +263,33 @@ private fun FeaturedCarouselItem(
                     }
                 }
 
-            Text(
-                text = item.title,
+            Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .fillMaxWidth()
                     .padding(16.dp),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = imageColors.value.dominant.getContrastColor(),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = item.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = imageColors.value.dominant.getContrastColor(),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                if (item.metadata.isNotEmpty()) {
+                    Text(
+                        text = item.metadata,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Normal,
+                        color = imageColors.value.dominant.getContrastColor().copy(alpha = 0.8f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
         }
     }
 }

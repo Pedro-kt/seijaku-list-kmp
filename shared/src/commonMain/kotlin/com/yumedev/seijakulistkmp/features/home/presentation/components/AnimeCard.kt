@@ -38,7 +38,7 @@ fun AnimeCard(
     cardWidth: Dp = 120.dp,
     modifier: Modifier = Modifier
 ) {
-    val cardShape = SeijakuTheme.shapes.cardAsymmetric
+    val cardShape = RoundedCornerShape(16.dp)
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
@@ -86,6 +86,7 @@ fun AnimeCard(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = item.title,
                         style = MaterialTheme.typography.titleSmall,

@@ -19,6 +19,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -148,10 +149,24 @@ fun HomeScreenContent(
                 .padding(paddingValues)
         ) {
             // Tab Row
-            PrimaryTabRow(
+            TabRow(
                 selectedTabIndex = selectedTabIndex,
                 containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                indicator = { tabPositions ->
+                    if (selectedTabIndex < tabPositions.size) {
+                        Box(
+                            Modifier
+                                .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                                .fillMaxWidth()
+                                .height(3.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                                )
+                        )
+                    }
+                }
             ) {
                 Tab(
                     selected = selectedTabIndex == 0,
@@ -670,18 +685,30 @@ private fun HomeTopAppBar(
         actions = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(end = 8.dp)
             ) {
                 ExpandableSearchChip(
                     isExpanded = isScrolled,
                     onClick = onSearchClick
                 )
 
-                IconButton(onClick = if (isScrolled) onProfileClick else onNotificationsClick) {
-                    Icon(
-                        imageVector = TablerIcons.Outlined.Bell,
-                        contentDescription = stringResource(Res.string.notifications)
-                    )
+                Surface(
+                    onClick = if (isScrolled) onProfileClick else onNotificationsClick,
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Icon(
+                            imageVector = TablerIcons.Outlined.Bell,
+                            contentDescription = stringResource(Res.string.notifications),
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
         },
@@ -710,9 +737,9 @@ private fun ExpandableSearchChip(
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         color = if (isExpanded) {
-            MaterialTheme.colorScheme.primaryContainer
+            MaterialTheme.colorScheme.surfaceContainerHighest
         } else {
-            MaterialTheme.colorScheme.surface
+            MaterialTheme.colorScheme.surfaceContainerHighest
         },
         modifier = Modifier
             .width(chipWidth)
@@ -729,7 +756,7 @@ private fun ExpandableSearchChip(
                 imageVector = TablerIcons.Outlined.Search,
                 contentDescription = stringResource(Res.string.search),
                 tint = if (isExpanded) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
+                    MaterialTheme.colorScheme.onSurface
                 } else {
                     MaterialTheme.colorScheme.onSurface
                 },
@@ -749,7 +776,7 @@ private fun ExpandableSearchChip(
                 Text(
                     text = stringResource(Res.string.search),
                     style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(start = 6.dp)
                 )
             }
