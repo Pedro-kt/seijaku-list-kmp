@@ -664,9 +664,7 @@ private fun HomeTopAppBar(
     TopAppBar(
         title = {
             Text(
-                text = stringResource(Res.string.app_name),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                text = stringResource(Res.string.app_name)
             )
         },
         actions = {

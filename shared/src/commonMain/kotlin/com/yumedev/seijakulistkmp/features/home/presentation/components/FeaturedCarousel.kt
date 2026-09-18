@@ -1,6 +1,9 @@
 package com.yumedev.seijakulistkmp.features.home.presentation.components
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -24,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -95,20 +99,14 @@ fun FeaturedCarousel(
             )
         }
 
+        // Expressive Page Indicators
         Row(
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             repeat(items.size) { index ->
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (pagerState.currentPage == index)
-                                MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                        )
+                ExpressivePageIndicator(
+                    isActive = pagerState.currentPage == index
                 )
             }
         }
@@ -141,7 +139,7 @@ private fun FeaturedCarouselItem(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .scale(scale),
-        shape = SeijakuTheme.shapes.large,
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFF1C1C1E)
         ),
@@ -259,4 +257,53 @@ private fun FeaturedCarouselItem(
 private fun Color.getContrastColor(): Color {
     val luminance = (0.299 * red + 0.587 * green + 0.114 * blue)
     return if (luminance > 0.5f) Color.Black else Color.White
+}
+
+@Composable
+private fun ExpressivePageIndicator(
+    isActive: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val width by animateDpAsState(
+        targetValue = if (isActive) 24.dp else 8.dp,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    val height by animateDpAsState(
+        targetValue = 8.dp,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    val scale by animateFloatAsState(
+        targetValue = if (isActive) 1f else 0.8f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessHigh
+        )
+    )
+
+    val alpha by animateFloatAsState(
+        targetValue = if (isActive) 1f else 0.3f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    Box(
+        modifier = modifier
+            .width(width)
+            .height(height)
+            .scale(scale)
+            .clip(RoundedCornerShape(50))
+            .background(
+                MaterialTheme.colorScheme.primary.copy(alpha = alpha)
+            )
+    )
 }
