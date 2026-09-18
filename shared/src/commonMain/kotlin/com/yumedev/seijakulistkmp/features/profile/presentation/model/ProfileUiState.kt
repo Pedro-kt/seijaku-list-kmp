@@ -11,4 +11,5 @@ data class ProfileUiState(
     val isLoading: Boolean = false,
     val error: ProfileError? = null,
     val showEditDialog: Boolean = false,
+    val isAuthenticated: Boolean = false,
 )

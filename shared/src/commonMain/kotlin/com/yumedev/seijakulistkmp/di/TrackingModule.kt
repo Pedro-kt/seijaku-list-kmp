@@ -45,7 +45,14 @@ val trackingModule = module {
     single { get<TrackingDatabase>().userProfileDao() }
 
     singleOf(::MALXmlMapper)
-    singleOf(::MediaListRepositoryImpl) bind MediaListRepository::class
+    single<MediaListRepository> {
+        MediaListRepositoryImpl(
+            mediaListDao = get(),
+            malXmlMapper = get(),
+            saveToFirestoreUseCase = get(),
+            deleteFromFirestoreUseCase = get()
+        )
+    }
     singleOf(::ProfileRepositoryImpl) bind ProfileRepository::class
 
     factoryOf(::GetCurrentProfileUseCase)

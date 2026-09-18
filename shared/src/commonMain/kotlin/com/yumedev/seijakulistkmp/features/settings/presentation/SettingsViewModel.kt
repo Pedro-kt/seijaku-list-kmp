@@ -3,6 +3,8 @@ package com.yumedev.seijakulistkmp.features.settings.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
+import com.yumedev.seijakulistkmp.features.auth.domain.usecase.GetCurrentUserUseCase
+import com.yumedev.seijakulistkmp.features.auth.domain.usecase.LogoutUseCase
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.GetCurrentProfileUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
@@ -33,6 +35,8 @@ class SettingsViewModel(
     private val getSfwModeUseCase: GetSfwModeUseCase,
     private val setSfwModeUseCase: SetSfwModeUseCase,
     private val getCurrentProfileUseCase: GetCurrentProfileUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val logoutUseCase: LogoutUseCase,
     private val exportToMALUseCase: ExportToMALUseCase,
     private val importFromMALUseCase: ImportFromMALUseCase,
     private val resolveImportConflictUseCase: ResolveImportConflictUseCase,
@@ -47,6 +51,7 @@ class SettingsViewModel(
         observeLanguageMode()
         observeSfwMode()
         observeCurrentProfile()
+        observeAuthUser()
     }
 
     private fun observeThemeMode() {
@@ -76,12 +81,30 @@ class SettingsViewModel(
     private fun observeCurrentProfile() {
         viewModelScope.launch {
             getCurrentProfileUseCase().collect { profile ->
-                _state.update {
-                    it.copy(
-                        username = profile?.name ?: "",
-                        userHandle = profile?.anilistId?.toString() ?: "Local",
-                        isLoggedIn = profile?.let { !it.isLocal } ?: false
+                _state.update { currentState ->
+                    currentState.copy(
+                        username = profile?.name ?: currentState.username
                     )
+                }
+            }
+        }
+    }
+
+    private fun observeAuthUser() {
+        viewModelScope.launch {
+            getCurrentUserUseCase().collect { authUser ->
+                _state.update { currentState ->
+                    if (authUser != null) {
+                        currentState.copy(
+                            userHandle = authUser.email ?: authUser.displayName ?: "User",
+                            isLoggedIn = !authUser.isAnonymous
+                        )
+                    } else {
+                        currentState.copy(
+                            userHandle = "Local",
+                            isLoggedIn = false
+                        )
+                    }
                 }
             }
         }
@@ -123,7 +146,9 @@ class SettingsViewModel(
     }
 
     fun onLogoutClick() {
-        // TODO: Implement logout
+        viewModelScope.launch {
+            logoutUseCase()
+        }
     }
 
     fun onExportAnimeClick(onExport: (String, String) -> Unit, onError: (String) -> Unit) {
