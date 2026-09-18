@@ -1,14 +1,22 @@
 package com.yumedev.seijakulistkmp.features.detail.presentation.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,15 +42,38 @@ fun MediaProgressCard(
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.98f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    val elevation by animateFloatAsState(
+        targetValue = if (isPressed) 4f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
     Card(
-        modifier = modifier.fillMaxWidth(),
+        onClick = { },
+        modifier = modifier
+            .fillMaxWidth()
+            .scale(scale),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 0.dp
-        )
+            defaultElevation = elevation.dp
+        ),
+        interactionSource = interactionSource
     ) {
         Column(
             modifier = Modifier
@@ -135,10 +166,31 @@ private fun StatusChip(
         MediaListStatus.REPEATING -> MaterialTheme.colorScheme.tertiary
     }
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    val backgroundAlpha by animateFloatAsState(
+        targetValue = if (isPressed) 0.2f else 0.12f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
     Surface(
-        modifier = modifier,
+        onClick = { },
+        modifier = modifier.scale(scale),
         shape = CircleShape,
-        color = statusColor.copy(alpha = 0.12f)
+        color = statusColor.copy(alpha = backgroundAlpha),
+        interactionSource = interactionSource
     ) {
         Text(
             text = statusText,
@@ -182,6 +234,20 @@ private fun ProgressSection(
     mediaType: MediaType,
     modifier: Modifier = Modifier
 ) {
+    val targetProgress = if (total != null && total > 0) {
+        (progress.toFloat() / total.toFloat()).coerceIn(0f, 1f)
+    } else {
+        0f
+    }
+
+    val animatedProgress by animateFloatAsState(
+        targetValue = targetProgress,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -223,7 +289,7 @@ private fun ProgressSection(
 
         if (total != null && total > 0) {
             LinearProgressIndicator(
-                progress = { (progress.toFloat() / total.toFloat()).coerceIn(0f, 1f) },
+                progress = { animatedProgress },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)
@@ -253,24 +319,67 @@ private fun ActionButtons(
         mediaStatus = mediaStatus
     )
 
+    val editInteractionSource = remember { MutableInteractionSource() }
+    val isEditPressed by editInteractionSource.collectIsPressedAsState()
+
+    val editScale by animateFloatAsState(
+        targetValue = if (isEditPressed) 0.96f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    val editIconScale by animateFloatAsState(
+        targetValue = if (isEditPressed) 1.1f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessHigh
+        )
+    )
+
+    val incrementInteractionSource = remember { MutableInteractionSource() }
+    val isIncrementPressed by incrementInteractionSource.collectIsPressedAsState()
+
+    val incrementScale by animateFloatAsState(
+        targetValue = if (isIncrementPressed) 0.96f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    val incrementElevation by animateFloatAsState(
+        targetValue = if (isIncrementPressed) 6f else 2f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         OutlinedButton(
             onClick = onEditClick,
-            modifier = Modifier.height(48.dp),
+            modifier = Modifier
+                .height(48.dp)
+                .scale(editScale),
             shape = RoundedCornerShape(50),
             border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.outline),
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer,
                 contentColor = MaterialTheme.colorScheme.onSurface
-            )
+            ),
+            interactionSource = editInteractionSource
         ) {
             Icon(
                 imageVector = TablerIcons.Outlined.Edit,
                 contentDescription = stringResource(Res.string.list_edit_title),
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier
+                    .size(20.dp)
+                    .scale(editIconScale)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
@@ -285,8 +394,14 @@ private fun ActionButtons(
             enabled = canIncrement,
             modifier = Modifier
                 .weight(1f)
-                .height(48.dp),
-            shape = RoundedCornerShape(50)
+                .height(48.dp)
+                .scale(incrementScale),
+            shape = RoundedCornerShape(50),
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = incrementElevation.dp,
+                pressedElevation = 0.dp
+            ),
+            interactionSource = incrementInteractionSource
         ) {
             Text(
                 text = "+1 ${
