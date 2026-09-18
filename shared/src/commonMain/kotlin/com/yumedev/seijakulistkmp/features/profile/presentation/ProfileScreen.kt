@@ -7,11 +7,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,6 +37,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -48,6 +53,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -159,41 +166,11 @@ fun ProfileScreenContent(
     onTabChanged: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(Res.string.my_profile)
-                    )
-                },
-                actions = {
-                    IconButton(onClick = onEditProfile) {
-                        Icon(
-                            imageVector = TablerIcons.Outlined.Edit,
-                            contentDescription = stringResource(Res.string.profile_edit_button),
-                        )
-                    }
-                    IconButton(onClick = onSettingsClick) {
-                        Icon(
-                            imageVector = TablerIcons.Outlined.Settings,
-                            contentDescription = stringResource(Res.string.settings),
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-                ),
-            )
-        },
-        modifier = modifier,
-    ) { paddingValues ->
+    Box(modifier = modifier.fillMaxSize()) {
         when {
             uiState.isLoading && uiState.profile == null -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
@@ -202,9 +179,7 @@ fun ProfileScreenContent(
 
             uiState.error != null && uiState.profile == null -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(uiState.error.toStringResource())
@@ -222,6 +197,8 @@ fun ProfileScreenContent(
                     selectedTab = uiState.selectedTab,
                     isAuthenticated = uiState.isAuthenticated,
                     onTabChanged = onTabChanged,
+                    onEditProfile = onEditProfile,
+                    onSettingsClick = onSettingsClick,
                     onAvatarClick = {
                         filePicker.pickImage(
                             onImageSelected = { uri ->
@@ -254,9 +231,7 @@ fun ProfileScreenContent(
                     },
                     onRemoveAvatar = onRemoveAvatar,
                     onRemoveBanner = onRemoveBanner,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                    modifier = Modifier.fillMaxSize(),
                 )
 
                 if (uiState.showEditDialog) {
@@ -280,17 +255,35 @@ fun ProfileContent(
     selectedTab: Int,
     isAuthenticated: Boolean,
     onTabChanged: (Int) -> Unit,
+    onEditProfile: () -> Unit,
+    onSettingsClick: () -> Unit,
     onAvatarClick: () -> Unit,
     onBannerClick: () -> Unit,
     onRemoveAvatar: () -> Unit,
     onRemoveBanner: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-    ) {
+    val scrollState = rememberScrollState()
+
+    val scrollOffset = scrollState.value
+    val maxScroll = 200f
+    val scrollAlpha = (scrollOffset / maxScroll).coerceIn(0f, 1f)
+
+    Box(modifier = modifier.fillMaxSize()) {
+        ProfileBannerBackground(
+            banner = profile.banner,
+            alpha = 1f - scrollAlpha,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState),
+        ) {
+            // Space for status bar + top app bar
+            Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+            Spacer(modifier = Modifier.height(56.dp))
         // Hero Section
         ProfileHeroSection(
             profile = profile,
@@ -351,7 +344,132 @@ fun ProfileContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(120.dp))
+            Spacer(modifier = Modifier.height(120.dp))
+        }
+
+        ProfileTopAppBar(
+            onEditClick = onEditProfile,
+            onSettingsClick = onSettingsClick,
+            backgroundAlpha = scrollAlpha,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
+    }
+}
+
+@Composable
+private fun ProfileBannerBackground(
+    banner: String?,
+    alpha: Float,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(200.dp)
+    ) {
+        if (!banner.isNullOrBlank()) {
+            AsyncImage(
+                model = banner,
+                contentDescription = "Profile banner",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer { this.alpha = alpha },
+                contentScale = ContentScale.Crop,
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer { this.alpha = alpha }
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            ),
+                        ),
+                    ),
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(100.dp)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            MaterialTheme.colorScheme.surface
+                        )
+                    )
+                )
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileTopAppBar(
+    onEditClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    backgroundAlpha: Float,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = backgroundAlpha))
+    ) {
+        Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+        Surface(
+            onClick = onEditClick,
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+            modifier = Modifier.size(40.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    imageVector = TablerIcons.Outlined.Edit,
+                    contentDescription = stringResource(Res.string.profile_edit_button),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Surface(
+            onClick = onSettingsClick,
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+            modifier = Modifier.size(40.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    imageVector = TablerIcons.Outlined.Settings,
+                    contentDescription = stringResource(Res.string.settings),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+        }
     }
 }
 
@@ -371,91 +489,8 @@ fun ProfileHeroSection(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(140.dp),
+                .height(100.dp),
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-            ) {
-                if (!profile.banner.isNullOrBlank()) {
-                    AsyncImage(
-                        model = profile.banner,
-                        contentDescription = "Profile banner",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop,
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                    ),
-                                ),
-                            ),
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
-                        .clickable {
-                            if (!profile.banner.isNullOrBlank()) {
-                                showBannerMenu = true
-                            } else {
-                                onBannerClick()
-                            }
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = TablerIcons.Outlined.Camera,
-                        contentDescription = "Select banner",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-
-                    DropdownMenu(
-                        expanded = showBannerMenu,
-                        onDismissRequest = { showBannerMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.profile_select_image)) },
-                            onClick = {
-                                showBannerMenu = false
-                                onBannerClick()
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = TablerIcons.Outlined.Photo,
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.profile_remove_image)) },
-                            onClick = {
-                                showBannerMenu = false
-                                onRemoveBanner()
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = TablerIcons.Outlined.Trash,
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                    }
-                }
-            }
 
             Box(
                 modifier = Modifier
