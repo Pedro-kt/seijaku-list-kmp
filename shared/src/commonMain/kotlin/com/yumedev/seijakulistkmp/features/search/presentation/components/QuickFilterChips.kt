@@ -1,14 +1,23 @@
 package com.yumedev.seijakulistkmp.features.search.presentation.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.features.search.presentation.model.QuickFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.toLabel
+import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Calendar
 import dev.seyfarth.tablericons.outlined.Clock
@@ -76,11 +85,40 @@ private fun QuickFilterChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.92f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    val elevation by animateFloatAsState(
+        targetValue = if (isPressed) 6f else 2f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    val iconScale by animateFloatAsState(
+        targetValue = if (isPressed) 1.15f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessHigh
+        )
+    )
+
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
+        shape = SeijakuTheme.shapes.buttonSecondary,
         color = MaterialTheme.colorScheme.surfaceVariant,
-        modifier = modifier
+        tonalElevation = elevation.dp,
+        modifier = modifier.scale(scale),
+        interactionSource = interactionSource
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
@@ -90,7 +128,9 @@ private fun QuickFilterChip(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier
+                    .size(20.dp)
+                    .scale(iconScale),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(

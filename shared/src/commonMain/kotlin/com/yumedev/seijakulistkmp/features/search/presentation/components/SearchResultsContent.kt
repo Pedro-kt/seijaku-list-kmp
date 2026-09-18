@@ -1,5 +1,7 @@
 package com.yumedev.seijakulistkmp.features.search.presentation.components
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -166,7 +168,17 @@ fun SearchResultsContent(
                     ) { character ->
                         CharacterResultItem(
                             item = character,
-                            onClick = { onCharacterClick(character) }
+                            onClick = { onCharacterClick(character) },
+                            modifier = Modifier.animateItem(
+                                fadeInSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessLow
+                                ),
+                                placementSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessMedium
+                                )
+                            )
                         )
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp)
@@ -202,7 +214,17 @@ fun SearchResultsContent(
                             onSaveClick = { item ->
                                 onSaveClick(item)
                             },
-                            isSaved = false // TODO: Check if item is saved
+                            isSaved = false,
+                            modifier = Modifier.animateItem(
+                                fadeInSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessLow
+                                ),
+                                placementSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessMedium
+                                )
+                            )
                         )
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp)
