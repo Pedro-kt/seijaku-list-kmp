@@ -89,6 +89,7 @@ import seijakulistkmp.shared.generated.resources.list_status_plan_to_watch
 import seijakulistkmp.shared.generated.resources.list_status_watching
 import seijakulistkmp.shared.generated.resources.my_profile
 import seijakulistkmp.shared.generated.resources.profile_about_label
+import seijakulistkmp.shared.generated.resources.profile_add_banner
 import seijakulistkmp.shared.generated.resources.profile_anilist_sync_unavailable
 import seijakulistkmp.shared.generated.resources.profile_cancel_button
 import seijakulistkmp.shared.generated.resources.profile_distribution
@@ -214,23 +215,7 @@ fun ProfileScreenContent(
                             onError = { /* TODO: Handle error */ }
                         )
                     },
-                    onBannerClick = {
-                        filePicker.pickImage(
-                            onImageSelected = { uri ->
-                                imageManager.saveImage(
-                                    imageUri = uri,
-                                    destinationFileName = "banner_${System.currentTimeMillis()}.jpg",
-                                    onSuccess = { path ->
-                                        onUpdateBanner(path)
-                                    },
-                                    onError = { /* TODO: Handle error */ }
-                                )
-                            },
-                            onError = { /* TODO: Handle error */ }
-                        )
-                    },
                     onRemoveAvatar = onRemoveAvatar,
-                    onRemoveBanner = onRemoveBanner,
                     modifier = Modifier.fillMaxSize(),
                 )
 
@@ -239,6 +224,22 @@ fun ProfileScreenContent(
                         profile = uiState.profile,
                         onDismiss = onDismissEditDialog,
                         onSave = onSaveProfileInfo,
+                        onBannerClick = {
+                            filePicker.pickImage(
+                                onImageSelected = { uri ->
+                                    imageManager.saveImage(
+                                        imageUri = uri,
+                                        destinationFileName = "banner_${System.currentTimeMillis()}.jpg",
+                                        onSuccess = { path ->
+                                            onUpdateBanner(path)
+                                        },
+                                        onError = { /* TODO: Handle error */ }
+                                    )
+                                },
+                                onError = { /* TODO: Handle error */ }
+                            )
+                        },
+                        onRemoveBanner = onRemoveBanner,
                     )
                 }
             }
@@ -258,9 +259,7 @@ fun ProfileContent(
     onEditProfile: () -> Unit,
     onSettingsClick: () -> Unit,
     onAvatarClick: () -> Unit,
-    onBannerClick: () -> Unit,
     onRemoveAvatar: () -> Unit,
-    onRemoveBanner: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
@@ -270,33 +269,31 @@ fun ProfileContent(
     val scrollAlpha = (scrollOffset / maxScroll).coerceIn(0f, 1f)
 
     Box(modifier = modifier.fillMaxSize()) {
-        ProfileBannerBackground(
-            banner = profile.banner,
-            alpha = 1f - scrollAlpha,
-            modifier = Modifier.fillMaxWidth()
-        )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState),
         ) {
-            // Space for status bar + top app bar
-            Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
-            Spacer(modifier = Modifier.height(56.dp))
-        // Hero Section
+            ProfileBannerBackground(
+                banner = profile.banner,
+                alpha = 1f - scrollAlpha,
+                modifier = Modifier.fillMaxWidth()
+            )
         ProfileHeroSection(
             profile = profile,
             isAuthenticated = isAuthenticated,
             onAvatarClick = onAvatarClick,
-            onBannerClick = onBannerClick,
             onRemoveAvatar = onRemoveAvatar,
-            onRemoveBanner = onRemoveBanner,
             modifier = Modifier.fillMaxWidth(),
         )
 
         // Tabs
-        PrimaryTabRow(selectedTabIndex = selectedTab) {
+        PrimaryTabRow(
+            selectedTabIndex = selectedTab,
+            modifier = Modifier.graphicsLayer {
+                translationY = -40.dp.toPx()
+            }
+        ) {
             Tab(
                 selected = selectedTab == 0,
                 onClick = { onTabChanged(0) },
@@ -316,7 +313,10 @@ fun ProfileContent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(16.dp)
+                .graphicsLayer {
+                    translationY = -40.dp.toPx()
+                },
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (stats != null) {
@@ -362,50 +362,56 @@ private fun ProfileBannerBackground(
     alpha: Float,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(200.dp)
-    ) {
+    val bannerHeight = if (!banner.isNullOrBlank()) 180.dp else 80.dp
+
+    Box(modifier = modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+            Spacer(modifier = Modifier.height(56.dp))
+            Spacer(modifier = Modifier.height(bannerHeight))
+        }
+
         if (!banner.isNullOrBlank()) {
             AsyncImage(
                 model = banner,
                 contentDescription = "Profile banner",
                 modifier = Modifier
-                    .fillMaxSize()
+                    .matchParentSize()
                     .graphicsLayer { this.alpha = alpha },
                 contentScale = ContentScale.Crop,
             )
         } else {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .matchParentSize()
                     .graphicsLayer { this.alpha = alpha }
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                                MaterialTheme.colorScheme.surface
                             ),
                         ),
                     ),
             )
         }
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(100.dp)
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            MaterialTheme.colorScheme.surface
+        if (!banner.isNullOrBlank()) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                MaterialTheme.colorScheme.surface
+                            )
                         )
                     )
-                )
-        )
+            )
+        }
     }
 }
 
@@ -478,25 +484,22 @@ fun ProfileHeroSection(
     profile: UserProfile,
     isAuthenticated: Boolean,
     onAvatarClick: () -> Unit,
-    onBannerClick: () -> Unit,
     onRemoveAvatar: () -> Unit,
-    onRemoveBanner: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showAvatarMenu by remember { mutableStateOf(false) }
-    var showBannerMenu by remember { mutableStateOf(false) }
     Column(modifier = modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp),
+                .graphicsLayer {
+                    translationY = -50.dp.toPx()
+                }
         ) {
-
             Box(
                 modifier = Modifier
                     .padding(start = 16.dp)
-                    .align(Alignment.BottomStart)
-                    .size(80.dp)
+                    .size(100.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surface),
                 contentAlignment = Alignment.Center,
@@ -512,7 +515,7 @@ fun ProfileHeroSection(
                     Icon(
                         imageVector = TablerIcons.Outlined.User,
                         contentDescription = null,
-                        modifier = Modifier.size(40.dp),
+                        modifier = Modifier.size(50.dp),
                         tint = MaterialTheme.colorScheme.primary,
                     )
                 }
@@ -520,8 +523,7 @@ fun ProfileHeroSection(
 
             Box(
                 modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(start = 76.dp, bottom = 2.dp)
+                    .padding(start = 86.dp, top = 70.dp)
                     .size(28.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primary)
@@ -579,7 +581,10 @@ fun ProfileHeroSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .padding(top = 12.dp),
+                .padding(top = 8.dp)
+                .graphicsLayer {
+                    translationY = -40.dp.toPx()
+                },
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
@@ -639,8 +644,6 @@ fun ProfileHeroSection(
             }
 
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -807,10 +810,13 @@ fun EditProfileBottomSheet(
     profile: UserProfile,
     onDismiss: () -> Unit,
     onSave: (String, String?) -> Unit,
+    onBannerClick: () -> Unit,
+    onRemoveBanner: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var name by remember { mutableStateOf(profile.name) }
     var about by remember { mutableStateOf(profile.about ?: "") }
+    var showBannerMenu by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -841,6 +847,92 @@ fun EditProfileBottomSheet(
             }
 
             Spacer(modifier = Modifier.height(4.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable {
+                        if (profile.banner != null) {
+                            showBannerMenu = true
+                        } else {
+                            onBannerClick()
+                        }
+                    }
+            ) {
+                if (!profile.banner.isNullOrBlank()) {
+                    AsyncImage(
+                        model = profile.banner,
+                        contentDescription = "Profile banner",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    ),
+                                ),
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = TablerIcons.Outlined.Photo,
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = stringResource(Res.string.profile_add_banner),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        }
+                    }
+                }
+
+                DropdownMenu(
+                    expanded = showBannerMenu,
+                    onDismissRequest = { showBannerMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.profile_select_image)) },
+                        onClick = {
+                            showBannerMenu = false
+                            onBannerClick()
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = TablerIcons.Outlined.Photo,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.profile_remove_image)) },
+                        onClick = {
+                            showBannerMenu = false
+                            onRemoveBanner()
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = TablerIcons.Outlined.Trash,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
+            }
 
             OutlinedTextField(
                 value = name,

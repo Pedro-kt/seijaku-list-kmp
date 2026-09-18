@@ -410,6 +410,7 @@
     <string name="profile_edit_subtitle">Update your profile information</string>
     <string name="profile_select_image">Select image</string>
     <string name="profile_remove_image">Remove</string>
+    <string name="profile_add_banner">Add banner</string>
 
     <!-- Welcome/Onboarding Screen -->
     <string name="welcome_skip">Skip</string>

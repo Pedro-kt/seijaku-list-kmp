@@ -29,6 +29,7 @@ import com.yumedev.seijakulistkmp.features.tracking.presentation.components.Anim
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCardType
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.SortBottomSheet
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCard
+import com.yumedev.seijakulistkmp.features.tracking.presentation.components.ExpressiveFilterChip
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AdjustmentsHorizontal
 import dev.seyfarth.tablericons.outlined.LayoutGrid
@@ -238,7 +239,7 @@ private fun StatusFilterChips(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item {
-            FilterChip(
+            ExpressiveFilterChip(
                 selected = selectedStatus == null,
                 onClick = { onStatusSelected(null) },
                 label = {
@@ -277,7 +278,7 @@ private fun StatusFilterChips(
                 }
             }
 
-            FilterChip(
+            ExpressiveFilterChip(
                 selected = selectedStatus == status,
                 onClick = { onStatusSelected(status) },
                 label = {

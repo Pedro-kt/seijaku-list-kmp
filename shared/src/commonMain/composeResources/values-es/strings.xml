@@ -400,6 +400,7 @@
     <string name="profile_edit_subtitle">Actualiza la información de tu perfil</string>
     <string name="profile_select_image">Seleccionar imagen</string>
     <string name="profile_remove_image">Eliminar</string>
+    <string name="profile_add_banner">Añadir banner</string>
 
     <!-- Welcome/Onboarding Screen -->
     <string name="welcome_skip">Omitir</string>
