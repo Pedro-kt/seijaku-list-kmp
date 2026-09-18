@@ -1,11 +1,14 @@
 package com.yumedev.seijakulistkmp.features.home.presentation
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +24,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
@@ -657,58 +661,30 @@ private fun HomeTopAppBar(
     onNotificationsClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = if (isScrolled) 3.dp else 0.dp
-    ) {
-        AnimatedContent(
-            targetState = isScrolled,
-            transitionSpec = {
-                fadeIn() togetherWith fadeOut()
-            },
-            label = "TopAppBarTransition"
-        ) { scrolled ->
-            if (scrolled) {
-                SearchBarMode(
-                    onSearchClick = onSearchClick,
-                    onProfileClick = onProfileClick
-                )
-            } else {
-                NormalAppBarMode(
-                    onSearchClick = onSearchClick,
-                    onNotificationsClick = onNotificationsClick
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun NormalAppBarMode(
-    onSearchClick: () -> Unit,
-    onNotificationsClick: () -> Unit
-) {
     TopAppBar(
         title = {
             Text(
                 text = stringResource(Res.string.app_name),
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
             )
         },
         actions = {
-            IconButton(onClick = onSearchClick) {
-                Icon(
-                    imageVector = TablerIcons.Outlined.Search,
-                    contentDescription = stringResource(Res.string.search)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ExpandableSearchChip(
+                    isExpanded = isScrolled,
+                    onClick = onSearchClick
                 )
-            }
-            IconButton(onClick = onNotificationsClick) {
-                Icon(
-                    imageVector = TablerIcons.Outlined.Bell,
-                    contentDescription = stringResource(Res.string.notifications)
-                )
+
+                IconButton(onClick = if (isScrolled) onProfileClick else onNotificationsClick) {
+                    Icon(
+                        imageVector = TablerIcons.Outlined.Bell,
+                        contentDescription = stringResource(Res.string.notifications)
+                    )
+                }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -718,52 +694,67 @@ private fun NormalAppBarMode(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchBarMode(
-    onSearchClick: () -> Unit,
-    onProfileClick: () -> Unit
+private fun ExpandableSearchChip(
+    isExpanded: Boolean,
+    onClick: () -> Unit
 ) {
-    TopAppBar(
-        title = {
-            Surface(
-                onClick = onSearchClick,
-                shape = RoundedCornerShape(28.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                tonalElevation = 6.dp,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = TablerIcons.Outlined.Search,
-                        contentDescription = stringResource(Res.string.search),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = stringResource(Res.string.search_placeholder),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        },
-        actions = {
-            IconButton(onClick = onProfileClick) {
-                Icon(
-                    imageVector = TablerIcons.Outlined.Bell,
-                    contentDescription = stringResource(Res.string.notifications)
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface
+    // Animación del ancho con spring (muy expresivo)
+    val chipWidth by animateDpAsState(
+        targetValue = if (isExpanded) 120.dp else 40.dp,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
         )
     )
+
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(20.dp),
+        color = if (isExpanded) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
+        modifier = Modifier
+            .width(chipWidth)
+            .height(40.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = TablerIcons.Outlined.Search,
+                contentDescription = stringResource(Res.string.search),
+                tint = if (isExpanded) {
+                    MaterialTheme.colorScheme.onPrimaryContainer
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                },
+                modifier = Modifier.size(24.dp)
+            )
+
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = expandHorizontally(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessMedium
+                    )
+                ) + fadeIn(),
+                exit = shrinkHorizontally() + fadeOut()
+            ) {
+                Text(
+                    text = stringResource(Res.string.search),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.padding(start = 6.dp)
+                )
+            }
+        }
+    }
 }

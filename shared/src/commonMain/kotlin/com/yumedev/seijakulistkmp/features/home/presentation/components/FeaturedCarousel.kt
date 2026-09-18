@@ -1,6 +1,9 @@
 package com.yumedev.seijakulistkmp.features.home.presentation.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -9,10 +12,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -23,6 +29,9 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.yumedev.seijakulistkmp.core.utils.rememberImageColors
 import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
+import com.yumedev.seijakulistkmp.ui.theme.ExpressiveMotion
+import com.yumedev.seijakulistkmp.ui.theme.InteractionAnimations
+import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
 import dev.seyfarth.tablericons.outlined.ChevronRight
@@ -118,15 +127,25 @@ private fun FeaturedCarouselItem(
         fallbackColor = MaterialTheme.colorScheme.surfaceContainer
     )
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.97f else 1f,
+        animationSpec = ExpressiveMotion.quickSpring
+    )
+
     Card(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(20.dp),
+            .padding(horizontal = 16.dp)
+            .scale(scale),
+        shape = SeijakuTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFF1C1C1E)
-        )
+        ),
+        interactionSource = interactionSource
     ) {
         Box(
             modifier = Modifier
@@ -179,7 +198,7 @@ private fun FeaturedCarouselItem(
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(12.dp),
-                    shape = RoundedCornerShape(100.dp),
+                    shape = SeijakuTheme.shapes.chip,
                     color = imageColors.value.vibrant
                 ) {
                     Text(
@@ -198,7 +217,7 @@ private fun FeaturedCarouselItem(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(12.dp),
-                        shape = RoundedCornerShape(100.dp),
+                        shape = SeijakuTheme.shapes.chip,
                         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
                     ) {
                         Row(
