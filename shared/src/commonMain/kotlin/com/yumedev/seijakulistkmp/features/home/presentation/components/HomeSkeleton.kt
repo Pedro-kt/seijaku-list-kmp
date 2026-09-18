@@ -33,14 +33,14 @@ fun FeaturedCarouselSkeleton(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .height(220.dp)
-                .clip(RoundedCornerShape(20.dp))
+                .height(200.dp)
+                .clip(RoundedCornerShape(24.dp))
                 .background(
                     brush = Brush.linearGradient(
                         colors = shimmerColors,
@@ -50,15 +50,23 @@ fun FeaturedCarouselSkeleton(modifier: Modifier = Modifier) {
                 )
         )
 
+        // Page indicators con diseño morphing
         Row(
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            repeat(3) {
+            repeat(3) { index ->
                 Box(
                     modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
+                        .width(if (index == 0) 24.dp else 8.dp)
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(100.dp))
+                        .background(
+                            if (index == 0)
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                            else
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                        )
                 )
             }
         }
@@ -80,14 +88,14 @@ fun MediaCardSkeleton(modifier: Modifier = Modifier) {
     )
 
     Column(
-        modifier = modifier.width(120.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier.width(120.dp)
     ) {
+        // Cover image
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(170.dp)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .background(
                     brush = Brush.linearGradient(
                         colors = shimmerColors,
@@ -97,43 +105,24 @@ fun MediaCardSkeleton(modifier: Modifier = Modifier) {
                 )
         )
 
+        // Content area - 75.dp height
         Box(
             modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .height(16.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = shimmerColors,
-                        start = androidx.compose.ui.geometry.Offset(translateAnim - 1000f, 0f),
-                        end = androidx.compose.ui.geometry.Offset(translateAnim, 0f)
-                    )
-                )
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(0.7f)
-                .height(12.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = shimmerColors,
-                        start = androidx.compose.ui.geometry.Offset(translateAnim - 1000f, 0f),
-                        end = androidx.compose.ui.geometry.Offset(translateAnim, 0f)
-                    )
-                )
-        )
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                .fillMaxWidth()
+                .height(75.dp)
         ) {
-            repeat(2) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Title
                 Box(
                     modifier = Modifier
-                        .width(40.dp)
-                        .height(18.dp)
-                        .clip(RoundedCornerShape(100.dp))
+                        .fillMaxWidth(0.85f)
+                        .height(14.dp)
+                        .clip(RoundedCornerShape(4.dp))
                         .background(
                             brush = Brush.linearGradient(
                                 colors = shimmerColors,
@@ -142,6 +131,42 @@ fun MediaCardSkeleton(modifier: Modifier = Modifier) {
                             )
                         )
                 )
+
+                // Metadata
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.65f)
+                        .height(11.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = shimmerColors,
+                                start = androidx.compose.ui.geometry.Offset(translateAnim - 1000f, 0f),
+                                end = androidx.compose.ui.geometry.Offset(translateAnim, 0f)
+                            )
+                        )
+                )
+
+                // Genre chips
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    repeat(2) {
+                        Box(
+                            modifier = Modifier
+                                .width(42.dp)
+                                .height(18.dp)
+                                .clip(RoundedCornerShape(100.dp))
+                                .background(
+                                    brush = Brush.linearGradient(
+                                        colors = shimmerColors,
+                                        start = androidx.compose.ui.geometry.Offset(translateAnim - 1000f, 0f),
+                                        end = androidx.compose.ui.geometry.Offset(translateAnim, 0f)
+                                    )
+                                )
+                        )
+                    }
+                }
             }
         }
     }
@@ -172,11 +197,12 @@ fun MediaSectionSkeleton(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Section title
             Box(
                 modifier = Modifier
-                    .width(150.dp)
-                    .height(24.dp)
-                    .clip(RoundedCornerShape(6.dp))
+                    .width(140.dp)
+                    .height(28.dp)
+                    .clip(RoundedCornerShape(8.dp))
                     .background(
                         brush = Brush.linearGradient(
                             colors = shimmerColors,
@@ -186,9 +212,11 @@ fun MediaSectionSkeleton(modifier: Modifier = Modifier) {
                     )
             )
 
+            // "See more" button
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .width(100.dp)
+                    .height(32.dp)
                     .clip(CircleShape)
                     .background(
                         brush = Brush.linearGradient(
@@ -217,13 +245,15 @@ fun HomeLoadingSkeleton(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
         FeaturedCarouselSkeleton(modifier = Modifier.padding(top = 16.dp))
 
         repeat(3) {
             MediaSectionSkeleton()
         }
+
+        Spacer(modifier = Modifier.height(80.dp))
     }
 }
 
