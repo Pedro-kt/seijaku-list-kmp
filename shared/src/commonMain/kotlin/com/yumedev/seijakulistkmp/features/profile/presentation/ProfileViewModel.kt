@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.core.domain.model.Result
+import com.yumedev.seijakulistkmp.features.auth.domain.usecase.GetCurrentUserUseCase
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.EnsureLocalProfileExistsUseCase
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.GetCurrentProfileUseCase
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.UpdateProfileStatisticsUseCase
@@ -23,6 +24,7 @@ class ProfileViewModel(
     private val updateStatistics: UpdateProfileStatisticsUseCase,
     private val ensureLocalProfileExists: EnsureLocalProfileExistsUseCase,
     private val getListStats: GetListStatsUseCase,
+    private val getCurrentUser: GetCurrentUserUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -31,6 +33,17 @@ class ProfileViewModel(
     init {
         loadProfile()
         loadStats()
+        observeAuthState()
+    }
+
+    private fun observeAuthState() {
+        viewModelScope.launch {
+            getCurrentUser().collect { authUser ->
+                _uiState.update {
+                    it.copy(isAuthenticated = authUser != null && !authUser.isAnonymous)
+                }
+            }
+        }
     }
 
     private fun loadProfile() {

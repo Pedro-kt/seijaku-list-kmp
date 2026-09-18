@@ -20,6 +20,8 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListSortOp
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStats
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import com.yumedev.seijakulistkmp.features.tracking.domain.repository.MediaListRepository
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.DeleteMediaListEntryFromFirestoreUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.SaveMediaListEntryToFirestoreUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.validator.MediaListValidator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -27,7 +29,9 @@ import kotlinx.coroutines.flow.map
 
 class MediaListRepositoryImpl(
     private val mediaListDao: MediaListDao,
-    private val malXmlMapper: MALXmlMapper
+    private val malXmlMapper: MALXmlMapper,
+    private val saveToFirestoreUseCase: SaveMediaListEntryToFirestoreUseCase,
+    private val deleteFromFirestoreUseCase: DeleteMediaListEntryFromFirestoreUseCase
 ) : MediaListRepository {
 
     override suspend fun addToList(
@@ -61,7 +65,11 @@ class MediaListRepositoryImpl(
         )
 
         val id = mediaListDao.insertEntry(entity)
-        entity.copy(id = id).toDomain()
+        val domainEntry = entity.copy(id = id).toDomain()
+
+        saveToFirestoreUseCase(domainEntry)
+
+        domainEntry
     }
 
     override suspend fun updateEntry(
@@ -97,11 +105,16 @@ class MediaListRepositoryImpl(
         )
 
         mediaListDao.updateEntry(updated)
-        updated.toDomain()
+        val domainEntry = updated.toDomain()
+
+        saveToFirestoreUseCase(domainEntry)
+
+        domainEntry
     }
 
     override suspend fun removeFromList(mediaId: Int, mediaType: MediaType): Result<Unit> = resultOf {
         mediaListDao.deleteByMedia(mediaId, mediaType.name)
+        deleteFromFirestoreUseCase(mediaId, mediaType)
     }
 
     override suspend fun getEntry(mediaId: Int, mediaType: MediaType): Result<MediaListEntry?> = resultOf {

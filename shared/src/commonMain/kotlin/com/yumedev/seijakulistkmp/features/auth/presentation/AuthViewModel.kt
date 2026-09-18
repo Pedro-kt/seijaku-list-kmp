@@ -6,6 +6,7 @@ import com.yumedev.seijakulistkmp.core.domain.model.Result
 import com.yumedev.seijakulistkmp.features.auth.domain.model.AuthError
 import com.yumedev.seijakulistkmp.features.auth.domain.usecase.*
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.SyncProfileWithFirestoreUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.SyncMediaListWithFirestoreUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -19,6 +20,7 @@ class AuthViewModel(
     private val isAuthenticated: IsAuthenticatedUseCase,
     private val sendPasswordReset: SendPasswordResetUseCase,
     private val syncProfileWithFirestore: SyncProfileWithFirestoreUseCase,
+    private val syncMediaListWithFirestore: SyncMediaListWithFirestoreUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthState())
@@ -98,7 +100,20 @@ class AuthViewModel(
 
             when (val result = loginWithEmail(state.email, state.password)) {
                 is Result.Success -> {
-                    syncProfileWithFirestore()
+                    val profileSyncResult = syncProfileWithFirestore()
+                    if (profileSyncResult is Result.Failure) {
+                        println("Profile sync failed: ${profileSyncResult.exception.message}")
+                    }
+
+                    val mediaSyncResult = syncMediaListWithFirestore()
+                    when (mediaSyncResult) {
+                        is Result.Success -> {
+                            println("Media list synced: ${mediaSyncResult.data.uploaded} uploaded, ${mediaSyncResult.data.downloaded} downloaded")
+                        }
+                        is Result.Failure -> {
+                            println("Media list sync failed: ${mediaSyncResult.exception.message}")
+                        }
+                    }
 
                     _uiState.update { it.copy(isLoading = false, loginSuccess = true) }
                     _events.send(AuthEvent.LoginSuccess)
@@ -137,7 +152,20 @@ class AuthViewModel(
 
             when (val result = registerWithEmail(state.email, state.password, state.confirmPassword)) {
                 is Result.Success -> {
-                    syncProfileWithFirestore()
+                    val profileSyncResult = syncProfileWithFirestore()
+                    if (profileSyncResult is Result.Failure) {
+                        println("Profile sync failed: ${profileSyncResult.exception.message}")
+                    }
+
+                    val mediaSyncResult = syncMediaListWithFirestore()
+                    when (mediaSyncResult) {
+                        is Result.Success -> {
+                            println("Media list synced: ${mediaSyncResult.data.uploaded} uploaded, ${mediaSyncResult.data.downloaded} downloaded")
+                        }
+                        is Result.Failure -> {
+                            println("Media list sync failed: ${mediaSyncResult.exception.message}")
+                        }
+                    }
 
                     _uiState.update { it.copy(isLoading = false, registerSuccess = true) }
                     _events.send(AuthEvent.RegisterSuccess)
@@ -163,7 +191,20 @@ class AuthViewModel(
 
             when (val result = loginWithGoogle(activityContext)) {
                 is Result.Success -> {
-                    syncProfileWithFirestore()
+                    val profileSyncResult = syncProfileWithFirestore()
+                    if (profileSyncResult is Result.Failure) {
+                        println("Profile sync failed: ${profileSyncResult.exception.message}")
+                    }
+
+                    val mediaSyncResult = syncMediaListWithFirestore()
+                    when (mediaSyncResult) {
+                        is Result.Success -> {
+                            println("Media list synced: ${mediaSyncResult.data.uploaded} uploaded, ${mediaSyncResult.data.downloaded} downloaded")
+                        }
+                        is Result.Failure -> {
+                            println("Media list sync failed: ${mediaSyncResult.exception.message}")
+                        }
+                    }
 
                     _uiState.update { it.copy(isGoogleSignInLoading = false) }
                     _events.send(AuthEvent.GoogleSignInSuccess)

@@ -220,6 +220,7 @@ fun ProfileScreenContent(
                     animeStats = uiState.animeStats,
                     mangaStats = uiState.mangaStats,
                     selectedTab = uiState.selectedTab,
+                    isAuthenticated = uiState.isAuthenticated,
                     onTabChanged = onTabChanged,
                     onAvatarClick = {
                         filePicker.pickImage(
@@ -277,6 +278,7 @@ fun ProfileContent(
     animeStats: MediaListStats?,
     mangaStats: MediaListStats?,
     selectedTab: Int,
+    isAuthenticated: Boolean,
     onTabChanged: (Int) -> Unit,
     onAvatarClick: () -> Unit,
     onBannerClick: () -> Unit,
@@ -292,6 +294,7 @@ fun ProfileContent(
         // Hero Section
         ProfileHeroSection(
             profile = profile,
+            isAuthenticated = isAuthenticated,
             onAvatarClick = onAvatarClick,
             onBannerClick = onBannerClick,
             onRemoveAvatar = onRemoveAvatar,
@@ -355,6 +358,7 @@ fun ProfileContent(
 @Composable
 fun ProfileHeroSection(
     profile: UserProfile,
+    isAuthenticated: Boolean,
     onAvatarClick: () -> Unit,
     onBannerClick: () -> Unit,
     onRemoveAvatar: () -> Unit,
@@ -582,7 +586,7 @@ fun ProfileHeroSection(
                 )
             }
 
-            if (profile.isLocal) {
+            if (!isAuthenticated) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Card(
                     colors = CardDefaults.cardColors(
