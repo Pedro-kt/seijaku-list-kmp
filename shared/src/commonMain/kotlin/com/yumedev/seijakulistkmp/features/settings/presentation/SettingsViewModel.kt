@@ -3,14 +3,17 @@ package com.yumedev.seijakulistkmp.features.settings.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
+import com.yumedev.seijakulistkmp.core.notification.AiringNotificationScheduler
 import com.yumedev.seijakulistkmp.features.auth.domain.usecase.GetCurrentUserUseCase
 import com.yumedev.seijakulistkmp.features.auth.domain.usecase.LogoutUseCase
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.GetCurrentProfileUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetAiringNotificationsUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetLanguageModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetSfwModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeModeUseCase
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetAiringNotificationsUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetLanguageModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetSfwModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetThemeModeUseCase
@@ -34,6 +37,9 @@ class SettingsViewModel(
     private val setLanguageModeUseCase: SetLanguageModeUseCase,
     private val getSfwModeUseCase: GetSfwModeUseCase,
     private val setSfwModeUseCase: SetSfwModeUseCase,
+    private val getAiringNotificationsUseCase: GetAiringNotificationsUseCase,
+    private val setAiringNotificationsUseCase: SetAiringNotificationsUseCase,
+    private val airingNotificationScheduler: AiringNotificationScheduler,
     private val getCurrentProfileUseCase: GetCurrentProfileUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val logoutUseCase: LogoutUseCase,
@@ -50,6 +56,7 @@ class SettingsViewModel(
         observeThemeMode()
         observeLanguageMode()
         observeSfwMode()
+        observeAiringNotifications()
         observeCurrentProfile()
         observeAuthUser()
     }
@@ -74,6 +81,14 @@ class SettingsViewModel(
         viewModelScope.launch {
             getSfwModeUseCase().collect { sfwEnabled ->
                 _state.update { it.copy(sfwModeEnabled = sfwEnabled) }
+            }
+        }
+    }
+
+    private fun observeAiringNotifications() {
+        viewModelScope.launch {
+            getAiringNotificationsUseCase().collect { enabled ->
+                _state.update { it.copy(airingNotificationsEnabled = enabled) }
             }
         }
     }
@@ -123,8 +138,15 @@ class SettingsViewModel(
     }
 
     fun onAiringNotificationsToggle(enabled: Boolean) {
-        _state.update { it.copy(airingNotificationsEnabled = enabled) }
-        // TODO: Implement persistence for airing notifications
+        viewModelScope.launch {
+            setAiringNotificationsUseCase(enabled)
+
+            if (enabled) {
+                airingNotificationScheduler.startPeriodicSync()
+            } else {
+                airingNotificationScheduler.cancelAll()
+            }
+        }
     }
 
     fun onSfwModeToggle(enabled: Boolean) {

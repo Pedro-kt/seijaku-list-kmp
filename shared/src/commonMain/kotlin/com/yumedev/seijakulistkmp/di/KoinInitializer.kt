@@ -10,6 +10,7 @@ fun initKoin(googleWebClientId: String, appDeclaration: KoinAppDeclaration = {})
             coreModule,
             networkModule,
             platformAuthModule(googleWebClientId),
+            platformNotificationModule,
             authModule,
             homeModule,
             searchModule,

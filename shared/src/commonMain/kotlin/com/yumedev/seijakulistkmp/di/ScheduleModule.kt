@@ -5,6 +5,8 @@ import com.yumedev.seijakulistkmp.features.schedule.data.datasource.AiringSchedu
 import com.yumedev.seijakulistkmp.features.schedule.data.repository.AiringScheduleRepositoryImpl
 import com.yumedev.seijakulistkmp.features.schedule.domain.repository.AiringScheduleRepository
 import com.yumedev.seijakulistkmp.features.schedule.domain.usecase.GetDayScheduleUseCase
+import com.yumedev.seijakulistkmp.features.schedule.domain.usecase.GetUserAiringAnimeTodayUseCase
+import com.yumedev.seijakulistkmp.features.schedule.domain.usecase.GetUserUpcomingEpisodesUseCase
 import com.yumedev.seijakulistkmp.features.schedule.domain.usecase.GetWeeklyScheduleUseCase
 import com.yumedev.seijakulistkmp.features.schedule.presentation.AiringScheduleViewModel
 import org.koin.core.module.dsl.factoryOf
@@ -20,6 +22,8 @@ val scheduleModule = module {
 
     factoryOf(::GetWeeklyScheduleUseCase)
     factoryOf(::GetDayScheduleUseCase)
+    factoryOf(::GetUserAiringAnimeTodayUseCase)
+    factoryOf(::GetUserUpcomingEpisodesUseCase)
 
     viewModelOf(::AiringScheduleViewModel)
 }

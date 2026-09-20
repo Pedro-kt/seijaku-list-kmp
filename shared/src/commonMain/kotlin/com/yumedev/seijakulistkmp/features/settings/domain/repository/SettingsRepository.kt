@@ -17,4 +17,7 @@ interface SettingsRepository {
 
     fun getCardType(): Flow<MediaListCardType>
     suspend fun setCardType(cardType: MediaListCardType)
+
+    fun getAiringNotifications(): Flow<Boolean>
+    suspend fun setAiringNotifications(enabled: Boolean)
 }
