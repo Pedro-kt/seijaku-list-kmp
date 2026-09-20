@@ -16,7 +16,8 @@ fun initKoin(googleWebClientId: String, appDeclaration: KoinAppDeclaration = {})
             detailModule,
             characterModule,
             settingsModule,
-            trackingModule
+            trackingModule,
+            scheduleModule
         )
     }
 }

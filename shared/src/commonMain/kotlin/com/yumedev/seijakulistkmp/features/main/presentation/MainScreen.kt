@@ -13,6 +13,7 @@ import com.yumedev.seijakulistkmp.features.detail.presentation.DetailScreen
 import com.yumedev.seijakulistkmp.features.home.presentation.HomeScreenContent
 import com.yumedev.seijakulistkmp.features.manga.presentation.MangaListScreenContent
 import com.yumedev.seijakulistkmp.features.profile.presentation.ProfileScreen
+import com.yumedev.seijakulistkmp.features.schedule.presentation.AiringScheduleScreen
 import com.yumedev.seijakulistkmp.features.settings.presentation.SettingsScreen
 import com.yumedev.seijakulistkmp.features.search.presentation.SearchScreenContent
 import com.yumedev.seijakulistkmp.features.welcome.presentation.WelcomeScreen
@@ -84,6 +85,9 @@ fun MainScreenContent() {
                     },
                     onNavigateToSectionList = { sectionType, mediaType, title ->
                         navigator.push(SectionListScreen(sectionType, mediaType, title))
+                    },
+                    onNavigateToAiringSchedule = {
+                        navigator.push(AiringScheduleScreen())
                     }
                 )
                 BottomNavItem.Anime -> AnimeListScreenContent()
