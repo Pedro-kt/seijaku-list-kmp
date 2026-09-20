@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,6 +30,7 @@ import com.yumedev.seijakulistkmp.features.tracking.presentation.components.Anim
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCardType
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.SortBottomSheet
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCard
+import com.yumedev.seijakulistkmp.features.tracking.presentation.components.ExpressiveFilterChip
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AdjustmentsHorizontal
 import dev.seyfarth.tablericons.outlined.LayoutGrid
@@ -70,32 +72,69 @@ fun UserAnimeListScreenContent(
             TopAppBar(
                 title = { Text(stringResource(Res.string.my_anime_list)) },
                 actions = {
-                    IconButton(
-                        onClick = { onEvent(UserAnimeListEvent.ToggleSearch) },
-                        enabled = uiState.entries.isNotEmpty()
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(end = 8.dp)
                     ) {
-                        Icon(
-                            imageVector = TablerIcons.Outlined.Search,
-                            contentDescription = stringResource(Res.string.search)
-                        )
-                    }
-                    IconButton(
-                        onClick = { onEvent(UserAnimeListEvent.ToggleCardType) },
-                        enabled = uiState.entries.isNotEmpty()
-                    ) {
-                        Icon(
-                            imageVector = when (uiState.cardType) {
-                                MediaListCardType.Compact -> TablerIcons.Outlined.LayoutGrid
-                                MediaListCardType.Grid -> TablerIcons.Outlined.LayoutList
-                            },
-                            contentDescription = stringResource(Res.string.list_change_view)
-                        )
-                    }
-                    IconButton(onClick = { onEvent(UserAnimeListEvent.ShowSortBottomSheet) }) {
-                        Icon(
-                            imageVector = TablerIcons.Outlined.AdjustmentsHorizontal,
-                            contentDescription = stringResource(Res.string.filter_menu)
-                        )
+                        Surface(
+                            onClick = { onEvent(UserAnimeListEvent.ToggleSearch) },
+                            enabled = uiState.entries.isNotEmpty(),
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Icon(
+                                    imageVector = TablerIcons.Outlined.Search,
+                                    contentDescription = stringResource(Res.string.search),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
+
+                        Surface(
+                            onClick = { onEvent(UserAnimeListEvent.ToggleCardType) },
+                            enabled = uiState.entries.isNotEmpty(),
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Icon(
+                                    imageVector = when (uiState.cardType) {
+                                        MediaListCardType.Compact -> TablerIcons.Outlined.LayoutGrid
+                                        MediaListCardType.Grid -> TablerIcons.Outlined.LayoutList
+                                    },
+                                    contentDescription = stringResource(Res.string.list_change_view),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
+
+                        Surface(
+                            onClick = { onEvent(UserAnimeListEvent.ShowSortBottomSheet) },
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Icon(
+                                    imageVector = TablerIcons.Outlined.AdjustmentsHorizontal,
+                                    contentDescription = stringResource(Res.string.filter_menu),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
                     }
                 }
             )
@@ -238,7 +277,7 @@ private fun StatusFilterChips(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item {
-            FilterChip(
+            ExpressiveFilterChip(
                 selected = selectedStatus == null,
                 onClick = { onStatusSelected(null) },
                 label = {
@@ -277,7 +316,7 @@ private fun StatusFilterChips(
                 }
             }
 
-            FilterChip(
+            ExpressiveFilterChip(
                 selected = selectedStatus == status,
                 onClick = { onStatusSelected(status) },
                 label = {

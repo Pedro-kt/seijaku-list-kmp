@@ -131,51 +131,32 @@ private fun LoadingContent(onBack: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
+                ShimmerBox(
+                    modifier = Modifier
+                        .width(160.dp)
+                        .height(230.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                )
+
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     ShimmerBox(
                         modifier = Modifier
-                            .width(140.dp)
-                            .height(200.dp)
+                            .fillMaxWidth(0.7f)
+                            .height(28.dp)
                             .clip(RoundedCornerShape(8.dp))
                     )
-
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(top = 4.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        ShimmerBox(
-                            modifier = Modifier
-                                .width(120.dp)
-                                .height(16.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                        )
-
-                        ShimmerBox(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(28.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                        )
-
-                        ShimmerBox(
-                            modifier = Modifier
-                                .fillMaxWidth(0.8f)
-                                .height(20.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                        )
-                    }
                 }
 
                 ShimmerBox(
                     modifier = Modifier
-                        .fillMaxWidth(0.7f)
+                        .fillMaxWidth(0.6f)
                         .height(16.dp)
                         .clip(RoundedCornerShape(8.dp))
                 )
@@ -214,7 +195,7 @@ private fun LoadingContent(onBack: () -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp)
-                        .clip(RoundedCornerShape(24.dp))
+                        .clip(RoundedCornerShape(50))
                 )
             }
 
@@ -433,6 +414,10 @@ fun DetailScreenContent(
                 synopsis = mediaDetail.description
             )
 
+            DetailGenres(
+                genres = mediaDetail.genres
+            )
+
             DetailInformation(
                 items = mediaDetail.informationItems
             )
@@ -443,10 +428,6 @@ fun DetailScreenContent(
                     onTrailerClick = onTrailerClick
                 )
             }
-
-            DetailGenres(
-                genres = mediaDetail.genres
-            )
 
             DetailCharacters(
                 characters = mediaDetail.characters,

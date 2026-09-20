@@ -17,13 +17,17 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.repository.MediaListR
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.AddToListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.CheckInListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ExportToMALUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetFavoriteMediaUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListEntryUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListStatsUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetMediaListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ImportFromMALUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.RemoveFavoriteUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.RemoveFromListUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ReorderFavoritesUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ResolveAllImportConflictsUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ResolveImportConflictUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.SetMediaAsFavoriteUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.UpdateListEntryUseCase
 import com.yumedev.seijakulistkmp.features.tracking.presentation.animelist.UserAnimeListViewModel
 import com.yumedev.seijakulistkmp.features.tracking.presentation.mangalist.UserMangaListViewModel
@@ -71,6 +75,11 @@ val trackingModule = module {
     factoryOf(::CheckInListUseCase)
     factoryOf(::ResolveImportConflictUseCase)
     factoryOf(::ResolveAllImportConflictsUseCase)
+
+    factoryOf(::GetFavoriteMediaUseCase)
+    factoryOf(::SetMediaAsFavoriteUseCase)
+    factoryOf(::RemoveFavoriteUseCase)
+    factoryOf(::ReorderFavoritesUseCase)
 
     viewModelOf(::ProfileViewModel)
     viewModelOf(::UserAnimeListViewModel)

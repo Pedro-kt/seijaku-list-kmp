@@ -9,6 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
+import com.yumedev.seijakulistkmp.features.tracking.presentation.components.ExpressiveFilterChip
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
 
@@ -96,7 +97,7 @@ private fun ThemeChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    FilterChip(
+    ExpressiveFilterChip(
         selected = selected,
         onClick = onClick,
         label = {
@@ -105,7 +106,6 @@ private fun ThemeChip(
                 style = MaterialTheme.typography.bodyMedium
             )
         },
-        shape = RoundedCornerShape(8.dp),
         modifier = modifier
     )
 }

@@ -344,4 +344,67 @@ class MediaListRepositoryImpl(
             resolveConflict(conflict, resolution).getOrThrow()
         }
     }
+
+    override fun observeFavorites(mediaType: MediaType): Flow<List<MediaListEntry>> {
+        return mediaListDao.observeFavoritesByType(mediaType.name)
+            .map { entities -> entities.map { it.toDomain() } }
+    }
+
+    override suspend fun getFavorites(mediaType: MediaType): Result<List<MediaListEntry>> = resultOf {
+        mediaListDao.getFavoritesByType(mediaType.name).map { it.toDomain() }
+    }
+
+    override suspend fun setFavoritePosition(
+        mediaId: Int,
+        mediaType: MediaType,
+        position: Int
+    ): Result<MediaListEntry> = resultOf {
+        require(position in 1..5) { "Favorite position must be between 1 and 5" }
+
+        val now = System.currentTimeMillis()
+        mediaListDao.updateFavoritePosition(
+            mediaId = mediaId,
+            mediaType = mediaType.name,
+            position = position,
+            updatedAt = now
+        )
+
+        val domainEntry = mediaListDao.getEntryByMedia(mediaId, mediaType.name)?.toDomain()
+            ?: throw IllegalStateException("Entry not found after update")
+
+        saveToFirestoreUseCase(domainEntry)
+
+        domainEntry
+    }
+
+    override suspend fun removeFavorite(mediaId: Int, mediaType: MediaType): Result<Unit> = resultOf {
+        val now = System.currentTimeMillis()
+        mediaListDao.removeFavorite(mediaId, mediaType.name, now)
+
+        val domainEntry = mediaListDao.getEntryByMedia(mediaId, mediaType.name)?.toDomain()
+            ?: throw IllegalStateException("Entry not found after update")
+
+        saveToFirestoreUseCase(domainEntry)
+    }
+
+    override suspend fun reorderFavorites(
+        mediaType: MediaType,
+        reorderedEntries: List<Pair<Int, Int>>
+    ): Result<Unit> = resultOf {
+        val now = System.currentTimeMillis()
+        reorderedEntries.forEach { (mediaId, newPosition) ->
+            require(newPosition in 1..5) { "Favorite position must be between 1 and 5" }
+            mediaListDao.updateFavoritePosition(
+                mediaId = mediaId,
+                mediaType = mediaType.name,
+                position = newPosition,
+                updatedAt = now
+            )
+
+            val domainEntry = mediaListDao.getEntryByMedia(mediaId, mediaType.name)?.toDomain()
+                ?: throw IllegalStateException("Entry not found after update")
+
+            saveToFirestoreUseCase(domainEntry)
+        }
+    }
 }

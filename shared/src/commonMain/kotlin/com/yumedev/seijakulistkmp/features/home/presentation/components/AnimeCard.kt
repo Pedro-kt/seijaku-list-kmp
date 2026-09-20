@@ -1,21 +1,32 @@
 package com.yumedev.seijakulistkmp.features.home.presentation.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.yumedev.seijakulistkmp.features.home.presentation.model.AnimeCardItem
+import com.yumedev.seijakulistkmp.ui.theme.ExpressiveMotion
+import com.yumedev.seijakulistkmp.ui.theme.InteractionAnimations
+import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
 
@@ -24,21 +35,34 @@ fun AnimeCard(
     item: AnimeCardItem,
     onClick: () -> Unit,
     onLongClick: () -> Unit = {},
+    cardWidth: Dp = 120.dp,
     modifier: Modifier = Modifier
 ) {
+    val cardShape = RoundedCornerShape(16.dp)
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) InteractionAnimations.PRESS_SCALE else 1f,
+        animationSpec = ExpressiveMotion.quickSpring
+    )
+
     Column (
-        modifier = modifier.width(120.dp)
+        modifier = modifier
+            .width(cardWidth)
+            .scale(scale)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Cover image
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(170.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(cardShape)
                     .combinedClickable(
+                        interactionSource = interactionSource,
+                        indication = null,
                         onClick = onClick,
                         onLongClick = onLongClick
                     )
@@ -47,7 +71,7 @@ fun AnimeCard(
                     AsyncImage(
                         model = imageUrl,
                         contentDescription = item.title,
-                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(12.dp)),
+                        modifier = Modifier.fillMaxSize().clip(cardShape),
                         contentScale = ContentScale.Crop
                     )
                 }
@@ -62,6 +86,7 @@ fun AnimeCard(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = item.title,
                         style = MaterialTheme.typography.titleSmall,
@@ -99,8 +124,9 @@ fun AnimeCard(
                         ) {
                             item.genres.take(2).forEach { genre ->
                                 Surface(
-                                    shape = RoundedCornerShape(100.dp),
-                                    color = MaterialTheme.colorScheme.primaryContainer
+                                    shape = SeijakuTheme.shapes.chip,
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                    tonalElevation = 1.dp
                                 ) {
                                     Text(
                                         text = genre,

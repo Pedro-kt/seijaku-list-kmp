@@ -24,6 +24,7 @@ fun MediaListEntry.toDto(firestoreId: String): MediaListEntryDto {
         createdAt = createdAt,
         updatedAt = updatedAt,
         anilistEntryId = anilistEntryId,
+        favoritePosition = favoritePosition,
         mediaTitle = mediaInfo?.title,
         mediaCoverImage = mediaInfo?.coverImage,
         mediaTotalEpisodes = mediaInfo?.totalEpisodes,
@@ -50,6 +51,7 @@ fun MediaListEntryDto.toDomain(localId: Long): MediaListEntry {
         createdAt = createdAt,
         updatedAt = updatedAt,
         anilistEntryId = anilistEntryId,
+        favoritePosition = favoritePosition,
         isSynced = true,
         needsSync = false,
         mediaInfo = if (mediaTitle != null) {

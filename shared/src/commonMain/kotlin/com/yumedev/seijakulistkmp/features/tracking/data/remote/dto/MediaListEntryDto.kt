@@ -19,6 +19,7 @@ data class MediaListEntryDto(
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
     val anilistEntryId: Int? = null,
+    val favoritePosition: Int? = null,
     val mediaTitle: String? = null,
     val mediaCoverImage: String? = null,
     val mediaTotalEpisodes: Int? = null,

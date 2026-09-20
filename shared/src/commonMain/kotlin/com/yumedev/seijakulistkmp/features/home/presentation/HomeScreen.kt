@@ -1,11 +1,14 @@
 package com.yumedev.seijakulistkmp.features.home.presentation
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,11 +19,13 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
@@ -35,12 +40,15 @@ import com.yumedev.seijakulistkmp.features.home.presentation.components.Featured
 import com.yumedev.seijakulistkmp.features.home.presentation.components.FeaturedCarouselSkeleton
 import com.yumedev.seijakulistkmp.features.home.presentation.components.HomeLoadingSkeleton
 import com.yumedev.seijakulistkmp.features.home.presentation.components.MangaSection
+import com.yumedev.seijakulistkmp.features.search.presentation.components.QuickFilterChips
+import com.yumedev.seijakulistkmp.features.search.presentation.model.QuickFilter
 import com.yumedev.seijakulistkmp.features.home.presentation.model.AnimeCardItem
 import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
 import com.yumedev.seijakulistkmp.features.home.presentation.sectionlist.SectionListScreen
+import com.yumedev.seijakulistkmp.features.search.presentation.SearchScreen
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AlertCircle
-import dev.seyfarth.tablericons.outlined.Bell
+import dev.seyfarth.tablericons.outlined.Calendar
 import dev.seyfarth.tablericons.outlined.Book
 import dev.seyfarth.tablericons.outlined.DeviceTv
 import dev.seyfarth.tablericons.outlined.Search
@@ -144,10 +152,24 @@ fun HomeScreenContent(
                 .padding(paddingValues)
         ) {
             // Tab Row
-            PrimaryTabRow(
+            TabRow(
                 selectedTabIndex = selectedTabIndex,
                 containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                indicator = { tabPositions ->
+                    if (selectedTabIndex < tabPositions.size) {
+                        Box(
+                            Modifier
+                                .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                                .fillMaxWidth()
+                                .height(3.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                                )
+                        )
+                    }
+                }
             ) {
                 Tab(
                     selected = selectedTabIndex == 0,
@@ -256,6 +278,8 @@ private fun AnimeTabContent(
     onAnimeLongClick: (AnimeCardItem) -> Unit,
     onNavigateToSectionList: (SectionType, MediaType, String) -> Unit
 ) {
+    val navigator = LocalNavigator.current
+
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
         onRefresh = onRefresh,
@@ -345,8 +369,20 @@ private fun AnimeTabContent(
         }
 
         item {
+            Spacer(modifier = Modifier.height(8.dp))
+            QuickFilterChips(
+                onFilterClick = { filter, label ->
+                    navigator?.push(
+                        SearchScreen(quickFilter = filter)
+                    )
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        item {
             val airingNowTitle = stringResource(Res.string.airing_now)
-            AnimeSection(
+        AnimeSection(
                 title = airingNowTitle,
                 items = state.airingNowAnime,
                 onSeeMoreClick = {
@@ -441,6 +477,8 @@ private fun MangaTabContent(
     onMangaLongClick: (com.yumedev.seijakulistkmp.features.home.presentation.model.MangaCardItem) -> Unit,
     onNavigateToSectionList: (SectionType, MediaType, String) -> Unit
 ) {
+    val navigator = LocalNavigator.current
+
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
         onRefresh = onRefresh,
@@ -528,6 +566,18 @@ private fun MangaTabContent(
                     )
                 }
             }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
+            QuickFilterChips(
+                onFilterClick = { filter, _ ->
+                    navigator?.push(
+                        SearchScreen(quickFilter = filter)
+                    )
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
         // Publishing Now Section
@@ -657,113 +707,110 @@ private fun HomeTopAppBar(
     onNotificationsClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = if (isScrolled) 3.dp else 0.dp
-    ) {
-        AnimatedContent(
-            targetState = isScrolled,
-            transitionSpec = {
-                fadeIn() togetherWith fadeOut()
-            },
-            label = "TopAppBarTransition"
-        ) { scrolled ->
-            if (scrolled) {
-                SearchBarMode(
-                    onSearchClick = onSearchClick,
-                    onProfileClick = onProfileClick
+    TopAppBar(
+        title = {
+            Text(
+                text = stringResource(Res.string.app_name)
+            )
+        },
+        actions = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(end = 8.dp)
+            ) {
+                ExpandableSearchChip(
+                    isExpanded = isScrolled,
+                    onClick = onSearchClick
                 )
-            } else {
-                NormalAppBarMode(
-                    onSearchClick = onSearchClick,
-                    onNotificationsClick = onNotificationsClick
+
+                Surface(
+                    onClick = if (isScrolled) onProfileClick else onNotificationsClick,
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Icon(
+                            imageVector = TablerIcons.Outlined.Calendar,
+                            contentDescription = stringResource(Res.string.notifications),
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface
+        )
+    )
+}
+
+@Composable
+private fun ExpandableSearchChip(
+    isExpanded: Boolean,
+    onClick: () -> Unit
+) {
+    // Animación del ancho con spring (muy expresivo)
+    val chipWidth by animateDpAsState(
+        targetValue = if (isExpanded) 120.dp else 40.dp,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(20.dp),
+        color = if (isExpanded) {
+            MaterialTheme.colorScheme.surfaceContainerHighest
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerHighest
+        },
+        modifier = Modifier
+            .width(chipWidth)
+            .height(40.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = TablerIcons.Outlined.Search,
+                contentDescription = stringResource(Res.string.search),
+                tint = if (isExpanded) {
+                    MaterialTheme.colorScheme.onSurface
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                },
+                modifier = Modifier.size(24.dp)
+            )
+
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = expandHorizontally(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessMedium
+                    )
+                ) + fadeIn(),
+                exit = shrinkHorizontally() + fadeOut()
+            ) {
+                Text(
+                    text = stringResource(Res.string.search),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(start = 6.dp)
                 )
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun NormalAppBarMode(
-    onSearchClick: () -> Unit,
-    onNotificationsClick: () -> Unit
-) {
-    TopAppBar(
-        title = {
-            Text(
-                text = stringResource(Res.string.app_name),
-                style = MaterialTheme.typography.titleLarge
-            )
-        },
-        actions = {
-            IconButton(onClick = onSearchClick) {
-                Icon(
-                    imageVector = TablerIcons.Outlined.Search,
-                    contentDescription = stringResource(Res.string.search)
-                )
-            }
-            IconButton(onClick = onNotificationsClick) {
-                Icon(
-                    imageVector = TablerIcons.Outlined.Bell,
-                    contentDescription = stringResource(Res.string.notifications)
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface
-        )
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SearchBarMode(
-    onSearchClick: () -> Unit,
-    onProfileClick: () -> Unit
-) {
-    TopAppBar(
-        title = {
-            Surface(
-                onClick = onSearchClick,
-                shape = RoundedCornerShape(28.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                tonalElevation = 6.dp,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = TablerIcons.Outlined.Search,
-                        contentDescription = stringResource(Res.string.search),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = stringResource(Res.string.search_placeholder),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        },
-        actions = {
-            IconButton(onClick = onProfileClick) {
-                Icon(
-                    imageVector = TablerIcons.Outlined.Bell,
-                    contentDescription = stringResource(Res.string.notifications)
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface
-        )
-    )
 }

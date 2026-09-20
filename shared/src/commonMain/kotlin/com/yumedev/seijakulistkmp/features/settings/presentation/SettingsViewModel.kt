@@ -142,7 +142,11 @@ class SettingsViewModel(
     }
 
     fun onAboutClick() {
-        // TODO: Navigate to about screen
+        _state.update { it.copy(pendingExternalUrl = "https://daffdev.vercel.app/privacy") }
+    }
+
+    fun dismissExternalLinkDialog() {
+        _state.update { it.copy(pendingExternalUrl = null) }
     }
 
     fun onLogoutClick() {

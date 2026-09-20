@@ -5,7 +5,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+
+val LocalExpressiveShapes = staticCompositionLocalOf { expressiveShapes }
 
 private val SumiDark = darkColorScheme(
     primary = SumiPrimaryDark,
@@ -86,9 +90,18 @@ fun SeijakuTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    MaterialTheme(
-        colorScheme = if (darkTheme) SumiDark else SumiLight,
-        typography = SeijakuTypography(),
-        content = content,
-    )
+    CompositionLocalProvider(LocalExpressiveShapes provides expressiveShapes) {
+        MaterialTheme(
+            colorScheme = if (darkTheme) SumiDark else SumiLight,
+            typography = SeijakuTypography(),
+            shapes = material3Shapes,
+            content = content,
+        )
+    }
+}
+
+object SeijakuTheme {
+    val shapes: ExpressiveShapes
+        @Composable
+        get() = LocalExpressiveShapes.current
 }

@@ -18,6 +18,7 @@ import com.yumedev.seijakulistkmp.core.utils.rememberAppVersion
 import com.yumedev.seijakulistkmp.core.utils.rememberFileExporter
 import com.yumedev.seijakulistkmp.core.utils.rememberFilePicker
 import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
+import com.yumedev.seijakulistkmp.core.utils.rememberUrlOpener
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.settings.presentation.components.*
@@ -41,6 +42,7 @@ class SettingsScreen : Screen {
         val filePicker = rememberFilePicker()
         val toastManager = rememberToastManager()
         val activityRecreator = rememberActivityRecreator()
+        val urlOpener = rememberUrlOpener()
         val (appVersion, buildNumber) = rememberAppVersion()
 
         val exportAnimeSuccessMessage = stringResource(Res.string.settings_export_anime_success)
@@ -153,6 +155,33 @@ class SettingsScreen : Screen {
                 conflicts = state.currentConflicts,
                 onDismiss = viewModel::dismissConflictDialog,
                 onResolveAll = viewModel::resolveAllConflicts
+            )
+        }
+
+        state.pendingExternalUrl?.let { url ->
+            AlertDialog(
+                onDismissRequest = viewModel::dismissExternalLinkDialog,
+                title = {
+                    Text(text = stringResource(Res.string.settings_external_link_title))
+                },
+                text = {
+                    Text(text = stringResource(Res.string.settings_external_link_message))
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            viewModel.dismissExternalLinkDialog()
+                            urlOpener.openUrl(url)
+                        }
+                    ) {
+                        Text(stringResource(Res.string.settings_external_link_confirm))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = viewModel::dismissExternalLinkDialog) {
+                        Text(stringResource(Res.string.list_cancel))
+                    }
+                }
             )
         }
     }

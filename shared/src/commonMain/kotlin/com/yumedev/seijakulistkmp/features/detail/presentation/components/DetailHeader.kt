@@ -1,18 +1,32 @@
 package com.yumedev.seijakulistkmp.features.detail.presentation.components
 
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
 import org.jetbrains.compose.resources.stringResource
@@ -39,76 +53,57 @@ fun DetailHeader(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        Box(
+            modifier = Modifier
+                .width(160.dp)
+                .height(230.dp)
+                .clip(RoundedCornerShape(16.dp))
         ) {
-            Box(
-                modifier = Modifier
-                    .width(140.dp)
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            ) {
-                coverImageUrl?.let { imageUrl ->
-                    AsyncImage(
-                        model = imageUrl,
-                        contentDescription = title,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(top = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                if (typeLabel != null || demographic != null) {
-                    Text(
-                        text = buildString {
-                            if (typeLabel != null) append(typeLabel.uppercase())
-                            if (typeLabel != null && demographic != null) append(" · ")
-                            if (demographic != null) append(demographic.uppercase())
-                        },
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+            coverImageUrl?.let { imageUrl ->
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
-
-                titleNative?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
-                }
             }
         }
 
-        // Metadata Row with optional airing badge
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            /*
+            titleNative?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+             */
+        }
+
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = metadataText,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                modifier = Modifier.weight(1f, fill = false)
-            )
-
             nextAiringText?.let { airingText ->
                 NextAiringPill(airingText)
             }
@@ -119,10 +114,8 @@ fun DetailHeader(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             formattedScore?.let { score ->
-                Surface(
-                    modifier = Modifier.weight(1f),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    shape = RoundedCornerShape(12.dp)
+                StatCard(
+                    modifier = Modifier.weight(1f)
                 ) {
                     StatItem(
                         icon = {
@@ -141,10 +134,8 @@ fun DetailHeader(
             }
 
             rankingText?.let { rank ->
-                Surface(
-                    modifier = Modifier.weight(1f),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    shape = RoundedCornerShape(12.dp)
+                StatCard(
+                    modifier = Modifier.weight(1f)
                 ) {
                     StatItem(
                         value = rank,
@@ -155,10 +146,8 @@ fun DetailHeader(
             }
 
             popularityText?.let { popularity ->
-                Surface(
-                    modifier = Modifier.weight(1f),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    shape = RoundedCornerShape(12.dp)
+                StatCard(
+                    modifier = Modifier.weight(1f)
                 ) {
                     StatItem(
                         value = popularity,
@@ -170,24 +159,49 @@ fun DetailHeader(
         }
 
         if (!isInList) {
-            Button(
+            ExpressiveAddToListButton(
                 onClick = onAddToListClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            ) {
-                Text(
-                    text = stringResource(Res.string.detail_add_to_list),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
+                modifier = Modifier.fillMaxWidth()
+            )
         }
+    }
+}
+
+@Composable
+private fun StatCard(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    // Scale animation expresiva
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    // Elevation animation
+    val elevation by animateFloatAsState(
+        targetValue = if (isPressed) 6f else 2f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    Surface(
+        onClick = { /* Stats are not clickable, just visual feedback */ },
+        modifier = modifier.scale(scale),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+        shape = SeijakuTheme.shapes.cardAsymmetric,
+        tonalElevation = elevation.dp,
+        interactionSource = interactionSource
+    ) {
+        content()
     }
 }
 
@@ -222,14 +236,64 @@ private fun StatItem(
 }
 
 @Composable
+private fun ExpressiveAddToListButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    // Scale animation expresiva con bounce
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.96f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    // Elevation animation
+    val elevation by animateFloatAsState(
+        targetValue = if (isPressed) 8f else 3f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )
+
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .height(48.dp)
+            .scale(scale),
+        shape = RoundedCornerShape(50),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        ),
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = elevation.dp,
+            pressedElevation = 0.dp
+        ),
+        interactionSource = interactionSource
+    ) {
+        Text(
+            text = stringResource(Res.string.detail_add_to_list),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold
+        )
+    }
+}
+
+@Composable
 private fun NextAiringPill(
     airingText: String, // Pre-formatted: "Ep. 12 en 2d"
     modifier: Modifier = Modifier
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
+        shape = SeijakuTheme.shapes.badge,
+        color = MaterialTheme.colorScheme.secondaryContainer
     ) {
         Text(
             text = airingText,

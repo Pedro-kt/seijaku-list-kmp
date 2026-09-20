@@ -14,6 +14,7 @@
     <string name="loading">Cargando...</string>
     <string name="error">Error</string>
     <string name="retry">Reintentar</string>
+    <string name="see_more">Ver más</string>
     <string name="search">Buscar</string>
     <string name="search_placeholder">Anime, manga, personajes...</string>
     <string name="search_anime_placeholder">Buscar anime</string>
@@ -212,6 +213,9 @@
     <string name="settings_clear_cache_desc">%1$s en el dispositivo</string>
     <string name="settings_about">Acerca de</string>
     <string name="settings_about_desc">Licencias y datos de AniList API</string>
+    <string name="settings_external_link_title">Abriendo enlace externo</string>
+    <string name="settings_external_link_message">Estás a punto de visitar un sitio web externo. ¿Deseas continuar?</string>
+    <string name="settings_external_link_confirm">Abrir</string>
     <string name="settings_account">CUENTA</string>
     <string name="settings_version">%1$s - Seijaku List v%2$s (build %3$s)</string>
 
@@ -399,6 +403,7 @@
     <string name="profile_edit_subtitle">Actualiza la información de tu perfil</string>
     <string name="profile_select_image">Seleccionar imagen</string>
     <string name="profile_remove_image">Eliminar</string>
+    <string name="profile_add_banner">Añadir banner</string>
 
     <!-- Welcome/Onboarding Screen -->
     <string name="welcome_skip">Omitir</string>

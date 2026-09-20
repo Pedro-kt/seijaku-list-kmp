@@ -12,7 +12,7 @@ import com.yumedev.seijakulistkmp.features.tracking.data.local.entity.MediaListE
         MediaListEntryEntity::class,
         UserProfileEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 abstract class TrackingDatabase : RoomDatabase() {

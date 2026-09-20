@@ -4,14 +4,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,6 +39,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -48,6 +55,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -55,13 +64,17 @@ import coil3.compose.AsyncImage
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.core.utils.rememberFilePicker
 import com.yumedev.seijakulistkmp.core.utils.rememberImageManager
 import com.yumedev.seijakulistkmp.features.profile.domain.model.UserProfile
+import com.yumedev.seijakulistkmp.features.profile.presentation.components.FavoriteMediaSelectorBottomSheet
+import com.yumedev.seijakulistkmp.features.profile.presentation.components.ProfileTopFavoritesSection
 import com.yumedev.seijakulistkmp.features.profile.presentation.model.ProfileError
 import com.yumedev.seijakulistkmp.features.profile.presentation.model.ProfileUiState
 import com.yumedev.seijakulistkmp.features.settings.presentation.SettingsScreen
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStats
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetMediaListUseCase
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Camera
 import dev.seyfarth.tablericons.outlined.Edit
@@ -72,6 +85,7 @@ import dev.seyfarth.tablericons.outlined.User
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import seijakulistkmp.shared.generated.resources.Res
@@ -82,6 +96,7 @@ import seijakulistkmp.shared.generated.resources.list_status_plan_to_watch
 import seijakulistkmp.shared.generated.resources.list_status_watching
 import seijakulistkmp.shared.generated.resources.my_profile
 import seijakulistkmp.shared.generated.resources.profile_about_label
+import seijakulistkmp.shared.generated.resources.profile_add_banner
 import seijakulistkmp.shared.generated.resources.profile_anilist_sync_unavailable
 import seijakulistkmp.shared.generated.resources.profile_cancel_button
 import seijakulistkmp.shared.generated.resources.profile_distribution
@@ -139,6 +154,11 @@ class ProfileScreen : Screen {
             onRemoveBanner = viewModel::onRemoveBanner,
             onRefreshStatistics = viewModel::onRefreshStatistics,
             onTabChanged = viewModel::onTabChanged,
+            onOpenFavoriteSelector = viewModel::onOpenFavoriteSelector,
+            onDismissFavoriteSelector = viewModel::onDismissFavoriteSelector,
+            onSetFavorite = viewModel::onSetFavorite,
+            onRemoveFavorite = viewModel::onRemoveFavorite,
+            onReorderFavorites = viewModel::onReorderFavorites,
         )
     }
 }
@@ -157,43 +177,18 @@ fun ProfileScreenContent(
     onRemoveBanner: () -> Unit,
     onRefreshStatistics: () -> Unit,
     onTabChanged: (Int) -> Unit,
+    onOpenFavoriteSelector: (Int) -> Unit,
+    onDismissFavoriteSelector: () -> Unit,
+    onSetFavorite: (Int, Int) -> Unit,
+    onRemoveFavorite: (Int) -> Unit,
+    onReorderFavorites: (Int, Int, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(Res.string.my_profile)
-                    )
-                },
-                actions = {
-                    IconButton(onClick = onEditProfile) {
-                        Icon(
-                            imageVector = TablerIcons.Outlined.Edit,
-                            contentDescription = stringResource(Res.string.profile_edit_button),
-                        )
-                    }
-                    IconButton(onClick = onSettingsClick) {
-                        Icon(
-                            imageVector = TablerIcons.Outlined.Settings,
-                            contentDescription = stringResource(Res.string.settings),
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-                ),
-            )
-        },
-        modifier = modifier,
-    ) { paddingValues ->
+    Box(modifier = modifier.fillMaxSize()) {
         when {
             uiState.isLoading && uiState.profile == null -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
@@ -202,9 +197,7 @@ fun ProfileScreenContent(
 
             uiState.error != null && uiState.profile == null -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(uiState.error.toStringResource())
@@ -219,9 +212,16 @@ fun ProfileScreenContent(
                     profile = uiState.profile,
                     animeStats = uiState.animeStats,
                     mangaStats = uiState.mangaStats,
+                    favoriteAnime = uiState.favoriteAnime,
+                    favoriteManga = uiState.favoriteManga,
                     selectedTab = uiState.selectedTab,
                     isAuthenticated = uiState.isAuthenticated,
                     onTabChanged = onTabChanged,
+                    onEditProfile = onEditProfile,
+                    onSettingsClick = onSettingsClick,
+                    onAddFavorite = onOpenFavoriteSelector,
+                    onFavoriteClick = { entry -> },
+                    onReorderFavorites = onReorderFavorites,
                     onAvatarClick = {
                         filePicker.pickImage(
                             onImageSelected = { uri ->
@@ -237,26 +237,8 @@ fun ProfileScreenContent(
                             onError = { /* TODO: Handle error */ }
                         )
                     },
-                    onBannerClick = {
-                        filePicker.pickImage(
-                            onImageSelected = { uri ->
-                                imageManager.saveImage(
-                                    imageUri = uri,
-                                    destinationFileName = "banner_${System.currentTimeMillis()}.jpg",
-                                    onSuccess = { path ->
-                                        onUpdateBanner(path)
-                                    },
-                                    onError = { /* TODO: Handle error */ }
-                                )
-                            },
-                            onError = { /* TODO: Handle error */ }
-                        )
-                    },
                     onRemoveAvatar = onRemoveAvatar,
-                    onRemoveBanner = onRemoveBanner,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                    modifier = Modifier.fillMaxSize(),
                 )
 
                 if (uiState.showEditDialog) {
@@ -264,6 +246,44 @@ fun ProfileScreenContent(
                         profile = uiState.profile,
                         onDismiss = onDismissEditDialog,
                         onSave = onSaveProfileInfo,
+                        onBannerClick = {
+                            filePicker.pickImage(
+                                onImageSelected = { uri ->
+                                    imageManager.saveImage(
+                                        imageUri = uri,
+                                        destinationFileName = "banner_${System.currentTimeMillis()}.jpg",
+                                        onSuccess = { path ->
+                                            onUpdateBanner(path)
+                                        },
+                                        onError = { /* TODO: Handle error */ }
+                                    )
+                                },
+                                onError = { /* TODO: Handle error */ }
+                            )
+                        },
+                        onRemoveBanner = onRemoveBanner,
+                    )
+                }
+
+                if (uiState.showFavoriteSelectorDialog && uiState.selectedFavoritePosition != null) {
+                    val getMediaList: GetMediaListUseCase = koinInject()
+                    val mediaType = if (uiState.selectedTab == 0) MediaType.ANIME else MediaType.MANGA
+                    val allEntries by getMediaList(mediaType).collectAsState(initial = emptyList())
+
+                    val excludedMediaIds = if (uiState.selectedTab == 0) {
+                        uiState.favoriteAnime.map { it.mediaId }.toSet()
+                    } else {
+                        uiState.favoriteManga.map { it.mediaId }.toSet()
+                    }
+
+                    FavoriteMediaSelectorBottomSheet(
+                        allEntries = allEntries,
+                        excludedMediaIds = excludedMediaIds,
+                        position = uiState.selectedFavoritePosition,
+                        onDismiss = onDismissFavoriteSelector,
+                        onSelect = { mediaId ->
+                            onSetFavorite(mediaId, uiState.selectedFavoritePosition)
+                        }
                     )
                 }
             }
@@ -277,33 +297,54 @@ fun ProfileContent(
     profile: UserProfile,
     animeStats: MediaListStats?,
     mangaStats: MediaListStats?,
+    favoriteAnime: List<com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry>,
+    favoriteManga: List<com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry>,
     selectedTab: Int,
     isAuthenticated: Boolean,
     onTabChanged: (Int) -> Unit,
+    onEditProfile: () -> Unit,
+    onSettingsClick: () -> Unit,
     onAvatarClick: () -> Unit,
-    onBannerClick: () -> Unit,
     onRemoveAvatar: () -> Unit,
-    onRemoveBanner: () -> Unit,
+    onAddFavorite: (Int) -> Unit,
+    onFavoriteClick: (com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry) -> Unit,
+    onReorderFavorites: (Int, Int, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-    ) {
-        // Hero Section
+    val scrollState = rememberScrollState()
+
+    val scrollOffset = scrollState.value
+    val maxScroll = 200f
+    val scrollAlpha = (scrollOffset / maxScroll).coerceIn(0f, 1f)
+
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState),
+        ) {
+            ProfileBannerBackground(
+                banner = profile.banner,
+                alpha = 1f - scrollAlpha,
+                modifier = Modifier.fillMaxWidth()
+            )
         ProfileHeroSection(
             profile = profile,
             isAuthenticated = isAuthenticated,
             onAvatarClick = onAvatarClick,
-            onBannerClick = onBannerClick,
             onRemoveAvatar = onRemoveAvatar,
-            onRemoveBanner = onRemoveBanner,
             modifier = Modifier.fillMaxWidth(),
         )
 
         // Tabs
-        PrimaryTabRow(selectedTabIndex = selectedTab) {
+        PrimaryTabRow(
+            selectedTabIndex = selectedTab,
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .graphicsLayer {
+                    translationY = -40.dp.toPx()
+                }
+        ) {
             Tab(
                 selected = selectedTab == 0,
                 onClick = { onTabChanged(0) },
@@ -323,18 +364,39 @@ fun ProfileContent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .graphicsLayer {
+                    translationY = -40.dp.toPx()
+                },
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (stats != null) {
-                ProfileStatsSection(
-                    stats = stats,
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    ProfileStatsSection(
+                        stats = stats,
+                        isAnime = isAnime,
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    ProfileDistributionSection(stats = stats)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                val favorites = if (isAnime) favoriteAnime else favoriteManga
+                ProfileTopFavoritesSection(
+                    favorites = favorites,
                     isAnime = isAnime,
+                    onAddFavorite = onAddFavorite,
+                    onFavoriteClick = onFavoriteClick,
+                    onReorderFavorites = onReorderFavorites,
+                    modifier = Modifier.fillMaxWidth()
                 )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                ProfileDistributionSection(stats = stats)
             } else {
                 Box(
                     modifier = Modifier
@@ -351,7 +413,138 @@ fun ProfileContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(120.dp))
+            Spacer(modifier = Modifier.height(120.dp))
+        }
+
+        ProfileTopAppBar(
+            onEditClick = onEditProfile,
+            onSettingsClick = onSettingsClick,
+            backgroundAlpha = scrollAlpha,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
+    }
+}
+
+@Composable
+private fun ProfileBannerBackground(
+    banner: String?,
+    alpha: Float,
+    modifier: Modifier = Modifier
+) {
+    val bannerHeight = if (!banner.isNullOrBlank()) 180.dp else 80.dp
+
+    Box(modifier = modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+            Spacer(modifier = Modifier.height(56.dp))
+            Spacer(modifier = Modifier.height(bannerHeight))
+        }
+
+        if (!banner.isNullOrBlank()) {
+            AsyncImage(
+                model = banner,
+                contentDescription = "Profile banner",
+                modifier = Modifier
+                    .matchParentSize()
+                    .graphicsLayer { this.alpha = alpha },
+                contentScale = ContentScale.Crop,
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .graphicsLayer { this.alpha = alpha }
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                                MaterialTheme.colorScheme.surface
+                            ),
+                        ),
+                    ),
+            )
+        }
+
+        if (!banner.isNullOrBlank()) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                MaterialTheme.colorScheme.surface
+                            )
+                        )
+                    )
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileTopAppBar(
+    onEditClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    backgroundAlpha: Float,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = backgroundAlpha))
+    ) {
+        Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+        Surface(
+            onClick = onEditClick,
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+            modifier = Modifier.size(40.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    imageVector = TablerIcons.Outlined.Edit,
+                    contentDescription = stringResource(Res.string.profile_edit_button),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Surface(
+            onClick = onSettingsClick,
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+            modifier = Modifier.size(40.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    imageVector = TablerIcons.Outlined.Settings,
+                    contentDescription = stringResource(Res.string.settings),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+        }
     }
 }
 
@@ -360,108 +553,22 @@ fun ProfileHeroSection(
     profile: UserProfile,
     isAuthenticated: Boolean,
     onAvatarClick: () -> Unit,
-    onBannerClick: () -> Unit,
     onRemoveAvatar: () -> Unit,
-    onRemoveBanner: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showAvatarMenu by remember { mutableStateOf(false) }
-    var showBannerMenu by remember { mutableStateOf(false) }
     Column(modifier = modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(140.dp),
+                .graphicsLayer {
+                    translationY = -50.dp.toPx()
+                }
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-            ) {
-                if (!profile.banner.isNullOrBlank()) {
-                    AsyncImage(
-                        model = profile.banner,
-                        contentDescription = "Profile banner",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop,
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                    ),
-                                ),
-                            ),
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
-                        .clickable {
-                            if (!profile.banner.isNullOrBlank()) {
-                                showBannerMenu = true
-                            } else {
-                                onBannerClick()
-                            }
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = TablerIcons.Outlined.Camera,
-                        contentDescription = "Select banner",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-
-                    DropdownMenu(
-                        expanded = showBannerMenu,
-                        onDismissRequest = { showBannerMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.profile_select_image)) },
-                            onClick = {
-                                showBannerMenu = false
-                                onBannerClick()
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = TablerIcons.Outlined.Photo,
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.profile_remove_image)) },
-                            onClick = {
-                                showBannerMenu = false
-                                onRemoveBanner()
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = TablerIcons.Outlined.Trash,
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                    }
-                }
-            }
-
-            Box(
-                modifier = Modifier
                     .padding(start = 16.dp)
-                    .align(Alignment.BottomStart)
-                    .size(80.dp)
+                    .size(100.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surface),
                 contentAlignment = Alignment.Center,
@@ -477,7 +584,7 @@ fun ProfileHeroSection(
                     Icon(
                         imageVector = TablerIcons.Outlined.User,
                         contentDescription = null,
-                        modifier = Modifier.size(40.dp),
+                        modifier = Modifier.size(50.dp),
                         tint = MaterialTheme.colorScheme.primary,
                     )
                 }
@@ -485,8 +592,7 @@ fun ProfileHeroSection(
 
             Box(
                 modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(start = 76.dp, bottom = 2.dp)
+                    .padding(start = 86.dp, top = 70.dp)
                     .size(28.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primary)
@@ -544,7 +650,10 @@ fun ProfileHeroSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .padding(top = 12.dp),
+                .padding(top = 8.dp)
+                .graphicsLayer {
+                    translationY = -40.dp.toPx()
+                },
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
@@ -604,8 +713,6 @@ fun ProfileHeroSection(
             }
 
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -772,10 +879,13 @@ fun EditProfileBottomSheet(
     profile: UserProfile,
     onDismiss: () -> Unit,
     onSave: (String, String?) -> Unit,
+    onBannerClick: () -> Unit,
+    onRemoveBanner: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var name by remember { mutableStateOf(profile.name) }
     var about by remember { mutableStateOf(profile.about ?: "") }
+    var showBannerMenu by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -806,6 +916,92 @@ fun EditProfileBottomSheet(
             }
 
             Spacer(modifier = Modifier.height(4.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable {
+                        if (profile.banner != null) {
+                            showBannerMenu = true
+                        } else {
+                            onBannerClick()
+                        }
+                    }
+            ) {
+                if (!profile.banner.isNullOrBlank()) {
+                    AsyncImage(
+                        model = profile.banner,
+                        contentDescription = "Profile banner",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    ),
+                                ),
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = TablerIcons.Outlined.Photo,
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = stringResource(Res.string.profile_add_banner),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        }
+                    }
+                }
+
+                DropdownMenu(
+                    expanded = showBannerMenu,
+                    onDismissRequest = { showBannerMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.profile_select_image)) },
+                        onClick = {
+                            showBannerMenu = false
+                            onBannerClick()
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = TablerIcons.Outlined.Photo,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.profile_remove_image)) },
+                        onClick = {
+                            showBannerMenu = false
+                            onRemoveBanner()
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = TablerIcons.Outlined.Trash,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
+            }
 
             OutlinedTextField(
                 value = name,

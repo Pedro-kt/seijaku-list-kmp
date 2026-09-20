@@ -6,26 +6,57 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
+import com.yumedev.seijakulistkmp.features.detail.presentation.DetailScreen
 import com.yumedev.seijakulistkmp.features.search.presentation.components.CollapsedSearchContent
 import com.yumedev.seijakulistkmp.features.search.presentation.components.ExpandedSearchContent
 import com.yumedev.seijakulistkmp.features.search.presentation.components.SearchResultsContent
+import com.yumedev.seijakulistkmp.features.search.presentation.model.QuickFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.toApiValue
+import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaType as SearchMediaType
 
-class SearchScreen : Screen {
+class SearchScreen(
+    private val quickFilter: QuickFilter? = null
+) : Screen {
     @Composable
     override fun Content() {
-        SearchScreenContent()
+        val navigator = LocalNavigator.currentOrThrow
+
+        SearchScreenContent(
+            quickFilter = quickFilter,
+            onNavigateToAnimeDetail = { animeId ->
+                navigator.push(
+                    DetailScreen(
+                        animeId,
+                        MediaType.ANIME
+                    )
+                )
+            },
+            onNavigateToMangaDetail = { mangaId ->
+                navigator.push(
+                    DetailScreen(
+                        mangaId,
+                        MediaType.MANGA
+                    )
+                )
+            }
+        )
     }
 }
 
 @Composable
 fun SearchScreenContent(
     shouldExpandOnStart: Boolean = false,
+    quickFilter: QuickFilter? = null,
     onExpandedChange: (Boolean) -> Unit = {},
     onExpandHandled: () -> Unit = {},
     onNavigateToAnimeDetail: (Int) -> Unit = {},
@@ -33,8 +64,10 @@ fun SearchScreenContent(
 ) {
     val viewModel = koinViewModel<SearchViewModel>()
     val state by viewModel.state.collectAsState()
+    val navigator = LocalNavigator.current
 
     var hasHandledNavigation by remember { mutableStateOf(false) }
+    var hasExecutedQuickFilter by remember { mutableStateOf(false) }
 
     val isExpanded = if (shouldExpandOnStart && !hasHandledNavigation) {
         true
@@ -50,11 +83,30 @@ fun SearchScreenContent(
         }
     }
 
+    // Ejecutar Quick Filter al inicio
+    LaunchedEffect(quickFilter) {
+        if (quickFilter != null && !hasExecutedQuickFilter) {
+            val filterLabel = when (quickFilter) {
+                QuickFilter.CurrentSeason -> "Current Season"
+                QuickFilter.AiringToday -> "Airing Today"
+                QuickFilter.Top100 -> "Top 100"
+                QuickFilter.Random -> "Random"
+            }
+
+            delay(100)
+            viewModel.searchByQuickFilter(quickFilter, filterLabel)
+        }
+    }
+
     LaunchedEffect(state.isExpanded, state.hasSearched) {
         onExpandedChange(state.isExpanded || state.hasSearched)
     }
 
-    when {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.surface
+    ) {
+        when {
         state.hasSearched -> {
             SearchResultsContent(
                 query = state.searchQuery,
@@ -78,7 +130,11 @@ fun SearchScreenContent(
                     // TODO: Navigate to character detail
                 },
                 onBackClick = {
-                    viewModel.clearSearchResults()
+                    if (quickFilter != null) {
+                        navigator?.pop()
+                    } else {
+                        viewModel.clearSearchResults()
+                    }
                 },
                 onRetry = {
                     viewModel.retrySearch()
@@ -156,5 +212,6 @@ fun SearchScreenContent(
             }
         )
         }
+    }
     }
 }

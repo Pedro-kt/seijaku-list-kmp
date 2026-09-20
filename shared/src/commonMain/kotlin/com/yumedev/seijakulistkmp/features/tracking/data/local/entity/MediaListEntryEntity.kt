@@ -11,7 +11,8 @@ import androidx.room3.PrimaryKey
         Index(value = ["media_id", "media_type"], unique = true),
         Index(value = ["status"]),
         Index(value = ["media_type"]),
-        Index(value = ["updated_at"])
+        Index(value = ["updated_at"]),
+        Index(value = ["favorite_position"])
     ]
 )
 data class MediaListEntryEntity(
@@ -82,5 +83,8 @@ data class MediaListEntryEntity(
     val mediaTotalVolumes: Int? = null,
 
     @ColumnInfo(name = "media_status")
-    val mediaStatus: String? = null
+    val mediaStatus: String? = null,
+
+    @ColumnInfo(name = "favorite_position")
+    val favoritePosition: Int? = null
 )
