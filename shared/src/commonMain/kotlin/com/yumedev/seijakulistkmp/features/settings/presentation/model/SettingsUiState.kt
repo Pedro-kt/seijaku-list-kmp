@@ -19,5 +19,6 @@ data class SettingsUiState(
     val importResult: ImportResult? = null,
     val showImportResultDialog: Boolean = false,
     val showConflictDialog: Boolean = false,
-    val currentConflicts: List<ImportConflict> = emptyList()
+    val currentConflicts: List<ImportConflict> = emptyList(),
+    val pendingExternalUrl: String? = null
 )

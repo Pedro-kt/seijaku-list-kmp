@@ -213,6 +213,9 @@
     <string name="settings_clear_cache_desc">%1$s on device</string>
     <string name="settings_about">About</string>
     <string name="settings_about_desc">Licenses and AniList API data</string>
+    <string name="settings_external_link_title">Opening external link</string>
+    <string name="settings_external_link_message">You are about to visit an external website. Do you want to continue?</string>
+    <string name="settings_external_link_confirm">Open</string>
     <string name="settings_account">ACCOUNT</string>
     <string name="settings_version">%1$s - Seijaku List v%2$s (build %3$s)</string>
 

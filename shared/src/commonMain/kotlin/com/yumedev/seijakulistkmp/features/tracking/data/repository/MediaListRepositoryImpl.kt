@@ -369,13 +369,22 @@ class MediaListRepositoryImpl(
             updatedAt = now
         )
 
-        mediaListDao.getEntryByMedia(mediaId, mediaType.name)?.toDomain()
+        val domainEntry = mediaListDao.getEntryByMedia(mediaId, mediaType.name)?.toDomain()
             ?: throw IllegalStateException("Entry not found after update")
+
+        saveToFirestoreUseCase(domainEntry)
+
+        domainEntry
     }
 
     override suspend fun removeFavorite(mediaId: Int, mediaType: MediaType): Result<Unit> = resultOf {
         val now = System.currentTimeMillis()
         mediaListDao.removeFavorite(mediaId, mediaType.name, now)
+
+        val domainEntry = mediaListDao.getEntryByMedia(mediaId, mediaType.name)?.toDomain()
+            ?: throw IllegalStateException("Entry not found after update")
+
+        saveToFirestoreUseCase(domainEntry)
     }
 
     override suspend fun reorderFavorites(
@@ -391,6 +400,11 @@ class MediaListRepositoryImpl(
                 position = newPosition,
                 updatedAt = now
             )
+
+            val domainEntry = mediaListDao.getEntryByMedia(mediaId, mediaType.name)?.toDomain()
+                ?: throw IllegalStateException("Entry not found after update")
+
+            saveToFirestoreUseCase(domainEntry)
         }
     }
 }
