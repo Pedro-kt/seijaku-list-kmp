@@ -32,8 +32,8 @@ android {
         applicationId = "com.yumedev.seijakulistkmp"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 6
-        versionName = "1.2.1"
+        versionCode = 7
+        versionName = "1.3.0"
     }
     packaging {
         resources {
