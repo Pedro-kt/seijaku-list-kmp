@@ -1,6 +1,7 @@
 package com.yumedev.seijakulistkmp.di
 
 import com.russhwolf.settings.Settings
+import com.yumedev.seijakulistkmp.core.error.ErrorMapper
 import com.yumedev.seijakulistkmp.core.util.MediaStringFormatter
 import com.yumedev.seijakulistkmp.core.util.MediaStringFormatterImpl
 import kotlinx.serialization.json.Json
@@ -10,6 +11,8 @@ import org.koin.dsl.module
 
 val coreModule = module {
     singleOf(::MediaStringFormatterImpl) bind MediaStringFormatter::class
+
+    single { ErrorMapper }
 
     single {
         Settings()

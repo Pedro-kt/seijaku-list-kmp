@@ -72,10 +72,19 @@ class SettingsRepositoryImpl(
         settings.putString(KEY_CARD_TYPE, cardTypeName)
     }
 
+    override fun getAiringNotifications(): Flow<Boolean> {
+        return flowSettings.getBooleanFlow(KEY_AIRING_NOTIFICATIONS, false)
+    }
+
+    override suspend fun setAiringNotifications(enabled: Boolean) {
+        settings.putBoolean(KEY_AIRING_NOTIFICATIONS, enabled)
+    }
+
     companion object {
         private const val KEY_THEME_MODE = "theme_mode"
         private const val KEY_LANGUAGE_MODE = "language_mode"
         private const val KEY_SFW_MODE = "sfw_mode"
         private const val KEY_CARD_TYPE = "card_type"
+        private const val KEY_AIRING_NOTIFICATIONS = "airing_notifications"
     }
 }

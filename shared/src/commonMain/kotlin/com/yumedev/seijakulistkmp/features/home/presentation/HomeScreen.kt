@@ -45,6 +45,7 @@ import com.yumedev.seijakulistkmp.features.search.presentation.model.QuickFilter
 import com.yumedev.seijakulistkmp.features.home.presentation.model.AnimeCardItem
 import com.yumedev.seijakulistkmp.features.home.presentation.model.FeaturedMediaItem
 import com.yumedev.seijakulistkmp.features.home.presentation.sectionlist.SectionListScreen
+import com.yumedev.seijakulistkmp.features.schedule.presentation.AiringScheduleScreen
 import com.yumedev.seijakulistkmp.features.search.presentation.SearchScreen
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.AlertCircle
@@ -88,7 +89,10 @@ class HomeScreen : Screen {
                     )
                 )
             },
-            onNavigateToSectionList = navCallback
+            onNavigateToSectionList = navCallback,
+            onNavigateToAiringSchedule = {
+                navigator.push(AiringScheduleScreen())
+            }
         )
     }
 }
@@ -98,7 +102,8 @@ fun HomeScreenContent(
     onNavigateToSearch: () -> Unit = {},
     onNavigateToAnimeDetail: (Int) -> Unit = {},
     onNavigateToMangaDetail: (Int) -> Unit = {},
-    onNavigateToSectionList: (SectionType, MediaType, String) -> Unit
+    onNavigateToSectionList: (SectionType, MediaType, String) -> Unit,
+    onNavigateToAiringSchedule: () -> Unit = {}
 ) {
     val animeViewModel = koinViewModel<AnimeHomeViewModel>()
     val animeState by animeViewModel.state.collectAsState()
@@ -137,6 +142,7 @@ fun HomeScreenContent(
             HomeTopAppBar(
                 isScrolled = isScrolled,
                 onSearchClick = onNavigateToSearch,
+                onCalendarClick = onNavigateToAiringSchedule,
                 onNotificationsClick = {
                     // TODO: Navigate to notifications screen
                 },
@@ -704,6 +710,7 @@ private fun MangaTabContent(
 private fun HomeTopAppBar(
     isScrolled: Boolean,
     onSearchClick: () -> Unit,
+    onCalendarClick: () -> Unit,
     onNotificationsClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
@@ -725,7 +732,7 @@ private fun HomeTopAppBar(
                 )
 
                 Surface(
-                    onClick = if (isScrolled) onProfileClick else onNotificationsClick,
+                    onClick = onCalendarClick,
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.surfaceContainerHighest,
                     modifier = Modifier.size(40.dp)
@@ -736,7 +743,7 @@ private fun HomeTopAppBar(
                     ) {
                         Icon(
                             imageVector = TablerIcons.Outlined.Calendar,
-                            contentDescription = stringResource(Res.string.notifications),
+                            contentDescription = "Airing Schedule",
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }

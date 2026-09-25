@@ -1,0 +1,43 @@
+query GetWeeklyAiringSchedule(
+    $airingAtGreater: Int!,
+    $airingAtLesser: Int!,
+    $page: Int,
+    $perPage: Int
+) {
+    Page(page: $page, perPage: $perPage) {
+        pageInfo {
+            hasNextPage
+            total
+            currentPage
+            lastPage
+        }
+        airingSchedules(
+            airingAt_greater: $airingAtGreater,
+            airingAt_lesser: $airingAtLesser,
+            sort: TIME
+        ) {
+            id
+            airingAt
+            timeUntilAiring
+            episode
+            mediaId
+            media {
+                id
+                title {
+                    romaji
+                    english
+                    native
+                }
+                coverImage {
+                    large
+                    medium
+                    color
+                }
+                genres
+                averageScore
+                format
+                status
+            }
+        }
+    }
+}

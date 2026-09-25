@@ -47,6 +47,7 @@ val trackingModule = module {
 
     single { get<TrackingDatabase>().mediaListDao() }
     single { get<TrackingDatabase>().userProfileDao() }
+    single { get<TrackingDatabase>().airingScheduleDao() }
 
     singleOf(::MALXmlMapper)
     single<MediaListRepository> {

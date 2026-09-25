@@ -4,6 +4,8 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import com.yumedev.seijakulistkmp.features.profile.data.local.dao.UserProfileDao
 import com.yumedev.seijakulistkmp.features.profile.data.local.entity.UserProfileEntity
+import com.yumedev.seijakulistkmp.features.schedule.data.local.dao.AiringScheduleDao
+import com.yumedev.seijakulistkmp.features.schedule.data.local.entity.AiringScheduleEntity
 import com.yumedev.seijakulistkmp.features.tracking.data.local.dao.MediaListDao
 import com.yumedev.seijakulistkmp.features.tracking.data.local.entity.MediaListEntryEntity
 
@@ -11,13 +13,15 @@ import com.yumedev.seijakulistkmp.features.tracking.data.local.entity.MediaListE
     entities = [
         MediaListEntryEntity::class,
         UserProfileEntity::class,
+        AiringScheduleEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = true
 )
 abstract class TrackingDatabase : RoomDatabase() {
     abstract fun mediaListDao(): MediaListDao
     abstract fun userProfileDao(): UserProfileDao
+    abstract fun airingScheduleDao(): AiringScheduleDao
 
     companion object {
         const val DATABASE_NAME = "seijaku_tracking.db"

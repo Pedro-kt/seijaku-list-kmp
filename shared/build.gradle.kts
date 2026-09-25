@@ -125,6 +125,9 @@ kotlin {
             // Koin Android
             implementation(libs.koin.android)
 
+            // WorkManager for notifications
+            implementation("androidx.work:work-runtime-ktx:2.9.0")
+
             // Ktor OkHttp Engine
             implementation(libs.ktor.client.okhttp)
 

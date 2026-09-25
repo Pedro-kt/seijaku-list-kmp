@@ -446,4 +446,37 @@
     <string name="auth_forgot_password_description">Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña</string>
     <string name="auth_cancel">Cancelar</string>
     <string name="auth_send">Enviar</string>
+
+    <!-- Airing Schedule -->
+    <string name="schedule_title">Calendario de Emisiones</string>
+    <string name="schedule_back">Atrás</string>
+    <string name="schedule_today">Hoy</string>
+    <string name="schedule_episode">Episodio</string>
+    <string name="schedule_airing_now">Al aire ahora</string>
+    <string name="schedule_in">En</string>
+    <string name="schedule_no_anime_today">No hay anime emitiéndose este día</string>
+    <string name="schedule_no_schedule_available">No hay calendario de emisiones disponible</string>
+
+    <!-- Days of week -->
+    <string name="day_monday">Lunes</string>
+    <string name="day_tuesday">Martes</string>
+    <string name="day_wednesday">Miércoles</string>
+    <string name="day_thursday">Jueves</string>
+    <string name="day_friday">Viernes</string>
+    <string name="day_saturday">Sábado</string>
+    <string name="day_sunday">Domingo</string>
+
+    <!-- Months -->
+    <string name="month_january">Enero</string>
+    <string name="month_february">Febrero</string>
+    <string name="month_march">Marzo</string>
+    <string name="month_april">Abril</string>
+    <string name="month_may">Mayo</string>
+    <string name="month_june">Junio</string>
+    <string name="month_july">Julio</string>
+    <string name="month_august">Agosto</string>
+    <string name="month_september">Septiembre</string>
+    <string name="month_october">Octubre</string>
+    <string name="month_november">Noviembre</string>
+    <string name="month_december">Diciembre</string>
 </resources>
