@@ -19,81 +19,45 @@ import seijakulistkmp.shared.generated.resources.*
 fun SocialAuthButtons(
     isGoogleLoading: Boolean,
     onGoogleSignIn: () -> Unit,
+    buttonText: String,
     enabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    OutlinedButton(
+        onClick = onGoogleSignIn,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ),
+        enabled = enabled && !isGoogleLoading
     ) {
-        OutlinedButton(
-            onClick = onGoogleSignIn,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = MaterialTheme.colorScheme.onSurface
-            ),
-            enabled = enabled && !isGoogleLoading
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (isGoogleLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Icon(
-                        imageVector = TablerIcons.Outlined.BrandGoogle,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = stringResource(Res.string.auth_google),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
+            if (isGoogleLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Icon(
+                    imageVector = TablerIcons.Outlined.BrandGoogle,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
                 )
             }
-        }
-
-        OutlinedButton(
-            onClick = { /* TODO: Implement Anilist OAuth */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, Color(0xFF02A9FF)),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = Color(0xFF02A9FF)
-            ),
-            enabled = false
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "AL",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(end = 4.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(Res.string.auth_anilist),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
-                )
-            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = buttonText,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }

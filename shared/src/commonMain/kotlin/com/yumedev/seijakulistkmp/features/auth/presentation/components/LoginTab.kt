@@ -23,6 +23,8 @@ import com.yumedev.seijakulistkmp.features.auth.presentation.AuthState
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Eye
 import dev.seyfarth.tablericons.outlined.EyeOff
+import dev.seyfarth.tablericons.outlined.Lock
+import dev.seyfarth.tablericons.outlined.Mail
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
 
@@ -35,6 +37,7 @@ fun LoginTab(
     onLogin: () -> Unit,
     onGoogleSignIn: (Any?) -> Unit,
     onForgotPassword: (String) -> Unit,
+    onNavigateToRegister: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -51,6 +54,43 @@ fun LoginTab(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            Text(
+                text = stringResource(Res.string.auth_login_title),
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Text(
+                text = stringResource(Res.string.auth_login_subtitle),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            val platformContext = getPlatformContext()
+
+            SocialAuthButtons(
+                isGoogleLoading = state.isGoogleSignInLoading,
+                onGoogleSignIn = { onGoogleSignIn(platformContext) },
+                buttonText = stringResource(Res.string.auth_google_continue),
+                enabled = !state.isLoading
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                HorizontalDivider(modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(Res.string.auth_or_with_email),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                HorizontalDivider(modifier = Modifier.weight(1f))
+            }
             OutlinedTextField(
                 value = state.email,
                 onValueChange = onEmailChange,
@@ -60,6 +100,12 @@ fun LoginTab(
                 singleLine = true,
                 isError = state.emailError != null,
                 supportingText = state.emailError?.let { { Text(it) } },
+                leadingIcon = {
+                    Icon(
+                        imageVector = TablerIcons.Outlined.Mail,
+                        contentDescription = null
+                    )
+                },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
@@ -80,6 +126,12 @@ fun LoginTab(
                 singleLine = true,
                 isError = state.passwordError != null,
                 supportingText = state.passwordError?.let { { Text(it) } },
+                leadingIcon = {
+                    Icon(
+                        imageVector = TablerIcons.Outlined.Lock,
+                        contentDescription = null
+                    )
+                },
                 visualTransformation = if (state.passwordVisible)
                     VisualTransformation.None
                 else
@@ -148,31 +200,31 @@ fun LoginTab(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                HorizontalDivider(modifier = Modifier.weight(1f))
                 Text(
-                    text = stringResource(Res.string.auth_or_continue_with),
+                    text = stringResource(Res.string.auth_dont_have_account),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                HorizontalDivider(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.width(4.dp))
+                TextButton(
+                    onClick = onNavigateToRegister,
+                    enabled = !state.isLoading
+                ) {
+                    Text(
+                        text = stringResource(Res.string.auth_register_link),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            val platformContext = getPlatformContext()
-
-            SocialAuthButtons(
-                isGoogleLoading = state.isGoogleSignInLoading,
-                onGoogleSignIn = { onGoogleSignIn(platformContext) },
-                enabled = !state.isLoading
-            )
         }
     }
 

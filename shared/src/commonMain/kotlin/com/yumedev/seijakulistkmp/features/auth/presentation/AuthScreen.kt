@@ -53,11 +53,13 @@ class AuthScreen : Screen {
         AuthScreenContent(
             state = state,
             snackbarHostState = snackbarHostState,
+            onNameChange = viewModel::onNameChange,
             onEmailChange = viewModel::onEmailChange,
             onPasswordChange = viewModel::onPasswordChange,
             onConfirmPasswordChange = viewModel::onConfirmPasswordChange,
             onTogglePasswordVisibility = viewModel::onTogglePasswordVisibility,
             onToggleConfirmPasswordVisibility = viewModel::onToggleConfirmPasswordVisibility,
+            onAcceptTermsChange = viewModel::onAcceptTermsChange,
             onLogin = viewModel::onLogin,
             onRegister = viewModel::onRegister,
             onGoogleSignIn = viewModel::onGoogleSignIn,
@@ -74,11 +76,13 @@ class AuthScreen : Screen {
 fun AuthScreenContent(
     state: AuthState,
     snackbarHostState: SnackbarHostState,
+    onNameChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
     onTogglePasswordVisibility: () -> Unit,
     onToggleConfirmPasswordVisibility: () -> Unit,
+    onAcceptTermsChange: (Boolean) -> Unit,
     onLogin: () -> Unit,
     onRegister: () -> Unit,
     onGoogleSignIn: (Any?) -> Unit,
@@ -173,17 +177,21 @@ fun AuthScreenContent(
                     onLogin = onLogin,
                     onGoogleSignIn = onGoogleSignIn,
                     onForgotPassword = onForgotPassword,
+                    onNavigateToRegister = { selectedTabIndex = 1 },
                     modifier = Modifier.fillMaxSize()
                 )
                 1 -> RegisterTab(
                     state = state,
+                    onNameChange = onNameChange,
                     onEmailChange = onEmailChange,
                     onPasswordChange = onPasswordChange,
                     onConfirmPasswordChange = onConfirmPasswordChange,
                     onTogglePasswordVisibility = onTogglePasswordVisibility,
                     onToggleConfirmPasswordVisibility = onToggleConfirmPasswordVisibility,
+                    onAcceptTermsChange = onAcceptTermsChange,
                     onRegister = onRegister,
                     onGoogleSignIn = onGoogleSignIn,
+                    onNavigateToLogin = { selectedTabIndex = 0 },
                     modifier = Modifier.fillMaxSize()
                 )
             }
