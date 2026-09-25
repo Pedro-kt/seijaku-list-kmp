@@ -419,6 +419,19 @@
     <string name="welcome_page4_description">Mantén un seguimiento de lo que estás viendo, planeando o has completado</string>
     <string name="welcome_page5_title">Sincroniza con AniList</string>
     <string name="welcome_page5_description">Si quieres, sincroniza tus listas con AniList y nunca pierdas tu progreso en todos tus dispositivos</string>
+    <string name="welcome_offline_feature1_title">Almacenamiento Local</string>
+    <string name="welcome_offline_feature1_description">Todos tus datos se guardan en tu dispositivo</string>
+    <string name="welcome_offline_feature2_title">Sin Internet</string>
+    <string name="welcome_offline_feature2_description">Rastrea sin conexión</string>
+    <string name="welcome_offline_feature3_title">Guardado Automático</string>
+    <string name="welcome_offline_feature3_description">Los cambios se guardan al instante</string>
+    <string name="welcome_export_your_list">Tu Lista</string>
+    <string name="welcome_export_export">Exportar</string>
+    <string name="welcome_export_xml">XML</string>
+    <string name="welcome_export_mal">MAL</string>
+    <string name="welcome_export_mal_full">MyAnimeList</string>
+    <string name="welcome_export_anilist">AniList</string>
+    <string name="welcome_export_anilist_full">AniList.co</string>
 
     <!-- Auth Screen -->
     <string name="auth_title">Bienvenido</string>
