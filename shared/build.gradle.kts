@@ -200,3 +200,12 @@ dependencies {
     // Android Runtime Classpath
     androidRuntimeClasspath(libs.compose.uiTooling)
 }
+
+// Consumer ProGuard Rules for Android library consumers
+afterEvaluate {
+    extensions.findByType<com.android.build.gradle.LibraryExtension>()?.apply {
+        defaultConfig {
+            consumerProguardFiles("consumer-rules.pro")
+        }
+    }
+}
