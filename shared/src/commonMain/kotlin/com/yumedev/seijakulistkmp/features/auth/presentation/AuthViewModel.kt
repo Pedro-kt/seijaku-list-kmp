@@ -47,6 +47,15 @@ class AuthViewModel(
         }
     }
 
+    fun onNameChange(name: String) {
+        _uiState.update {
+            it.copy(
+                name = name,
+                nameError = validateName(name)
+            )
+        }
+    }
+
     fun onEmailChange(email: String) {
         _uiState.update {
             it.copy(
@@ -80,6 +89,10 @@ class AuthViewModel(
 
     fun onToggleConfirmPasswordVisibility() {
         _uiState.update { it.copy(confirmPasswordVisible = !it.confirmPasswordVisible) }
+    }
+
+    fun onAcceptTermsChange(accepted: Boolean) {
+        _uiState.update { it.copy(acceptTerms = accepted) }
     }
 
     fun onLogin() {
@@ -139,6 +152,7 @@ class AuthViewModel(
         if (!state.isRegisterFormValid) {
             _uiState.update {
                 it.copy(
+                    nameError = validateName(state.name),
                     emailError = validateEmail(state.email),
                     passwordError = validatePassword(state.password),
                     confirmPasswordError = validateConfirmPassword(state.password, state.confirmPassword)
@@ -271,6 +285,14 @@ class AuthViewModel(
     fun clearForm() {
         _uiState.update {
             AuthState()
+        }
+    }
+
+    private fun validateName(name: String): String? {
+        return when {
+            name.isBlank() -> null
+            name.length < 2 -> "Name must be at least 2 characters"
+            else -> null
         }
     }
 

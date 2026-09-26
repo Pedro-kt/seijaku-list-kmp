@@ -10,13 +10,16 @@ data class AuthState(
     val currentUser: AuthUser? = null,
     val isAuthenticated: Boolean = false,
 
+    val name: String = "",
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
     val passwordVisible: Boolean = false,
     val confirmPasswordVisible: Boolean = false,
+    val acceptTerms: Boolean = false,
 
     val error: AuthError? = null,
+    val nameError: String? = null,
     val emailError: String? = null,
     val passwordError: String? = null,
     val confirmPasswordError: String? = null,
@@ -29,10 +32,13 @@ data class AuthState(
         get() = email.isNotBlank() && password.isNotBlank() && emailError == null && passwordError == null
 
     val isRegisterFormValid: Boolean
-        get() = email.isNotBlank() &&
+        get() = name.isNotBlank() &&
+                email.isNotBlank() &&
                 password.isNotBlank() &&
                 confirmPassword.isNotBlank() &&
                 password == confirmPassword &&
+                acceptTerms &&
+                nameError == null &&
                 emailError == null &&
                 passwordError == null &&
                 confirmPasswordError == null

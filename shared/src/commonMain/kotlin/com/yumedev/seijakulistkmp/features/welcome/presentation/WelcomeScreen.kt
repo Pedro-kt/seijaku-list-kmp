@@ -34,7 +34,10 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.features.auth.presentation.AuthScreen
+import com.yumedev.seijakulistkmp.features.welcome.presentation.components.WelcomeAppShowcase
 import com.yumedev.seijakulistkmp.features.welcome.presentation.components.WelcomeExportDemo
+import com.yumedev.seijakulistkmp.features.welcome.presentation.components.WelcomeOfflineDemo
+import com.yumedev.seijakulistkmp.features.welcome.presentation.components.WelcomeOrganizationDemo
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Book
 import dev.seyfarth.tablericons.outlined.DeviceTv
@@ -83,11 +86,6 @@ fun WelcomeScreenContent(
             title = stringResource(Res.string.welcome_page4_title),
             description = stringResource(Res.string.welcome_page4_description),
             icon = TablerIcons.Outlined.Book
-        ),
-        WelcomePage(
-            title = stringResource(Res.string.welcome_page5_title),
-            description = stringResource(Res.string.welcome_page5_description),
-            icon = TablerIcons.Outlined.Refresh
         )
     )
 
@@ -366,19 +364,16 @@ private fun WelcomeVisualShowcase(
     ) {
         when (pageIndex) {
             0 -> {
-
+                WelcomeAppShowcase(modifier = Modifier.fillMaxSize())
             }
             1 -> {
-
+                WelcomeOfflineDemo(modifier = Modifier.fillMaxSize())
             }
             2 -> {
                 WelcomeExportDemo(modifier = Modifier.fillMaxSize())
             }
             3 -> {
-
-            }
-            else -> {
-                // Clean space for future custom designs
+                WelcomeOrganizationDemo(modifier = Modifier.fillMaxSize())
             }
         }
     }

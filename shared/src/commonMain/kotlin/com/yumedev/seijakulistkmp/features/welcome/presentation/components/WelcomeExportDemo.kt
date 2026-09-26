@@ -23,6 +23,8 @@ import dev.seyfarth.tablericons.outlined.FileExport
 import dev.seyfarth.tablericons.outlined.FileTypeXml
 import dev.seyfarth.tablericons.outlined.ListDetails
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
+import seijakulistkmp.shared.generated.resources.*
 
 @Composable
 fun WelcomeExportDemo(
@@ -31,8 +33,8 @@ fun WelcomeExportDemo(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 32.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically),
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Export flow animation
@@ -64,7 +66,7 @@ private fun ExportFlowAnimation() {
         // Step 1: Your List
         FlowStep(
             icon = TablerIcons.Outlined.ListDetails,
-            label = "Your List",
+            label = stringResource(Res.string.welcome_export_your_list),
             isActive = currentStep >= 0,
             delay = 0
         )
@@ -75,7 +77,7 @@ private fun ExportFlowAnimation() {
         // Step 2: Export
         FlowStep(
             icon = TablerIcons.Outlined.FileExport,
-            label = "Export",
+            label = stringResource(Res.string.welcome_export_export),
             isActive = currentStep >= 1,
             delay = 200
         )
@@ -86,7 +88,7 @@ private fun ExportFlowAnimation() {
         // Step 3: XML File
         FlowStep(
             icon = TablerIcons.Outlined.FileTypeXml,
-            label = "XML",
+            label = stringResource(Res.string.welcome_export_xml),
             isActive = currentStep >= 2,
             delay = 400
         )
@@ -137,7 +139,7 @@ private fun FlowStep(
             }
     ) {
         Surface(
-            modifier = Modifier.size(56.dp),
+            modifier = Modifier.size(48.dp),
             shape = CircleShape,
             color = if (showContent)
                 MaterialTheme.colorScheme.primaryContainer
@@ -152,7 +154,7 @@ private fun FlowStep(
                 Icon(
                     imageVector = icon,
                     contentDescription = label,
-                    modifier = Modifier.size(28.dp),
+                    modifier = Modifier.size(24.dp),
                     tint = if (showContent)
                         MaterialTheme.colorScheme.onPrimaryContainer
                     else
@@ -203,8 +205,16 @@ private fun AnimatedArrow(isActive: Boolean) {
 @Composable
 private fun SupportedPlatformsCards() {
     val platforms = listOf(
-        PlatformInfo("MAL", "MyAnimeList", MaterialTheme.colorScheme.primaryContainer),
-        PlatformInfo("AniList", "AniList.co", MaterialTheme.colorScheme.secondaryContainer)
+        PlatformInfo(
+            stringResource(Res.string.welcome_export_mal),
+            stringResource(Res.string.welcome_export_mal_full),
+            MaterialTheme.colorScheme.primaryContainer
+        ),
+        PlatformInfo(
+            stringResource(Res.string.welcome_export_anilist),
+            stringResource(Res.string.welcome_export_anilist_full),
+            MaterialTheme.colorScheme.secondaryContainer
+        )
     )
 
     Row(
@@ -253,7 +263,7 @@ private fun SupportedPlatformsCards() {
                 ) {
                     // Check icon
                     Surface(
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(28.dp),
                         shape = CircleShape,
                         color = MaterialTheme.colorScheme.tertiary
                     ) {
@@ -264,7 +274,7 @@ private fun SupportedPlatformsCards() {
                             Icon(
                                 imageVector = TablerIcons.Outlined.Check,
                                 contentDescription = null,
-                                modifier = Modifier.size(18.dp),
+                                modifier = Modifier.size(16.dp),
                                 tint = MaterialTheme.colorScheme.onTertiary
                             )
                         }
@@ -272,7 +282,7 @@ private fun SupportedPlatformsCards() {
 
                     Text(
                         text = platform.name,
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
