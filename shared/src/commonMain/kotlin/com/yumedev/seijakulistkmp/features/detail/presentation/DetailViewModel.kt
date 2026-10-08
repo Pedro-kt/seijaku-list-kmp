@@ -4,10 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yumedev.seijakulistkmp.core.domain.model.Result
 import com.yumedev.seijakulistkmp.core.error.ErrorMapper
+import com.yumedev.seijakulistkmp.features.detail.domain.model.Episode
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
 import com.yumedev.seijakulistkmp.features.detail.domain.usecase.GetAnimeDetailUseCase
 import com.yumedev.seijakulistkmp.features.detail.domain.usecase.GetMangaDetailUseCase
+import com.yumedev.seijakulistkmp.features.detail.domain.usecase.ObserveFavoriteEpisodesByMediaUseCase
+import com.yumedev.seijakulistkmp.features.detail.domain.usecase.ToggleFavoriteEpisodeUseCase
 import com.yumedev.seijakulistkmp.features.detail.presentation.utils.toCore
+import com.yumedev.seijakulistkmp.features.profile.domain.usecase.GetCurrentProfileUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.CachedMediaInfo
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
@@ -16,6 +20,7 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.AddToListUseC
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.CheckInListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListEntryUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.UpdateListEntryUseCase
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,13 +36,17 @@ class DetailViewModel(
     private val addToListUseCase: AddToListUseCase,
     private val updateListEntryUseCase: UpdateListEntryUseCase,
     private val checkInListUseCase: CheckInListUseCase,
-    private val getListEntryUseCase: GetListEntryUseCase
+    private val getListEntryUseCase: GetListEntryUseCase,
+    private val toggleFavoriteEpisodeUseCase: ToggleFavoriteEpisodeUseCase,
+    private val observeFavoriteEpisodesByMediaUseCase: ObserveFavoriteEpisodesByMediaUseCase,
+    private val getCurrentProfileUseCase: GetCurrentProfileUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DetailState())
     val state: StateFlow<DetailState> = _state.asStateFlow()
 
     private var observeListEntryJob: Job? = null
+    private var observeFavoriteEpisodesJob: Job? = null
 
     fun loadMediaDetail(id: Int, type: MediaType) {
         viewModelScope.launch {
@@ -73,6 +82,7 @@ class DetailViewModel(
                 }
 
                 observeListEntry(id, type)
+                observeFavoriteEpisodes(id)
             }.onFailure { exception ->
                 val errorType = ErrorMapper.mapToErrorType(exception)
                 _state.update {
@@ -99,6 +109,30 @@ class DetailViewModel(
             .launchIn(viewModelScope)
     }
 
+    private fun observeFavoriteEpisodes(mediaId: Int) {
+        observeFavoriteEpisodesJob?.cancel()
+        viewModelScope.launch {
+            val profile = getCurrentProfileUseCase().first() ?: return@launch
+
+            observeFavoriteEpisodesJob = observeFavoriteEpisodesByMediaUseCase(
+                userId = profile.id.toString(),
+                mediaId = mediaId
+            ).onEach { favoriteEpisodes ->
+                _state.update { currentState ->
+                    val updatedMediaDetail = currentState.mediaDetail?.let { detail ->
+                        val updatedEpisodes = detail.episodes_list?.map { episode ->
+                            episode.copy(
+                                isFavorite = favoriteEpisodes.any { it.episodeNumber == episode.number }
+                            )
+                        }
+                        detail.copy(episodes_list = updatedEpisodes)
+                    }
+                    currentState.copy(mediaDetail = updatedMediaDetail)
+                }
+            }.launchIn(viewModelScope)
+        }
+    }
+
     fun retry(id: Int, type: MediaType) {
         loadMediaDetail(id, type)
     }
@@ -109,6 +143,21 @@ class DetailViewModel(
                 mediaDetail = currentState.mediaDetail?.copy(
                     isFavorite = !currentState.mediaDetail.isFavorite
                 )
+            )
+        }
+    }
+
+    fun toggleEpisodeFavorite(episodeNumber: Int, episodeTitle: String, thumbnailUrl: String?) {
+        viewModelScope.launch {
+            val currentDetail = _state.value.mediaDetail ?: return@launch
+            val profile = getCurrentProfileUseCase().first() ?: return@launch
+
+            toggleFavoriteEpisodeUseCase(
+                userId = profile.id.toString(),
+                mediaId = currentDetail.id,
+                episodeNumber = episodeNumber,
+                episodeTitle = episodeTitle,
+                thumbnailUrl = thumbnailUrl
             )
         }
     }

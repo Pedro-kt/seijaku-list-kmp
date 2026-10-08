@@ -19,6 +19,7 @@ import com.yumedev.seijakulistkmp.features.detail.presentation.model.EpisodeUiMo
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
 import dev.seyfarth.tablericons.outlined.PlayerPlay
+import dev.seyfarth.tablericons.outlined.Star
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
 
@@ -30,6 +31,7 @@ fun DetailChaptersList(
     totalCount: Int?,
     onSeeAllClick: () -> Unit,
     onItemClick: (Int) -> Unit,
+    onEpisodeFavoriteToggle: (episodeNumber: Int, episodeTitle: String, thumbnailUrl: String?) -> Unit = { _, _, _ -> },
     modifier: Modifier = Modifier
 ) {
     val hasContent = when (type) {
@@ -99,7 +101,14 @@ fun DetailChaptersList(
                     itemsToShow?.forEach { episode ->
                         EpisodeItem(
                             episode = episode,
-                            onClick = { onItemClick(episode.number) }
+                            onClick = { onItemClick(episode.number) },
+                            onFavoriteClick = {
+                                onEpisodeFavoriteToggle(
+                                    episode.number,
+                                    episode.title,
+                                    episode.thumbnail
+                                )
+                            }
                         )
                     }
                 }
@@ -135,6 +144,7 @@ fun DetailChaptersList(
 private fun EpisodeItem(
     episode: EpisodeUiModel,
     onClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -222,6 +232,24 @@ private fun EpisodeItem(
                         )
                     }
                 }
+            }
+
+            IconButton(
+                onClick = onFavoriteClick
+            ) {
+                Icon(
+                    imageVector = if (episode.isFavorite) TablerIcons.Filled.Star else TablerIcons.Outlined.Star,
+                    contentDescription = if (episode.isFavorite) {
+                        stringResource(Res.string.detail_unfavorite_episode)
+                    } else {
+                        stringResource(Res.string.detail_favorite_episode)
+                    },
+                    tint = if (episode.isFavorite) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    }
+                )
             }
         }
     }
