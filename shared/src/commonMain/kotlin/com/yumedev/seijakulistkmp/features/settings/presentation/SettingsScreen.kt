@@ -17,6 +17,7 @@ import com.yumedev.seijakulistkmp.core.utils.rememberActivityRecreator
 import com.yumedev.seijakulistkmp.core.utils.rememberAppVersion
 import com.yumedev.seijakulistkmp.core.utils.rememberFileExporter
 import com.yumedev.seijakulistkmp.core.utils.rememberFilePicker
+import com.yumedev.seijakulistkmp.core.utils.rememberNotificationPermissionRequester
 import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
 import com.yumedev.seijakulistkmp.core.utils.rememberUrlOpener
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
@@ -43,6 +44,7 @@ class SettingsScreen : Screen {
         val toastManager = rememberToastManager()
         val activityRecreator = rememberActivityRecreator()
         val urlOpener = rememberUrlOpener()
+        val notificationPermissionRequester = rememberNotificationPermissionRequester()
         val (appVersion, buildNumber) = rememberAppVersion()
 
         val exportAnimeSuccessMessage = stringResource(Res.string.settings_export_anime_success)
@@ -50,6 +52,7 @@ class SettingsScreen : Screen {
         val exportErrorMessage = stringResource(Res.string.settings_export_error)
         val importSuccessMessage = stringResource(Res.string.settings_import_success)
         val importErrorMessage = stringResource(Res.string.settings_import_error)
+        val permissionDeniedMessage = stringResource(Res.string.settings_notification_permission_denied)
 
         SettingsScreenContent(
             onBackClick = { navigator.pop() },
@@ -61,7 +64,25 @@ class SettingsScreen : Screen {
                 viewModel.onLanguageSelected(languageMode)
                 activityRecreator.recreate()
             },
-            onAiringNotificationsToggle = viewModel::onAiringNotificationsToggle,
+            onAiringNotificationsToggle = { enabled ->
+                if (enabled) {
+                    if (notificationPermissionRequester.checkPermissionGranted()) {
+                        viewModel.onAiringNotificationsToggle(true)
+                    } else {
+                        notificationPermissionRequester.requestPermission(
+                            onGranted = {
+                                viewModel.onAiringNotificationsToggle(true)
+                            },
+                            onDenied = {
+                                toastManager.showToast(permissionDeniedMessage)
+                                viewModel.onAiringNotificationsToggle(false)
+                            }
+                        )
+                    }
+                } else {
+                    viewModel.onAiringNotificationsToggle(false)
+                }
+            },
             onSfwModeToggle = viewModel::onSfwModeToggle,
             onSyncClick = viewModel::onSyncClick,
             onLoginClick = {

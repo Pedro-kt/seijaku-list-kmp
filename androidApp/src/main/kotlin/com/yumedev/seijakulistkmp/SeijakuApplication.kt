@@ -1,6 +1,8 @@
 package com.yumedev.seijakulistkmp
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
@@ -18,7 +20,22 @@ class SeijakuApplication : Application() {
             androidContext(this@SeijakuApplication)
         }
 
+        createNotificationChannel()
         applyLanguage()
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Airing Notifications"
+            val descriptionText = "Notifications for anime episodes airing soon"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -57,5 +74,9 @@ class SeijakuApplication : Application() {
             @Suppress("DEPRECATION")
             resources.updateConfiguration(configuration, resources.displayMetrics)
         }
+    }
+
+    companion object {
+        const val NOTIFICATION_CHANNEL_ID = "airing_notifications"
     }
 }

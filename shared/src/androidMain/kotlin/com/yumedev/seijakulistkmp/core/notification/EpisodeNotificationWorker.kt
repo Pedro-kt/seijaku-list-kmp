@@ -1,14 +1,13 @@
 package com.yumedev.seijakulistkmp.core.notification
 
-import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
-import android.os.Build
+import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.yumedev.seijakulistkmp.core.util.AiringScheduleTimeUtil
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 
 class EpisodeNotificationWorker(
@@ -27,27 +26,12 @@ class EpisodeNotificationWorker(
                 return Result.failure()
             }
 
-            createNotificationChannel()
             showNotification(mediaId, title, episode, airingAt)
 
             Result.success()
         } catch (e: Exception) {
             e.printStackTrace()
             Result.failure()
-        }
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Airing Notifications"
-            val descriptionText = "Notifications for anime episodes airing soon"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-            }
-
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
         }
     }
 
@@ -66,12 +50,30 @@ class EpisodeNotificationWorker(
             use24Hour = false
         )
 
+        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(EXTRA_MEDIA_ID, mediaId)
+        }
+
+        val pendingIntent = intent?.let {
+            PendingIntent.getActivity(
+                context,
+                mediaId,
+                it,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        }
+
+        val iconResId = context.resources.getIdentifier("ic_notification", "drawable", context.packageName)
+        val notificationIcon = if (iconResId != 0) iconResId else android.R.drawable.ic_dialog_info
+
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info) // TODO: Use app icon
+            .setSmallIcon(notificationIcon)
             .setContentTitle("$title - Episode $episode")
             .setContentText("Airing in 1 hour at $airingTime")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
             .build()
 
         notificationManager.notify(mediaId, notification)
@@ -79,5 +81,6 @@ class EpisodeNotificationWorker(
 
     companion object {
         const val CHANNEL_ID = "airing_notifications"
+        const val EXTRA_MEDIA_ID = "extra_media_id"
     }
 }
