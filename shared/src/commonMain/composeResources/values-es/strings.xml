@@ -164,6 +164,7 @@
     <string name="settings_content">CONTENIDO</string>
     <string name="settings_airing_notifications">Notificaciones de emisión</string>
     <string name="settings_airing_notifications_desc">Aviso cuando sale un episodio de tu lista</string>
+    <string name="settings_notification_permission_denied">Permiso de notificaciones denegado. Por favor actívalo en ajustes.</string>
     <string name="settings_sfw_mode">Modo seguro para el trabajo</string>
     <string name="settings_sfw_mode_desc">Oculta contenido NSFW y anime para adultos</string>
     <string name="settings_data">DATOS</string>
