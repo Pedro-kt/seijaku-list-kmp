@@ -1,5 +1,6 @@
 package com.yumedev.seijakulistkmp.features.detail.data.repository
 
+import com.yumedev.seijakulistkmp.core.domain.model.Result
 import com.yumedev.seijakulistkmp.features.detail.data.local.dao.FavoriteEpisodeDao
 import com.yumedev.seijakulistkmp.features.detail.data.local.entity.FavoriteEpisodeEntity
 import com.yumedev.seijakulistkmp.features.detail.data.mapper.toDomain
@@ -91,10 +92,15 @@ class FavoriteEpisodeRepositoryImpl(
         return try {
             val favorites = favoriteEpisodeDao.getAllByUser(userId)
                 .map { it.toDomain() }
-            Result.success(favorites)
+            Result.Success(favorites)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.Failure(e)
         }
+    }
+
+    override fun observeAllFavorites(userId: String): Flow<List<FavoriteEpisode>> {
+        return favoriteEpisodeDao.observeAllByUser(userId)
+            .map { entities -> entities.map { it.toDomain() } }
     }
 
     override suspend fun isFavorite(
@@ -111,5 +117,27 @@ class FavoriteEpisodeRepositoryImpl(
         episodeNumber: Int
     ): Flow<Boolean> {
         return favoriteEpisodeDao.observeIsFavorite(userId, mediaId, episodeNumber)
+    }
+
+    override suspend fun updateRatingAndComment(
+        id: Long,
+        rating: Int?,
+        comment: String?
+    ): Result<Unit> {
+        return try {
+            favoriteEpisodeDao.updateRatingAndComment(id, rating, comment)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteFavoriteById(id: Long): Result<Unit> {
+        return try {
+            favoriteEpisodeDao.deleteById(id)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

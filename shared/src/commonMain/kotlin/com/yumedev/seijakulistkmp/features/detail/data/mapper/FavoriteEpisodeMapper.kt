@@ -12,7 +12,9 @@ fun FavoriteEpisodeEntity.toDomain(): FavoriteEpisode {
         episodeTitle = episodeTitle,
         thumbnailUrl = thumbnailUrl,
         markedAt = markedAt,
-        syncedAt = syncedAt
+        syncedAt = syncedAt,
+        rating = rating,
+        comment = comment
     )
 }
 
@@ -25,6 +27,8 @@ fun FavoriteEpisode.toEntity(): FavoriteEpisodeEntity {
         episodeTitle = episodeTitle,
         thumbnailUrl = thumbnailUrl,
         markedAt = markedAt,
-        syncedAt = syncedAt
+        syncedAt = syncedAt,
+        rating = rating,
+        comment = comment
     )
 }

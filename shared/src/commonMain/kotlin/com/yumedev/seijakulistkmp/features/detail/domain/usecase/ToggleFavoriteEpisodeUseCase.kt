@@ -1,5 +1,6 @@
 package com.yumedev.seijakulistkmp.features.detail.domain.usecase
 
+import com.yumedev.seijakulistkmp.core.domain.model.Result
 import com.yumedev.seijakulistkmp.features.detail.domain.repository.FavoriteEpisodeRepository
 
 class ToggleFavoriteEpisodeUseCase(

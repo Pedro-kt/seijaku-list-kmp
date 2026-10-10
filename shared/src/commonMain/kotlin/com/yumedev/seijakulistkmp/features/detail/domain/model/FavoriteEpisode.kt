@@ -8,5 +8,7 @@ data class FavoriteEpisode(
     val episodeTitle: String,
     val thumbnailUrl: String?,
     val markedAt: Long,
-    val syncedAt: Long? = null
+    val syncedAt: Long? = null,
+    val rating: Int? = null,
+    val comment: String? = null
 )

@@ -43,4 +43,10 @@ interface FavoriteEpisodeDao {
 
     @Query("DELETE FROM favorite_episodes WHERE user_id = :userId")
     suspend fun deleteAllByUser(userId: String)
+
+    @Query("UPDATE favorite_episodes SET rating = :rating, comment = :comment WHERE id = :id")
+    suspend fun updateRatingAndComment(id: Long, rating: Int?, comment: String?)
+
+    @Query("DELETE FROM favorite_episodes WHERE id = :id")
+    suspend fun deleteById(id: Long)
 }

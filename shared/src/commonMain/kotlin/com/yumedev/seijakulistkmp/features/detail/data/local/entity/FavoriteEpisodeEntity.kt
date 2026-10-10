@@ -36,5 +36,11 @@ data class FavoriteEpisodeEntity(
     val markedAt: Long,
 
     @ColumnInfo(name = "synced_at")
-    val syncedAt: Long? = null
+    val syncedAt: Long? = null,
+
+    @ColumnInfo(name = "rating")
+    val rating: Int? = null,
+
+    @ColumnInfo(name = "comment")
+    val comment: String? = null
 )

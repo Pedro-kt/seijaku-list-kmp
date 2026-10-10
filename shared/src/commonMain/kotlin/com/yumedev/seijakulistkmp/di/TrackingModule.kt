@@ -11,6 +11,7 @@ import com.yumedev.seijakulistkmp.features.profile.domain.usecase.UpdateProfileU
 import com.yumedev.seijakulistkmp.features.profile.presentation.ProfileViewModel
 import com.yumedev.seijakulistkmp.features.tracking.data.export.MALXmlMapper
 import com.yumedev.seijakulistkmp.features.tracking.data.local.MIGRATION_5_6
+import com.yumedev.seijakulistkmp.features.tracking.data.local.MIGRATION_6_7
 import com.yumedev.seijakulistkmp.features.tracking.data.local.TrackingDatabase
 import com.yumedev.seijakulistkmp.features.tracking.data.local.TrackingDatabaseBuilder
 import com.yumedev.seijakulistkmp.features.tracking.data.repository.MediaListRepositoryImpl
@@ -42,7 +43,7 @@ val trackingModule = module {
     single<TrackingDatabase> {
         TrackingDatabaseBuilder.create()
             .setDriver(BundledSQLiteDriver())
-            .addMigrations(MIGRATION_2_3, MIGRATION_5_6)
+            .addMigrations(MIGRATION_2_3, MIGRATION_5_6, MIGRATION_6_7)
             .build()
     }
 

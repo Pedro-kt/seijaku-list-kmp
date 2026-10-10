@@ -67,3 +67,10 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
         connection.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_favorite_episodes_user_id_media_id_episode_number ON favorite_episodes(user_id, media_id, episode_number)")
     }
 }
+
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE favorite_episodes ADD COLUMN rating INTEGER DEFAULT NULL")
+        connection.execSQL("ALTER TABLE favorite_episodes ADD COLUMN comment TEXT DEFAULT NULL")
+    }
+}

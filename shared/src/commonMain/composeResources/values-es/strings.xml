@@ -406,6 +406,26 @@
     <string name="profile_select_image">Seleccionar imagen</string>
     <string name="profile_remove_image">Eliminar</string>
     <string name="profile_add_banner">Añadir banner</string>
+    <string name="profile_top_anime">Top 5 Anime</string>
+    <string name="profile_top_manga">Top 5 Manga</string>
+    <string name="profile_favorite_episodes_title">Episodios Favoritos</string>
+    <string name="profile_favorite_episodes_empty">Aún no tienes episodios favoritos.\nMarca tus episodios favoritos desde la vista de detalle de un anime.</string>
+    <string name="profile_favorite_episode_edit_title">Editar Episodio Favorito</string>
+    <string name="profile_favorite_episode_delete">Eliminar</string>
+    <string name="profile_favorite_episode_rating_label">Calificación</string>
+    <string name="profile_favorite_episode_comment_label">Comentario</string>
+    <string name="profile_favorite_episode_comment_placeholder">Escribe tus pensamientos sobre este episodio...</string>
+    <string name="profile_favorite_episode_save">Guardar</string>
+    <string name="profile_favorite_episode_cancel">Cancelar</string>
+    <string name="profile_favorite_episode_info">Episodio %1$d: %2$s</string>
+    <string name="profile_favorite_episode_number">Episodio %1$d</string>
+    <string name="profile_favorite_episode_short">Ep %1$d</string>
+    <string name="profile_favorite_episode_star_desc">%1$d estrella</string>
+    <string name="profile_favorite_episode_stars_desc">%1$d estrellas</string>
+    <string name="profile_position_n">Posición #%1$d</string>
+    <string name="profile_select_favorite">Selecciona tu favorito</string>
+    <string name="profile_no_entries_found">No se encontraron entradas</string>
+    <string name="profile_score_format">Puntuación: %1$s/10</string>
 
     <!-- Welcome/Onboarding Screen -->
     <string name="welcome_skip">Omitir</string>

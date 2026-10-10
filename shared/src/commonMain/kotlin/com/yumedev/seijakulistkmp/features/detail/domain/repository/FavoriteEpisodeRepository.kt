@@ -1,5 +1,6 @@
 package com.yumedev.seijakulistkmp.features.detail.domain.repository
 
+import com.yumedev.seijakulistkmp.core.domain.model.Result
 import com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode
 import kotlinx.coroutines.flow.Flow
 
@@ -23,7 +24,13 @@ interface FavoriteEpisodeRepository {
 
     suspend fun getAllFavorites(userId: String): Result<List<FavoriteEpisode>>
 
+    fun observeAllFavorites(userId: String): Flow<List<FavoriteEpisode>>
+
     suspend fun isFavorite(userId: String, mediaId: Int, episodeNumber: Int): Boolean
 
     fun observeIsFavorite(userId: String, mediaId: Int, episodeNumber: Int): Flow<Boolean>
+
+    suspend fun updateRatingAndComment(id: Long, rating: Int?, comment: String?): Result<Unit>
+
+    suspend fun deleteFavoriteById(id: Long): Result<Unit>
 }
