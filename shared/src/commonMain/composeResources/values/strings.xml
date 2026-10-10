@@ -164,6 +164,7 @@
     <string name="settings_content">CONTENT</string>
     <string name="settings_airing_notifications">Airing notifications</string>
     <string name="settings_airing_notifications_desc">Notify when an episode from your list airs</string>
+    <string name="settings_notification_permission_denied">Notification permission denied. Please enable it in settings.</string>
     <string name="settings_sfw_mode">Safe for work mode</string>
     <string name="settings_sfw_mode_desc">Hide NSFW content and adult anime</string>
     <string name="settings_data">DATA</string>
