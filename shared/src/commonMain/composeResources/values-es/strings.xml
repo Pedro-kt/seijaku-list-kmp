@@ -427,6 +427,11 @@
     <string name="profile_select_favorite">Selecciona tu favorito</string>
     <string name="profile_no_entries_found">No se encontraron entradas</string>
     <string name="profile_score_format">Puntuación: %1$s/10</string>
+    <string name="search_episodes_placeholder">Buscar episodios o anime</string>
+    <string name="sort_by">Ordenar por</string>
+    <string name="sort_by_rating">Por Calificación</string>
+    <string name="sort_alphabetically">Alfabéticamente</string>
+    <string name="profile_episodes_count">%1$d episodios</string>
 
     <!-- Welcome/Onboarding Screen -->
     <string name="welcome_skip">Omitir</string>

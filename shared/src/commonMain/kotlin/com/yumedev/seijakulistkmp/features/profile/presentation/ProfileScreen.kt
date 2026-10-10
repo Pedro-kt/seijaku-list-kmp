@@ -174,7 +174,11 @@ class ProfileScreen : Screen {
             onReorderFavorites = viewModel::onReorderFavorites,
             onEpisodeFavoriteClick = { episode ->
                 selectedEpisode = episode
-            }
+            },
+            onToggleEpisodesSearch = viewModel::onToggleEpisodesSearch,
+            onEpisodesSearchQueryChange = viewModel::onEpisodesSearchQueryChange,
+            onEpisodesSortChange = viewModel::onEpisodesSortChange,
+            onToggleAnimeGroup = viewModel::onToggleAnimeGroup
         )
 
 
@@ -220,6 +224,10 @@ fun ProfileScreenContent(
     onRemoveFavorite: (Int) -> Unit,
     onReorderFavorites: (Int, Int, Boolean) -> Unit,
     onEpisodeFavoriteClick: (FavoriteEpisode) -> Unit,
+    onToggleEpisodesSearch: () -> Unit,
+    onEpisodesSearchQueryChange: (String) -> Unit,
+    onEpisodesSortChange: (com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption) -> Unit,
+    onToggleAnimeGroup: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -253,7 +261,12 @@ fun ProfileScreenContent(
                     favoriteAnime = uiState.favoriteAnime,
                     favoriteManga = uiState.favoriteManga,
                     favoriteEpisodes = uiState.favoriteEpisodes,
+                    groupedFavoriteEpisodes = uiState.groupedFavoriteEpisodes,
                     isFavoriteEpisodesLoading = uiState.isFavoriteEpisodesLoading,
+                    isEpisodesSearchVisible = uiState.isEpisodesSearchVisible,
+                    episodesSearchQuery = uiState.episodesSearchQuery,
+                    episodesSortBy = uiState.episodesSortBy,
+                    expandedAnimeGroups = uiState.expandedAnimeGroups,
                     selectedTab = uiState.selectedTab,
                     isAuthenticated = uiState.isAuthenticated,
                     onTabChanged = onTabChanged,
@@ -263,6 +276,10 @@ fun ProfileScreenContent(
                     onFavoriteClick = { entry -> },
                     onReorderFavorites = onReorderFavorites,
                     onEpisodeFavoriteClick = onEpisodeFavoriteClick,
+                    onToggleEpisodesSearch = onToggleEpisodesSearch,
+                    onEpisodesSearchQueryChange = onEpisodesSearchQueryChange,
+                    onEpisodesSortChange = onEpisodesSortChange,
+                    onToggleAnimeGroup = onToggleAnimeGroup,
                     onAvatarClick = {
                         filePicker.pickImage(
                             onImageSelected = { uri ->
@@ -341,7 +358,12 @@ fun ProfileContent(
     favoriteAnime: List<com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry>,
     favoriteManga: List<com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry>,
     favoriteEpisodes: List<com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode>,
+    groupedFavoriteEpisodes: List<com.yumedev.seijakulistkmp.features.profile.presentation.model.AnimeGroup>,
     isFavoriteEpisodesLoading: Boolean,
+    isEpisodesSearchVisible: Boolean,
+    episodesSearchQuery: String,
+    episodesSortBy: com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption,
+    expandedAnimeGroups: Set<Int>,
     selectedTab: Int,
     isAuthenticated: Boolean,
     onTabChanged: (Int) -> Unit,
@@ -353,6 +375,10 @@ fun ProfileContent(
     onFavoriteClick: (com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry) -> Unit,
     onReorderFavorites: (Int, Int, Boolean) -> Unit,
     onEpisodeFavoriteClick: (FavoriteEpisode) -> Unit,
+    onToggleEpisodesSearch: () -> Unit,
+    onEpisodesSearchQueryChange: (String) -> Unit,
+    onEpisodesSortChange: (com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption) -> Unit,
+    onToggleAnimeGroup: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
@@ -453,10 +479,18 @@ fun ProfileContent(
                     }
 
                     FavoriteEpisodesSection(
-                        favoriteEpisodes = favoriteEpisodes,
+                        groupedEpisodes = groupedFavoriteEpisodes,
                         animeTitles = animeTitles,
                         isLoading = isFavoriteEpisodesLoading,
+                        isSearchVisible = isEpisodesSearchVisible,
+                        searchQuery = episodesSearchQuery,
+                        currentSort = episodesSortBy,
+                        expandedGroups = expandedAnimeGroups,
                         onEpisodeClick = onEpisodeFavoriteClick,
+                        onToggleSearch = onToggleEpisodesSearch,
+                        onSearchQueryChange = onEpisodesSearchQueryChange,
+                        onSortChange = onEpisodesSortChange,
+                        onToggleGroup = onToggleAnimeGroup,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

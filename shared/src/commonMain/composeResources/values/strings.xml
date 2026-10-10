@@ -437,6 +437,11 @@
     <string name="profile_select_favorite">Select your favorite</string>
     <string name="profile_no_entries_found">No entries found</string>
     <string name="profile_score_format">Score: %1$s/10</string>
+    <string name="search_episodes_placeholder">Search episodes or anime</string>
+    <string name="sort_by">Sort by</string>
+    <string name="sort_by_rating">By Rating</string>
+    <string name="sort_alphabetically">Alphabetically</string>
+    <string name="profile_episodes_count">%1$d episodes</string>
 
     <!-- Welcome/Onboarding Screen -->
     <string name="welcome_skip">Skip</string>

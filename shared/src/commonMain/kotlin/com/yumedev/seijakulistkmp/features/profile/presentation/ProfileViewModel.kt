@@ -127,6 +127,7 @@ class ProfileViewModel(
                         isFavoriteEpisodesLoading = false
                     )
                 }
+                updateGroupedEpisodes()
             }
         }
     }
@@ -451,5 +452,78 @@ class ProfileViewModel(
                 }
             }
         }
+    }
+
+    fun onToggleEpisodesSearch() {
+        _uiState.update {
+            val newVisible = !it.isEpisodesSearchVisible
+            it.copy(
+                isEpisodesSearchVisible = newVisible,
+                episodesSearchQuery = if (newVisible) it.episodesSearchQuery else ""
+            )
+        }
+        if (!_uiState.value.isEpisodesSearchVisible) {
+            updateGroupedEpisodes()
+        }
+    }
+
+    fun onEpisodesSearchQueryChange(query: String) {
+        _uiState.update { it.copy(episodesSearchQuery = query) }
+        updateGroupedEpisodes()
+    }
+
+    fun onEpisodesSortChange(sortOption: com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption) {
+        _uiState.update { it.copy(episodesSortBy = sortOption) }
+        updateGroupedEpisodes()
+    }
+
+    fun onToggleAnimeGroup(mediaId: Int) {
+        _uiState.update {
+            val newExpandedGroups = if (it.expandedAnimeGroups.contains(mediaId)) {
+                it.expandedAnimeGroups - mediaId
+            } else {
+                it.expandedAnimeGroups + mediaId
+            }
+            it.copy(expandedAnimeGroups = newExpandedGroups)
+        }
+    }
+
+    private fun updateGroupedEpisodes() {
+        val currentState = _uiState.value
+        val episodes = currentState.favoriteEpisodes
+
+        val filtered = if (currentState.episodesSearchQuery.isBlank()) {
+            episodes
+        } else {
+            val query = currentState.episodesSearchQuery.lowercase()
+            episodes.filter { episode ->
+                episode.episodeTitle.lowercase().contains(query) ||
+                // We'll need to get anime title from somewhere - for now just filter by episode title
+                episode.episodeTitle.lowercase().contains(query)
+            }
+        }
+
+        val sorted = when (currentState.episodesSortBy) {
+            com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption.RATING -> {
+                filtered.sortedWith(
+                    compareByDescending<com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode> { it.rating ?: -1 }
+                        .thenByDescending { it.markedAt }
+                )
+            }
+            com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption.ALPHABETICALLY -> {
+                filtered.sortedBy { it.episodeTitle.lowercase() }
+            }
+        }
+
+        val grouped = sorted.groupBy { it.mediaId }
+            .map { (mediaId, groupEpisodes) ->
+                com.yumedev.seijakulistkmp.features.profile.presentation.model.AnimeGroup(
+                    mediaId = mediaId,
+                    animeTitle = "Anime $mediaId", // TODO: Get actual anime title
+                    episodes = groupEpisodes
+                )
+            }
+
+        _uiState.update { it.copy(groupedFavoriteEpisodes = grouped) }
     }
 }
