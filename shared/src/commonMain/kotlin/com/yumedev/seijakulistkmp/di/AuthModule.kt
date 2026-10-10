@@ -3,6 +3,7 @@ package com.yumedev.seijakulistkmp.di
 import com.yumedev.seijakulistkmp.features.auth.domain.repository.AuthRepository
 import com.yumedev.seijakulistkmp.features.auth.domain.usecase.*
 import com.yumedev.seijakulistkmp.features.auth.presentation.AuthViewModel
+import com.yumedev.seijakulistkmp.features.detail.domain.usecase.SyncFavoriteEpisodesWithFirestoreUseCase
 import com.yumedev.seijakulistkmp.features.profile.data.remote.FirestoreProfileDataSource
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.SyncProfileWithFirestoreUseCase
 import com.yumedev.seijakulistkmp.features.tracking.data.remote.FirestoreMediaListDataSource
@@ -31,6 +32,7 @@ val authModule = module {
     factoryOf(::SyncMediaListWithFirestoreUseCase)
     factoryOf(::SaveMediaListEntryToFirestoreUseCase)
     factoryOf(::DeleteMediaListEntryFromFirestoreUseCase)
+    factoryOf(::SyncFavoriteEpisodesWithFirestoreUseCase)
 
     viewModelOf(::AuthViewModel)
 }

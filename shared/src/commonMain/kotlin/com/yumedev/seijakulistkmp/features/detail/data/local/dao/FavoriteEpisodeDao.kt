@@ -49,4 +49,13 @@ interface FavoriteEpisodeDao {
 
     @Query("DELETE FROM favorite_episodes WHERE id = :id")
     suspend fun deleteById(id: Long)
+
+    @Query("SELECT * FROM favorite_episodes WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): FavoriteEpisodeEntity?
+
+    @Query("SELECT * FROM favorite_episodes WHERE user_id != :excludeUserId")
+    suspend fun getAllExceptUser(excludeUserId: String): List<FavoriteEpisodeEntity>
+
+    @Query("UPDATE favorite_episodes SET user_id = :newUserId WHERE user_id != :newUserId")
+    suspend fun migrateAllEpisodesToUser(newUserId: String)
 }

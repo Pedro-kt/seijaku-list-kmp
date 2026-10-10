@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.yumedev.seijakulistkmp.core.domain.model.Result
 import com.yumedev.seijakulistkmp.features.auth.domain.model.AuthError
 import com.yumedev.seijakulistkmp.features.auth.domain.usecase.*
+import com.yumedev.seijakulistkmp.features.detail.domain.usecase.SyncFavoriteEpisodesWithFirestoreUseCase
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.SyncProfileWithFirestoreUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.SyncMediaListWithFirestoreUseCase
 import kotlinx.coroutines.channels.Channel
@@ -21,6 +22,7 @@ class AuthViewModel(
     private val sendPasswordReset: SendPasswordResetUseCase,
     private val syncProfileWithFirestore: SyncProfileWithFirestoreUseCase,
     private val syncMediaListWithFirestore: SyncMediaListWithFirestoreUseCase,
+    private val syncFavoriteEpisodesWithFirestore: SyncFavoriteEpisodesWithFirestoreUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthState())
