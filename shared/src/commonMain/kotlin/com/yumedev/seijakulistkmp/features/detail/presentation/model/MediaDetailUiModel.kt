@@ -74,7 +74,8 @@ data class EpisodeUiModel(
     val site: String?,
     val airDate: String?,
     val duration: Int?,
-    val rating: Double?
+    val rating: Double?,
+    val isFavorite: Boolean = false
 )
 
 data class ChapterUiModel(

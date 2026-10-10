@@ -45,3 +45,32 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
         connection.execSQL("CREATE INDEX IF NOT EXISTS index_airing_schedules_airing_at ON airing_schedules(airing_at)")
     }
 }
+
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS favorite_episodes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                user_id TEXT NOT NULL,
+                media_id INTEGER NOT NULL,
+                episode_number INTEGER NOT NULL,
+                episode_title TEXT NOT NULL,
+                thumbnail_url TEXT,
+                marked_at INTEGER NOT NULL,
+                synced_at INTEGER
+            )
+            """.trimIndent()
+        )
+        connection.execSQL("CREATE INDEX IF NOT EXISTS index_favorite_episodes_user_id ON favorite_episodes(user_id)")
+        connection.execSQL("CREATE INDEX IF NOT EXISTS index_favorite_episodes_media_id ON favorite_episodes(media_id)")
+        connection.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_favorite_episodes_user_id_media_id_episode_number ON favorite_episodes(user_id, media_id, episode_number)")
+    }
+}
+
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE favorite_episodes ADD COLUMN rating INTEGER DEFAULT NULL")
+        connection.execSQL("ALTER TABLE favorite_episodes ADD COLUMN comment TEXT DEFAULT NULL")
+    }
+}

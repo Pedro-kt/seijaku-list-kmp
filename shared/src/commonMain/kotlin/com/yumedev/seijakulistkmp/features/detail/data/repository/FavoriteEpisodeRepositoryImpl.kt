@@ -1,0 +1,197 @@
+package com.yumedev.seijakulistkmp.features.detail.data.repository
+
+import com.yumedev.seijakulistkmp.core.domain.model.Result
+import com.yumedev.seijakulistkmp.features.detail.data.local.dao.FavoriteEpisodeDao
+import com.yumedev.seijakulistkmp.features.detail.data.local.entity.FavoriteEpisodeEntity
+import com.yumedev.seijakulistkmp.features.detail.data.mapper.toDomain
+import com.yumedev.seijakulistkmp.features.detail.data.mapper.toEntity
+import com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode
+import com.yumedev.seijakulistkmp.features.detail.domain.repository.FavoriteEpisodeRepository
+import com.yumedev.seijakulistkmp.features.detail.domain.usecase.DeleteFavoriteEpisodeFromFirestoreUseCase
+import com.yumedev.seijakulistkmp.features.detail.domain.usecase.SaveFavoriteEpisodeToFirestoreUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+
+class FavoriteEpisodeRepositoryImpl(
+    private val favoriteEpisodeDao: FavoriteEpisodeDao,
+    private val saveToFirestore: SaveFavoriteEpisodeToFirestoreUseCase,
+    private val deleteFromFirestore: DeleteFavoriteEpisodeFromFirestoreUseCase
+) : FavoriteEpisodeRepository {
+
+    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    override suspend fun toggleFavorite(
+        userId: String,
+        mediaId: Int,
+        episodeNumber: Int,
+        episodeTitle: String,
+        thumbnailUrl: String?
+    ): Result<Unit> {
+        return try {
+            val exists = favoriteEpisodeDao.isFavorite(userId, mediaId, episodeNumber)
+
+            if (exists) {
+                favoriteEpisodeDao.deleteByEpisode(userId, mediaId, episodeNumber)
+
+                repositoryScope.launch {
+                    try {
+                        deleteFromFirestore(mediaId, episodeNumber)
+                    } catch (e: Exception) {
+                        //TODO
+                    }
+                }
+            } else {
+                val favoriteEpisode = FavoriteEpisodeEntity(
+                    userId = userId,
+                    mediaId = mediaId,
+                    episodeNumber = episodeNumber,
+                    episodeTitle = episodeTitle,
+                    thumbnailUrl = thumbnailUrl,
+                    markedAt = Clock.System.now().toEpochMilliseconds()
+                )
+                val insertedId = favoriteEpisodeDao.insert(favoriteEpisode)
+
+                repositoryScope.launch {
+                    try {
+                        val episodeToSync = favoriteEpisodeDao.getById(insertedId)
+                        if (episodeToSync != null) {
+                            saveToFirestore(episodeToSync.toDomain())
+                        }
+                    } catch (e: Exception) {
+                        //TODO
+                    }
+                }
+            }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun addFavorite(favoriteEpisode: FavoriteEpisode): Result<Unit> {
+        return try {
+            favoriteEpisodeDao.insert(favoriteEpisode.toEntity())
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun removeFavorite(
+        userId: String,
+        mediaId: Int,
+        episodeNumber: Int
+    ): Result<Unit> {
+        return try {
+            favoriteEpisodeDao.deleteByEpisode(userId, mediaId, episodeNumber)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override fun observeFavoritesByMedia(
+        userId: String,
+        mediaId: Int
+    ): Flow<List<FavoriteEpisode>> {
+        return favoriteEpisodeDao.observeFavoritesByMedia(userId, mediaId)
+            .map { entities -> entities.map { it.toDomain() } }
+    }
+
+    override suspend fun getFavoritesByMedia(
+        userId: String,
+        mediaId: Int
+    ): Result<List<FavoriteEpisode>> {
+        return try {
+            val favorites = favoriteEpisodeDao.getFavoritesByMedia(userId, mediaId)
+                .map { it.toDomain() }
+            Result.success(favorites)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getAllFavorites(userId: String): Result<List<FavoriteEpisode>> {
+        return try {
+            val favorites = favoriteEpisodeDao.getAllByUser(userId)
+                .map { it.toDomain() }
+            Result.Success(favorites)
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
+
+    override fun observeAllFavorites(userId: String): Flow<List<FavoriteEpisode>> {
+        return favoriteEpisodeDao.observeAllByUser(userId)
+            .map { entities -> entities.map { it.toDomain() } }
+    }
+
+    override suspend fun isFavorite(
+        userId: String,
+        mediaId: Int,
+        episodeNumber: Int
+    ): Boolean {
+        return favoriteEpisodeDao.isFavorite(userId, mediaId, episodeNumber)
+    }
+
+    override fun observeIsFavorite(
+        userId: String,
+        mediaId: Int,
+        episodeNumber: Int
+    ): Flow<Boolean> {
+        return favoriteEpisodeDao.observeIsFavorite(userId, mediaId, episodeNumber)
+    }
+
+    override suspend fun updateRatingAndComment(
+        id: Long,
+        rating: Int?,
+        comment: String?
+    ): Result<Unit> {
+        return try {
+            favoriteEpisodeDao.updateRatingAndComment(id, rating, comment)
+
+            repositoryScope.launch {
+                try {
+                    val updatedEpisode = favoriteEpisodeDao.getById(id)
+                    if (updatedEpisode != null) {
+                        saveToFirestore(updatedEpisode.toDomain())
+                    }
+                } catch (e: Exception) {
+                    //TODO
+                }
+            }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteFavoriteById(id: Long): Result<Unit> {
+        return try {
+            val episode = favoriteEpisodeDao.getById(id)
+
+            favoriteEpisodeDao.deleteById(id)
+
+            if (episode != null) {
+                repositoryScope.launch {
+                    try {
+                        deleteFromFirestore(episode.mediaId, episode.episodeNumber)
+                    } catch (e: Exception) {
+                        //TODO
+                    }
+                }
+            }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+}

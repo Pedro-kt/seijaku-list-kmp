@@ -88,6 +88,9 @@ data class DetailScreen(
                     },
                     onSeeAllChaptersClick = { /* TODO: Navigate to chapters list */ },
                     onChapterClick = { /* TODO: Navigate to chapter/episode */ },
+                    onEpisodeFavoriteToggle = { episodeNumber, episodeTitle, thumbnailUrl ->
+                        viewModel.toggleEpisodeFavorite(episodeNumber, episodeTitle, thumbnailUrl)
+                    },
                     onImageClick = { /* TODO: Open image viewer */ },
                     onExternalLinkClick = { url -> url?.let { urlOpener.openUrl(it) } },
                     onTrailerClick = { id, site ->
@@ -349,6 +352,7 @@ fun DetailScreenContent(
     onCharacterClick: (Int) -> Unit,
     onSeeAllChaptersClick: () -> Unit,
     onChapterClick: (Int) -> Unit,
+    onEpisodeFavoriteToggle: (Int, String, String?) -> Unit,
     onImageClick: (String) -> Unit,
     onExternalLinkClick: (String?) -> Unit,
     onTrailerClick: (String, String) -> Unit,
@@ -447,7 +451,8 @@ fun DetailScreenContent(
                 episodes = mediaDetail.episodesList,
                 totalCount = mediaDetail.totalChapters ?: mediaDetail.totalEpisodes,
                 onSeeAllClick = onSeeAllChaptersClick,
-                onItemClick = onChapterClick
+                onItemClick = onChapterClick,
+                onEpisodeFavoriteToggle = onEpisodeFavoriteToggle
             )
 
             DetailImagesGrid(

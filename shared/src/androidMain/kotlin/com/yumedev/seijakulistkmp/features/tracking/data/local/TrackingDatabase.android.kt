@@ -16,6 +16,6 @@ actual object TrackingDatabaseBuilder {
         return Room.databaseBuilder<TrackingDatabase>(
             context = appContext,
             name = dbFile.absolutePath
-        ).addMigrations(MIGRATION_1_2, MIGRATION_3_4, MIGRATION_4_5)
+        ).addMigrations(MIGRATION_1_2, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
     }
 }

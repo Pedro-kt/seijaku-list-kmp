@@ -5,6 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.core.domain.model.Result
 import com.yumedev.seijakulistkmp.features.auth.domain.usecase.GetCurrentUserUseCase
+import com.yumedev.seijakulistkmp.features.detail.domain.usecase.DeleteFavoriteEpisodeUseCase
+import com.yumedev.seijakulistkmp.features.detail.domain.usecase.GetAllFavoriteEpisodesUseCase
+import com.yumedev.seijakulistkmp.features.detail.domain.usecase.ObserveAllFavoriteEpisodesUseCase
+import com.yumedev.seijakulistkmp.features.detail.domain.usecase.UpdateFavoriteEpisodeUseCase
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.EnsureLocalProfileExistsUseCase
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.GetCurrentProfileUseCase
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.UpdateProfileStatisticsUseCase
@@ -33,6 +37,9 @@ class ProfileViewModel(
     private val setMediaAsFavorite: SetMediaAsFavoriteUseCase,
     private val removeFavorite: RemoveFavoriteUseCase,
     private val reorderFavorites: ReorderFavoritesUseCase,
+    private val observeAllFavoriteEpisodes: ObserveAllFavoriteEpisodesUseCase,
+    private val updateFavoriteEpisode: UpdateFavoriteEpisodeUseCase,
+    private val deleteFavoriteEpisode: DeleteFavoriteEpisodeUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -42,6 +49,7 @@ class ProfileViewModel(
         loadProfile()
         loadStats()
         loadFavorites()
+        loadFavoriteEpisodes()
         observeAuthState()
     }
 
@@ -106,6 +114,19 @@ class ProfileViewModel(
         viewModelScope.launch {
             getFavoriteMedia.observe(MediaType.MANGA).collect { favorites ->
                 _uiState.update { it.copy(favoriteManga = favorites) }
+            }
+        }
+    }
+
+    private fun loadFavoriteEpisodes() {
+        viewModelScope.launch {
+            observeAllFavoriteEpisodes().collect { episodes ->
+                _uiState.update {
+                    it.copy(
+                        favoriteEpisodes = episodes,
+                        isFavoriteEpisodesLoading = false
+                    )
+                }
             }
         }
     }
@@ -403,6 +424,30 @@ class ProfileViewModel(
                     is Result.Failure -> {
                         _uiState.update { it.copy(error = ProfileError.SavingError) }
                     }
+                }
+            }
+        }
+    }
+
+    fun onUpdateFavoriteEpisode(id: Long, rating: Int?, comment: String?) {
+        viewModelScope.launch {
+            when (updateFavoriteEpisode(id, rating, comment)) {
+                is Result.Success -> {
+                }
+                is Result.Failure -> {
+                    _uiState.update { it.copy(error = ProfileError.SavingError) }
+                }
+            }
+        }
+    }
+
+    fun onDeleteFavoriteEpisode(id: Long) {
+        viewModelScope.launch {
+            when (deleteFavoriteEpisode(id)) {
+                is Result.Success -> {
+                }
+                is Result.Failure -> {
+                    _uiState.update { it.copy(error = ProfileError.SavingError) }
                 }
             }
         }

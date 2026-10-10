@@ -46,6 +46,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,6 +69,9 @@ import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.core.utils.rememberFilePicker
 import com.yumedev.seijakulistkmp.core.utils.rememberImageManager
 import com.yumedev.seijakulistkmp.features.profile.domain.model.UserProfile
+import com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode
+import com.yumedev.seijakulistkmp.features.profile.presentation.components.EditFavoriteEpisodeBottomSheet
+import com.yumedev.seijakulistkmp.features.profile.presentation.components.FavoriteEpisodesSection
 import com.yumedev.seijakulistkmp.features.profile.presentation.components.FavoriteMediaSelectorBottomSheet
 import com.yumedev.seijakulistkmp.features.profile.presentation.components.ProfileTopFavoritesSection
 import com.yumedev.seijakulistkmp.features.profile.presentation.model.ProfileError
@@ -135,12 +139,21 @@ private fun ProfileError.toStringResource(): String {
 }
 
 class ProfileScreen : Screen {
-    @OptIn(KoinExperimentalAPI::class)
+    @OptIn(KoinExperimentalAPI::class, ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val viewModel = koinViewModel<ProfileViewModel>()
         val uiState by viewModel.uiState.collectAsState()
+
+        var selectedEpisode by remember { mutableStateOf<FavoriteEpisode?>(null) }
+        val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+        LaunchedEffect(uiState.favoriteEpisodes) {
+            selectedEpisode = selectedEpisode?.let { current ->
+                uiState.favoriteEpisodes.find { it.id == current.id }
+            }
+        }
 
         ProfileScreenContent(
             uiState = uiState,
@@ -159,7 +172,31 @@ class ProfileScreen : Screen {
             onSetFavorite = viewModel::onSetFavorite,
             onRemoveFavorite = viewModel::onRemoveFavorite,
             onReorderFavorites = viewModel::onReorderFavorites,
+            onEpisodeFavoriteClick = { episode ->
+                selectedEpisode = episode
+            }
         )
+
+
+        selectedEpisode?.let { episode ->
+            val getMediaList: GetMediaListUseCase = koinInject()
+            val allAnimeEntries by getMediaList(MediaType.ANIME).collectAsState(initial = emptyList())
+            val animeTitle = allAnimeEntries.find { it.mediaId == episode.mediaId }?.mediaInfo?.title
+
+            EditFavoriteEpisodeBottomSheet(
+                episode = episode,
+                animeTitle = animeTitle,
+                sheetState = editSheetState,
+                onDismiss = { selectedEpisode = null },
+                onSave = { rating, comment ->
+                    viewModel.onUpdateFavoriteEpisode(episode.id, rating, comment)
+                    selectedEpisode = null
+                },
+                onDelete = {
+                    viewModel.onDeleteFavoriteEpisode(episode.id)
+                }
+            )
+        }
     }
 }
 
@@ -182,6 +219,7 @@ fun ProfileScreenContent(
     onSetFavorite: (Int, Int) -> Unit,
     onRemoveFavorite: (Int) -> Unit,
     onReorderFavorites: (Int, Int, Boolean) -> Unit,
+    onEpisodeFavoriteClick: (FavoriteEpisode) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -214,6 +252,8 @@ fun ProfileScreenContent(
                     mangaStats = uiState.mangaStats,
                     favoriteAnime = uiState.favoriteAnime,
                     favoriteManga = uiState.favoriteManga,
+                    favoriteEpisodes = uiState.favoriteEpisodes,
+                    isFavoriteEpisodesLoading = uiState.isFavoriteEpisodesLoading,
                     selectedTab = uiState.selectedTab,
                     isAuthenticated = uiState.isAuthenticated,
                     onTabChanged = onTabChanged,
@@ -222,6 +262,7 @@ fun ProfileScreenContent(
                     onAddFavorite = onOpenFavoriteSelector,
                     onFavoriteClick = { entry -> },
                     onReorderFavorites = onReorderFavorites,
+                    onEpisodeFavoriteClick = onEpisodeFavoriteClick,
                     onAvatarClick = {
                         filePicker.pickImage(
                             onImageSelected = { uri ->
@@ -299,6 +340,8 @@ fun ProfileContent(
     mangaStats: MediaListStats?,
     favoriteAnime: List<com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry>,
     favoriteManga: List<com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry>,
+    favoriteEpisodes: List<com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode>,
+    isFavoriteEpisodesLoading: Boolean,
     selectedTab: Int,
     isAuthenticated: Boolean,
     onTabChanged: (Int) -> Unit,
@@ -309,6 +352,7 @@ fun ProfileContent(
     onAddFavorite: (Int) -> Unit,
     onFavoriteClick: (com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry) -> Unit,
     onReorderFavorites: (Int, Int, Boolean) -> Unit,
+    onEpisodeFavoriteClick: (FavoriteEpisode) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
@@ -397,6 +441,25 @@ fun ProfileContent(
                     onReorderFavorites = onReorderFavorites,
                     modifier = Modifier.fillMaxWidth()
                 )
+
+
+                if (isAnime) {
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    val getMediaList: GetMediaListUseCase = koinInject()
+                    val allAnimeEntries by getMediaList(MediaType.ANIME).collectAsState(initial = emptyList())
+                    val animeTitles = allAnimeEntries.associate { entry ->
+                        entry.mediaId to (entry.mediaInfo?.title ?: "")
+                    }
+
+                    FavoriteEpisodesSection(
+                        favoriteEpisodes = favoriteEpisodes,
+                        animeTitles = animeTitles,
+                        isLoading = isFavoriteEpisodesLoading,
+                        onEpisodeClick = onEpisodeFavoriteClick,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             } else {
                 Box(
                     modifier = Modifier
