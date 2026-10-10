@@ -97,6 +97,7 @@ temp/
 
 # Documentation
 docs/
+AGENTS.md
 
 .claude/.agents/
 
