@@ -20,4 +20,6 @@ interface AuthRepository {
     fun isAuthenticated(): Flow<Boolean>
 
     suspend fun sendPasswordResetEmail(email: String): Result<Unit>
+
+    suspend fun sendEmailVerification(): Result<Unit>
 }

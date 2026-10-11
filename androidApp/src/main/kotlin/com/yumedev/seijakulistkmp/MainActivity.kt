@@ -35,10 +35,6 @@ class MainActivity : ComponentActivity() {
         val prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
         val languageModeName = prefs.getString("language_mode", "SYSTEM") ?: "SYSTEM"
 
-        println("MainActivity - SharedPreferences name: $prefsName")
-        println("MainActivity - Language mode from prefs: $languageModeName")
-        println("MainActivity - All prefs: ${prefs.all}")
-
         val systemLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             context.resources.configuration.locales[0].language
         } else {
@@ -46,16 +42,12 @@ class MainActivity : ComponentActivity() {
             context.resources.configuration.locale.language
         }
 
-        println("MainActivity - System locale: $systemLocale")
-
         val languageCode = when (languageModeName) {
             "ENGLISH" -> "en"
             "SPANISH" -> "es"
             "SYSTEM" -> if (systemLocale == "es") "es" else "en"
             else -> if (systemLocale == "es") "es" else "en"
         }
-
-        println("MainActivity - Applying language code: $languageCode")
 
         val locale = Locale(languageCode)
         Locale.setDefault(locale)

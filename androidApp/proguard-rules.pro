@@ -290,12 +290,12 @@
 -optimizationpasses 5
 -allowaccessmodification
 
-# Remove logging in production (optional - uncomment if desired)
-# -assumenosideeffects class android.util.Log {
-#     public static *** d(...);
-#     public static *** v(...);
-#     public static *** i(...);
-# }
+# Remove debug/verbose/info logging in production (keeps warnings and errors)
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
+}
 
 # =============================================================================
 # Suppress Warnings (Clean build output)

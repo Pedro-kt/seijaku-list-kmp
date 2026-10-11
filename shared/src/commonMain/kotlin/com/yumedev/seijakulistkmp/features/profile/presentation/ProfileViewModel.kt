@@ -40,6 +40,7 @@ class ProfileViewModel(
     private val observeAllFavoriteEpisodes: ObserveAllFavoriteEpisodesUseCase,
     private val updateFavoriteEpisode: UpdateFavoriteEpisodeUseCase,
     private val deleteFavoriteEpisode: DeleteFavoriteEpisodeUseCase,
+    private val mediaListDao: com.yumedev.seijakulistkmp.features.tracking.data.local.dao.MediaListDao,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -489,41 +490,50 @@ class ProfileViewModel(
     }
 
     private fun updateGroupedEpisodes() {
-        val currentState = _uiState.value
-        val episodes = currentState.favoriteEpisodes
+        viewModelScope.launch {
+            val currentState = _uiState.value
+            val episodes = currentState.favoriteEpisodes
 
-        val filtered = if (currentState.episodesSearchQuery.isBlank()) {
-            episodes
-        } else {
-            val query = currentState.episodesSearchQuery.lowercase()
-            episodes.filter { episode ->
-                episode.episodeTitle.lowercase().contains(query) ||
-                // We'll need to get anime title from somewhere - for now just filter by episode title
-                episode.episodeTitle.lowercase().contains(query)
+            val filtered = if (currentState.episodesSearchQuery.isBlank()) {
+                episodes
+            } else {
+                val query = currentState.episodesSearchQuery.lowercase()
+                episodes.filter { episode ->
+                    episode.episodeTitle.lowercase().contains(query)
+                }
             }
+
+            val sorted = when (currentState.episodesSortBy) {
+                com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption.RATING -> {
+                    filtered.sortedWith(
+                        compareByDescending<com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode> { it.rating ?: -1 }
+                            .thenByDescending { it.markedAt }
+                    )
+                }
+                com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption.ALPHABETICALLY -> {
+                    filtered.sortedBy { it.episodeTitle.lowercase() }
+                }
+            }
+
+            val mediaIds = sorted.map { it.mediaId }.distinct()
+
+            val animeTitles = if (mediaIds.isNotEmpty()) {
+                mediaListDao.getMediaEntriesByIds(mediaIds, MediaType.ANIME.name)
+                    .associate { it.mediaId to it.mediaTitle }
+            } else {
+                emptyMap()
+            }
+
+            val grouped = sorted.groupBy { it.mediaId }
+                .map { (mediaId, groupEpisodes) ->
+                    com.yumedev.seijakulistkmp.features.profile.presentation.model.AnimeGroup(
+                        mediaId = mediaId,
+                        animeTitle = animeTitles[mediaId] ?: "Anime $mediaId",
+                        episodes = groupEpisodes
+                    )
+                }
+
+            _uiState.update { it.copy(groupedFavoriteEpisodes = grouped) }
         }
-
-        val sorted = when (currentState.episodesSortBy) {
-            com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption.RATING -> {
-                filtered.sortedWith(
-                    compareByDescending<com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode> { it.rating ?: -1 }
-                        .thenByDescending { it.markedAt }
-                )
-            }
-            com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption.ALPHABETICALLY -> {
-                filtered.sortedBy { it.episodeTitle.lowercase() }
-            }
-        }
-
-        val grouped = sorted.groupBy { it.mediaId }
-            .map { (mediaId, groupEpisodes) ->
-                com.yumedev.seijakulistkmp.features.profile.presentation.model.AnimeGroup(
-                    mediaId = mediaId,
-                    animeTitle = "Anime $mediaId", // TODO: Get actual anime title
-                    episodes = groupEpisodes
-                )
-            }
-
-        _uiState.update { it.copy(groupedFavoriteEpisodes = grouped) }
     }
 }
