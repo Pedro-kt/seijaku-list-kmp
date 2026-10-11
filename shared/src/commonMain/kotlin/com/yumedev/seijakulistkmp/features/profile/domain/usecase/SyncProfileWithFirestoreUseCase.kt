@@ -19,10 +19,9 @@ class SyncProfileWithFirestoreUseCase(
             ?: return Result.Failure(Exception("User not authenticated"))
 
         val uid = currentUser.uid
-
         val localProfile = profileRepository.getCurrentProfileSync()
-
         val firestoreResult = firestoreDataSource.getProfile(uid)
+
         if (firestoreResult is Result.Failure) {
             return Result.Failure(firestoreResult.exception)
         }
@@ -33,12 +32,45 @@ class SyncProfileWithFirestoreUseCase(
             localProfile != null && firestoreProfile != null -> {
                 if (firestoreProfile.updatedAt > localProfile.updatedAt.toEpochMilliseconds()) {
                     val updatedLocal = firestoreProfile.toDomain(localProfile.id)
-                    profileRepository.updateProfile(updatedLocal)
-                    Result.Success(updatedLocal)
+                    val updateResult = profileRepository.updateProfile(updatedLocal)
+                    when (updateResult) {
+                        is Result.Success -> Result.Success(updatedLocal)
+                        is Result.Failure -> Result.Failure(updateResult.exception)
+                    }
                 } else {
-                    val dto = localProfile.toDto(uid)
-                    firestoreDataSource.saveProfile(dto)
-                    Result.Success(localProfile)
+                    val avatarToUse = if (localProfile.avatar?.large == null && firestoreProfile.avatar?.large != null) {
+                        firestoreProfile.avatar.large
+                    } else {
+                        localProfile.avatar?.large
+                    }
+
+                    val bannerToUse = if (localProfile.banner == null && firestoreProfile.banner != null) {
+                        firestoreProfile.banner
+                    } else {
+                        localProfile.banner
+                    }
+
+                    val profileToSync = if (avatarToUse != localProfile.avatar?.large || bannerToUse != localProfile.banner) {
+                        val updateResult = profileRepository.createOrUpdateLocalProfile(
+                            name = localProfile.name,
+                            about = localProfile.about,
+                            avatarUrl = avatarToUse,
+                            bannerUrl = bannerToUse
+                        )
+                        when (updateResult) {
+                            is Result.Success -> updateResult.data
+                            is Result.Failure -> localProfile
+                        }
+                    } else {
+                        localProfile
+                    }
+
+                    val dto = profileToSync.toDto(uid)
+                    val saveResult = firestoreDataSource.saveProfile(dto)
+                    when (saveResult) {
+                        is Result.Success -> Result.Success(profileToSync)
+                        is Result.Failure -> Result.Failure(saveResult.exception)
+                    }
                 }
             }
 
@@ -75,8 +107,11 @@ class SyncProfileWithFirestoreUseCase(
                 when (newProfile) {
                     is Result.Success -> {
                         val dto = newProfile.data.toDto(uid)
-                        firestoreDataSource.saveProfile(dto)
-                        Result.Success(newProfile.data)
+                        val saveResult = firestoreDataSource.saveProfile(dto)
+                        when (saveResult) {
+                            is Result.Success -> Result.Success(newProfile.data)
+                            is Result.Failure -> Result.Failure(saveResult.exception)
+                        }
                     }
                     is Result.Failure -> Result.Failure(newProfile.exception)
                 }

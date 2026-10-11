@@ -115,19 +115,19 @@ class AuthViewModel(
 
             when (val result = loginWithEmail(state.email, state.password)) {
                 is Result.Success -> {
-                    val profileSyncResult = syncProfileWithFirestore()
-                    if (profileSyncResult is Result.Failure) {
-                        println("Profile sync failed: ${profileSyncResult.exception.message}")
+                    try {
+                        syncProfileWithFirestore()
+                    } catch (e: Exception) {
                     }
 
-                    val mediaSyncResult = syncMediaListWithFirestore()
-                    when (mediaSyncResult) {
-                        is Result.Success -> {
-                            println("Media list synced: ${mediaSyncResult.data.uploaded} uploaded, ${mediaSyncResult.data.downloaded} downloaded")
-                        }
-                        is Result.Failure -> {
-                            println("Media list sync failed: ${mediaSyncResult.exception.message}")
-                        }
+                    try {
+                        syncMediaListWithFirestore()
+                    } catch (e: Exception) {
+                    }
+
+                    try {
+                        syncFavoriteEpisodesWithFirestore()
+                    } catch (e: Exception) {
                     }
 
                     _uiState.update { it.copy(isLoading = false, loginSuccess = true) }
@@ -168,19 +168,19 @@ class AuthViewModel(
 
             when (val result = registerWithEmail(state.email, state.password, state.confirmPassword)) {
                 is Result.Success -> {
-                    val profileSyncResult = syncProfileWithFirestore()
-                    if (profileSyncResult is Result.Failure) {
-                        println("Profile sync failed: ${profileSyncResult.exception.message}")
+                    try {
+                        syncProfileWithFirestore()
+                    } catch (e: Exception) {
                     }
 
-                    val mediaSyncResult = syncMediaListWithFirestore()
-                    when (mediaSyncResult) {
-                        is Result.Success -> {
-                            println("Media list synced: ${mediaSyncResult.data.uploaded} uploaded, ${mediaSyncResult.data.downloaded} downloaded")
-                        }
-                        is Result.Failure -> {
-                            println("Media list sync failed: ${mediaSyncResult.exception.message}")
-                        }
+                    try {
+                        syncMediaListWithFirestore()
+                    } catch (e: Exception) {
+                    }
+
+                    try {
+                        syncFavoriteEpisodesWithFirestore()
+                    } catch (e: Exception) {
                     }
 
                     _uiState.update { it.copy(isLoading = false, registerSuccess = true) }
@@ -207,19 +207,19 @@ class AuthViewModel(
 
             when (val result = loginWithGoogle(activityContext)) {
                 is Result.Success -> {
-                    val profileSyncResult = syncProfileWithFirestore()
-                    if (profileSyncResult is Result.Failure) {
-                        println("Profile sync failed: ${profileSyncResult.exception.message}")
+                    try {
+                        syncProfileWithFirestore()
+                    } catch (e: Exception) {
                     }
 
-                    val mediaSyncResult = syncMediaListWithFirestore()
-                    when (mediaSyncResult) {
-                        is Result.Success -> {
-                            println("Media list synced: ${mediaSyncResult.data.uploaded} uploaded, ${mediaSyncResult.data.downloaded} downloaded")
-                        }
-                        is Result.Failure -> {
-                            println("Media list sync failed: ${mediaSyncResult.exception.message}")
-                        }
+                    try {
+                        syncMediaListWithFirestore()
+                    } catch (e: Exception) {
+                    }
+
+                    try {
+                        syncFavoriteEpisodesWithFirestore()
+                    } catch (e: Exception) {
                     }
 
                     _uiState.update { it.copy(isGoogleSignInLoading = false) }

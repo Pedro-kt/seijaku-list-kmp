@@ -66,28 +66,37 @@ class ProfileViewModel(
 
     private fun loadProfile() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+            try {
+                _uiState.update { it.copy(isLoading = true, error = null) }
 
-            when (ensureLocalProfileExists()) {
-                is Result.Success -> {
-                    getCurrentProfile().collect { profile ->
+                when (ensureLocalProfileExists()) {
+                    is Result.Success -> {
+                        getCurrentProfile().collect { profile ->
+                            _uiState.update {
+                                it.copy(
+                                    profile = profile,
+                                    isLoading = false,
+                                    error = null,
+                                )
+                            }
+                        }
+                    }
+
+                    is Result.Failure -> {
                         _uiState.update {
                             it.copy(
-                                profile = profile,
                                 isLoading = false,
-                                error = null,
+                                error = ProfileError.LoadingError,
                             )
                         }
                     }
                 }
-
-                is Result.Failure -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = ProfileError.LoadingError,
-                        )
-                    }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = ProfileError.LoadingError,
+                    )
                 }
             }
         }
@@ -95,40 +104,58 @@ class ProfileViewModel(
 
     private fun loadStats() {
         viewModelScope.launch {
-            getListStats(MediaType.ANIME).collect { stats ->
-                _uiState.update { it.copy(animeStats = stats) }
+            try {
+                getListStats(MediaType.ANIME).collect { stats ->
+                    _uiState.update { it.copy(animeStats = stats) }
+                }
+            } catch (e: Exception) {
             }
         }
         viewModelScope.launch {
-            getListStats(MediaType.MANGA).collect { stats ->
-                _uiState.update { it.copy(mangaStats = stats) }
+            try {
+                getListStats(MediaType.MANGA).collect { stats ->
+                    _uiState.update { it.copy(mangaStats = stats) }
+                }
+            } catch (e: Exception) {
             }
         }
     }
 
     private fun loadFavorites() {
         viewModelScope.launch {
-            getFavoriteMedia.observe(MediaType.ANIME).collect { favorites ->
-                _uiState.update { it.copy(favoriteAnime = favorites) }
+            try {
+                getFavoriteMedia.observe(MediaType.ANIME).collect { favorites ->
+                    _uiState.update { it.copy(favoriteAnime = favorites) }
+                }
+            } catch (e: Exception) {
             }
         }
         viewModelScope.launch {
-            getFavoriteMedia.observe(MediaType.MANGA).collect { favorites ->
-                _uiState.update { it.copy(favoriteManga = favorites) }
+            try {
+                getFavoriteMedia.observe(MediaType.MANGA).collect { favorites ->
+                    _uiState.update { it.copy(favoriteManga = favorites) }
+                }
+            } catch (e: Exception) {
             }
         }
     }
 
     private fun loadFavoriteEpisodes() {
         viewModelScope.launch {
-            observeAllFavoriteEpisodes().collect { episodes ->
-                _uiState.update {
-                    it.copy(
-                        favoriteEpisodes = episodes,
-                        isFavoriteEpisodesLoading = false
-                    )
+            try {
+                observeAllFavoriteEpisodes().collect { episodes ->
+                    _uiState.update {
+                        it.copy(
+                            favoriteEpisodes = episodes,
+                            isFavoriteEpisodesLoading = false
+                        )
+                    }
+                    updateGroupedEpisodes()
                 }
-                updateGroupedEpisodes()
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(isFavoriteEpisodesLoading = false)
+                }
             }
         }
     }
