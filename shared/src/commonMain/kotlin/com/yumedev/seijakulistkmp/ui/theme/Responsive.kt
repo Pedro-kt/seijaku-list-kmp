@@ -14,35 +14,59 @@ enum class WindowSizeClass {
 
 data class ResponsiveValues(
     val cardWidth: Dp,
+    val cardImageHeight: Dp,
     val gridColumns: Int,
     val horizontalPadding: Dp,
+    val verticalPadding: Dp,
     val spacingBetweenCards: Dp,
-    val featuredCarouselHeight: Dp
+    val featuredCarouselHeight: Dp,
+    val buttonHeight: Dp,
+    val iconSize: Dp,
+    val chipPadding: Dp,
+    val minTouchTarget: Dp
 )
 
 object ResponsiveDefaults {
     val compact = ResponsiveValues(
-        cardWidth = 120.dp,
+        cardWidth = 110.dp,
+        cardImageHeight = 155.dp,
         gridColumns = 3,
-        horizontalPadding = 16.dp,
-        spacingBetweenCards = 12.dp,
-        featuredCarouselHeight = 220.dp
+        horizontalPadding = 12.dp,
+        verticalPadding = 12.dp,
+        spacingBetweenCards = 8.dp,
+        featuredCarouselHeight = 200.dp,
+        buttonHeight = 48.dp,
+        iconSize = 20.dp,
+        chipPadding = 4.dp,
+        minTouchTarget = 48.dp
     )
 
     val medium = ResponsiveValues(
-        cardWidth = 140.dp,
+        cardWidth = 130.dp,
+        cardImageHeight = 180.dp,
         gridColumns = 4,
-        horizontalPadding = 24.dp,
-        spacingBetweenCards = 16.dp,
-        featuredCarouselHeight = 260.dp
+        horizontalPadding = 20.dp,
+        verticalPadding = 16.dp,
+        spacingBetweenCards = 12.dp,
+        featuredCarouselHeight = 240.dp,
+        buttonHeight = 52.dp,
+        iconSize = 24.dp,
+        chipPadding = 6.dp,
+        minTouchTarget = 48.dp
     )
 
     val expanded = ResponsiveValues(
-        cardWidth = 160.dp,
+        cardWidth = 150.dp,
+        cardImageHeight = 200.dp,
         gridColumns = 6,
         horizontalPadding = 32.dp,
-        spacingBetweenCards = 20.dp,
-        featuredCarouselHeight = 300.dp
+        verticalPadding = 24.dp,
+        spacingBetweenCards = 16.dp,
+        featuredCarouselHeight = 300.dp,
+        buttonHeight = 56.dp,
+        iconSize = 28.dp,
+        chipPadding = 8.dp,
+        minTouchTarget = 56.dp
     )
 
     fun forWindowSize(windowSize: WindowSizeClass): ResponsiveValues {

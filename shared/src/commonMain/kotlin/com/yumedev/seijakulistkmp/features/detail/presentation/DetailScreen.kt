@@ -48,9 +48,29 @@ data class DetailScreen(
         val state by viewModel.state.collectAsState()
         val urlOpener = rememberUrlOpener()
         val shareHelper = rememberShareHelper()
+        val snackbarHostState = remember { SnackbarHostState() }
 
         LaunchedEffect(mediaId, mediaType) {
             viewModel.loadMediaDetail(mediaId, mediaType)
+        }
+
+        LaunchedEffect(Unit) {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is DetailEvent.ShowError -> {
+                        snackbarHostState.showSnackbar(
+                            message = event.message,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                    is DetailEvent.ShowSuccess -> {
+                        snackbarHostState.showSnackbar(
+                            message = event.message,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                }
+            }
         }
 
         when {
@@ -67,6 +87,7 @@ data class DetailScreen(
                 DetailScreenContent(
                     mediaDetail = mediaDetailUi,
                     listEntry = state.listEntry,
+                    snackbarHostState = snackbarHostState,
                     onBackClick = { navigator.pop() },
                     onFavoriteClick = { viewModel.toggleFavorite() },
                     onShareClick = {
@@ -343,6 +364,7 @@ private fun rememberMediaDetailUiModel(mediaDetail: MediaDetail): MediaDetailUiM
 fun DetailScreenContent(
     mediaDetail: MediaDetailUiModel,
     listEntry: com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry?,
+    snackbarHostState: SnackbarHostState,
     onBackClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onShareClick: () -> Unit,
@@ -373,6 +395,7 @@ fun DetailScreenContent(
                 title = if (showTitleInTopBar) mediaDetail.title else null
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = modifier
     ) { paddingValues ->
         Column(

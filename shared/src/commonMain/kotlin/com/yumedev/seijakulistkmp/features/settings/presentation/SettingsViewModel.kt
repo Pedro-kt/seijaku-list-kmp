@@ -6,7 +6,9 @@ import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.core.notification.AiringNotificationScheduler
 import com.yumedev.seijakulistkmp.features.auth.domain.usecase.GetCurrentUserUseCase
 import com.yumedev.seijakulistkmp.features.auth.domain.usecase.LogoutUseCase
+import com.yumedev.seijakulistkmp.features.detail.domain.usecase.SyncFavoriteEpisodesWithFirestoreUseCase
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.GetCurrentProfileUseCase
+import com.yumedev.seijakulistkmp.features.profile.domain.usecase.SyncProfileWithFirestoreUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetAiringNotificationsUseCase
@@ -24,9 +26,11 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ExportToMALUs
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ImportFromMALUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ResolveAllImportConflictsUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.ResolveImportConflictUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.SyncMediaListWithFirestoreUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -46,7 +50,10 @@ class SettingsViewModel(
     private val exportToMALUseCase: ExportToMALUseCase,
     private val importFromMALUseCase: ImportFromMALUseCase,
     private val resolveImportConflictUseCase: ResolveImportConflictUseCase,
-    private val resolveAllImportConflictsUseCase: ResolveAllImportConflictsUseCase
+    private val resolveAllImportConflictsUseCase: ResolveAllImportConflictsUseCase,
+    private val syncProfileWithFirestoreUseCase: SyncProfileWithFirestoreUseCase,
+    private val syncMediaListWithFirestoreUseCase: SyncMediaListWithFirestoreUseCase,
+    private val syncFavoriteEpisodesWithFirestoreUseCase: SyncFavoriteEpisodesWithFirestoreUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsUiState())
@@ -156,11 +163,42 @@ class SettingsViewModel(
     }
 
     fun onSyncClick() {
-        // TODO: Implement AniList sync
+        viewModelScope.launch {
+            val user = getCurrentUserUseCase().first()
+            if (user == null) {
+                return@launch
+            }
+
+            _state.update { it.copy(isSyncing = true) }
+
+            try {
+                syncProfileWithFirestoreUseCase()
+                syncMediaListWithFirestoreUseCase()
+                syncFavoriteEpisodesWithFirestoreUseCase()
+
+                _state.update { it.copy(
+                    isSyncing = false,
+                    syncMessage = "Sync completed successfully"
+                )}
+            } catch (e: Exception) {
+                _state.update { it.copy(
+                    isSyncing = false,
+                    syncMessage = "Sync failed: ${e.message}"
+                )}
+            }
+        }
     }
 
     fun onClearCacheClick() {
-        // TODO: Implement cache clearing
+        _state.update { it.copy(clearCacheMessage = "Cache clearing is not yet implemented. Use app settings to clear app data.") }
+    }
+
+    fun dismissSyncMessage() {
+        _state.update { it.copy(syncMessage = null) }
+    }
+
+    fun dismissClearCacheMessage() {
+        _state.update { it.copy(clearCacheMessage = null) }
     }
 
     fun onAboutClick() {

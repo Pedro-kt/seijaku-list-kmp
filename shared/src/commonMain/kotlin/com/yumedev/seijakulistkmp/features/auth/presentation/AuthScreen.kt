@@ -13,6 +13,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.features.auth.presentation.components.LoginTab
 import com.yumedev.seijakulistkmp.features.auth.presentation.components.RegisterTab
 import com.yumedev.seijakulistkmp.features.main.presentation.MainScreen
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -90,6 +91,7 @@ fun AuthScreenContent(
     onContinueWithoutAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsiveValues = ResponsiveTheme.values
     var selectedTabIndex by remember { mutableStateOf(0) }
 
     val tabs = listOf(
@@ -105,14 +107,14 @@ fun AuthScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .padding(24.dp),
+                    .padding(responsiveValues.horizontalPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 OutlinedButton(
                     onClick = onContinueWithoutAccount,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
+                        .height(responsiveValues.buttonHeight),
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = MaterialTheme.colorScheme.onSurface
                     )
@@ -134,7 +136,11 @@ fun AuthScreenContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp, bottom = 16.dp)
+                    .padding(
+                        start = responsiveValues.horizontalPadding,
+                        end = responsiveValues.horizontalPadding,
+                        bottom = responsiveValues.verticalPadding
+                    )
             ) {
                 Text(
                     text = stringResource(Res.string.auth_title),

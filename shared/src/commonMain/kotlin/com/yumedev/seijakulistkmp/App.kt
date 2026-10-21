@@ -1,9 +1,11 @@
 package com.yumedev.seijakulistkmp
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
@@ -14,7 +16,9 @@ import coil3.request.crossfade
 import com.yumedev.seijakulistkmp.features.main.presentation.MainScreen
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeModeUseCase
+import com.yumedev.seijakulistkmp.ui.theme.ProvideResponsiveValues
 import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
+import com.yumedev.seijakulistkmp.ui.theme.rememberWindowSizeClass
 import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
 
@@ -43,8 +47,18 @@ fun App() {
         }
 
         SeijakuTheme(darkTheme = darkTheme) {
-            Navigator(MainScreen()) { navigator ->
-                SlideTransition(navigator)
+            BoxWithConstraints {
+                val density = LocalDensity.current
+                val widthDp = with(density) {
+                    constraints.maxWidth.toDp().value.toInt()
+                }
+                val windowSizeClass = rememberWindowSizeClass(widthDp)
+
+                ProvideResponsiveValues(windowSizeClass) {
+                    Navigator(MainScreen()) { navigator ->
+                        SlideTransition(navigator)
+                    }
+                }
             }
         }
     }
