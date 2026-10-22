@@ -10,20 +10,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun DetailSynopsis(
     synopsis: String?,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     var isExpanded by remember { mutableStateOf(false) }
 
     synopsis?.let { text ->
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(horizontal = responsive.horizontalPadding),
+            verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
         ) {
             Text(
                 text = stringResource(Res.string.detail_synopsis),
@@ -41,7 +43,7 @@ fun DetailSynopsis(
                 )
 
                 if (text.length > 200 || text.count { it == '\n' } > 3) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(responsive.smallPadding))
                     Text(
                         text = stringResource(
                             if (isExpanded) Res.string.detail_read_less

@@ -11,6 +11,7 @@ import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -20,6 +21,7 @@ fun ChangeStatusBottomSheet(
     onDismiss: () -> Unit,
     onStatusSelected: (MediaListStatus) -> Unit
 ) {
+    val responsive = ResponsiveTheme.values
     ModalBottomSheet(
         onDismissRequest = onDismiss
     ) {
@@ -31,12 +33,12 @@ fun ChangeStatusBottomSheet(
             Text(
                 text = stringResource(Res.string.list_change_status_title),
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
+                modifier = Modifier.padding(horizontal = responsive.xlargePadding, vertical = responsive.largePadding)
             )
 
             Divider()
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
 
             Column(
                 modifier = Modifier.fillMaxWidth()
@@ -54,7 +56,7 @@ fun ChangeStatusBottomSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(responsive.xlargePadding))
         }
     }
 }
@@ -66,6 +68,7 @@ private fun StatusOption(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
+    val responsive = ResponsiveTheme.values
     val statusText = when (status) {
         MediaListStatus.CURRENT -> if (mediaType == MediaType.ANIME) {
             stringResource(Res.string.list_status_watching)
@@ -91,7 +94,7 @@ private fun StatusOption(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = 24.dp, vertical = 8.dp),
+            .padding(horizontal = responsive.xlargePadding, vertical = responsive.mediumSpacing),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

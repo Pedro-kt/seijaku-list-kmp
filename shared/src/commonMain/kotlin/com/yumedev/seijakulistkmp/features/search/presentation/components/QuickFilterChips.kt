@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.features.search.presentation.model.QuickFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.toLabel
 import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Calendar
 import dev.seyfarth.tablericons.outlined.Clock
@@ -30,15 +31,16 @@ fun QuickFilterChips(
     onFilterClick: (QuickFilter, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(horizontal = responsive.horizontalPadding),
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
         ) {
             val currentSeasonLabel = QuickFilter.CurrentSeason.toLabel()
             QuickFilterChip(
@@ -58,8 +60,8 @@ fun QuickFilterChips(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(horizontal = responsive.horizontalPadding),
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
         ) {
             val top100Label = QuickFilter.Top100.toLabel()
             QuickFilterChip(
@@ -86,6 +88,7 @@ private fun QuickFilterChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
@@ -122,15 +125,15 @@ private fun QuickFilterChip(
         interactionSource = interactionSource
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(horizontal = responsive.mediumPadding, vertical = responsive.mediumPadding),
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(20.dp)
+                    .size(responsive.smallIconSize)
                     .scale(iconScale),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )

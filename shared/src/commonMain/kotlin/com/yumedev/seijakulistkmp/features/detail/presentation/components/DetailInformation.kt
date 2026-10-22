@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.features.detail.presentation.model.InformationItemUiModel
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun DetailInformation(
@@ -19,11 +20,12 @@ fun DetailInformation(
 ) {
     if (items.isEmpty()) return
 
+    val responsive = ResponsiveTheme.values
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = responsive.horizontalPadding),
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         Text(
             text = stringResource(Res.string.detail_information),
@@ -33,35 +35,35 @@ fun DetailInformation(
 
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
         ) {
             items.chunked(2).forEach { rowItems ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
                 ) {
                     Surface(
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(responsive.cornerRadius),
                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                     ) {
                         InfoItemView(
                             label = rowItems[0].label,
                             value = rowItems[0].value,
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier.padding(responsive.largePadding)
                         )
                     }
 
                     if (rowItems.size == 2) {
                         Surface(
                             modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(responsive.cornerRadius),
                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                         ) {
                             InfoItemView(
                                 label = rowItems[1].label,
                                 value = rowItems[1].value,
-                                modifier = Modifier.padding(16.dp)
+                                modifier = Modifier.padding(responsive.largePadding)
                             )
                         }
                     } else {
@@ -79,9 +81,10 @@ private fun InfoItemView(
     value: String,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
     ) {
         Text(
             text = label,

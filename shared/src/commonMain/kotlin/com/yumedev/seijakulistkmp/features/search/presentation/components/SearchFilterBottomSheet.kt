@@ -14,6 +14,7 @@ import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilte
 import com.yumedev.seijakulistkmp.features.search.presentation.model.toLabel
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -30,6 +31,7 @@ fun SearchFilterBottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val isAnime = mediaType == SearchFilter.ANIME
     val availableFormats = if (isAnime) {
         MediaFormat.forAnime()
@@ -45,9 +47,9 @@ fun SearchFilterBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(horizontal = responsive.horizontalPadding)
+                .padding(bottom = responsive.xlargePadding),
+            verticalArrangement = Arrangement.spacedBy(responsive.largePadding)
         ) {
             Text(
                 text = stringResource(Res.string.filters_title),
@@ -56,7 +58,7 @@ fun SearchFilterBottomSheet(
             )
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
                 Text(
                     text = stringResource(Res.string.filter_status),
@@ -65,8 +67,8 @@ fun SearchFilterBottomSheet(
                 )
 
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
+                    verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                 ) {
                     MediaStatus.all().forEach { status ->
                         FilterChip(
@@ -79,7 +81,7 @@ fun SearchFilterBottomSheet(
             }
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -114,7 +116,7 @@ fun SearchFilterBottomSheet(
             }
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
                 Text(
                     text = stringResource(Res.string.filter_format),
@@ -123,8 +125,8 @@ fun SearchFilterBottomSheet(
                 )
 
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
+                    verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                 ) {
                     availableFormats.forEach { format ->
                         FilterChip(
@@ -138,12 +140,12 @@ fun SearchFilterBottomSheet(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
                 OutlinedButton(
                     onClick = onReset,
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(responsive.mediumPadding)
                 ) {
                     Text(stringResource(Res.string.filter_reset))
                 }
@@ -154,7 +156,7 @@ fun SearchFilterBottomSheet(
                         onDismiss()
                     },
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(responsive.mediumPadding)
                 ) {
                     Text(stringResource(Res.string.filter_apply))
                 }

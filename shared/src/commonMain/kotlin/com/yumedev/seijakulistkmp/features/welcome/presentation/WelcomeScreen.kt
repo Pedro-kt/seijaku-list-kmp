@@ -47,6 +47,7 @@ import dev.seyfarth.tablericons.outlined.Star
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 class WelcomeScreen : Screen {
     @Composable
@@ -66,6 +67,7 @@ fun WelcomeScreenContent(
     onFinish: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val pages = listOf(
         WelcomePage(
             title = stringResource(Res.string.welcome_page1_title),
@@ -104,8 +106,8 @@ fun WelcomeScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
-                    .height(48.dp)
-                    .padding(horizontal = 16.dp),
+                    .height(responsive.minTouchTarget)
+                    .padding(horizontal = responsive.horizontalPadding),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 val skipButtonAlpha by animateFloatAsState(
@@ -150,14 +152,14 @@ fun WelcomeScreenContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                    .padding(horizontal = responsive.horizontalPadding, vertical = responsive.largePadding),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 repeat(pages.size) { index ->
                     PageIndicator(
                         isSelected = index == pagerState.currentPage,
-                        modifier = Modifier.padding(horizontal = 4.dp)
+                        modifier = Modifier.padding(horizontal = responsive.smallPadding)
                     )
                 }
             }
@@ -166,7 +168,7 @@ fun WelcomeScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .padding(horizontal = 24.dp, vertical = 16.dp)
+                    .padding(horizontal = responsive.xlargePadding, vertical = responsive.largePadding)
             ) {
                 FilledTonalButton(
                     onClick = {
@@ -180,8 +182,8 @@ fun WelcomeScreenContent(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(28.dp)
+                        .height(responsive.buttonHeight),
+                    shape = RoundedCornerShape(responsive.buttonHeight / 2)
                 ) {
                     Text(
                         text = if (pagerState.currentPage < pages.size - 1)
@@ -204,6 +206,7 @@ fun WelcomePageContent(
     pageOffset: Float,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
 
@@ -233,24 +236,6 @@ fun WelcomePageContent(
         isCompact -> 0.5.sp
         isSmall -> 1.sp
         else -> 2.sp
-    }
-
-    val horizontalPadding = when {
-        isCompact -> 20.dp
-        isSmall -> 24.dp
-        else -> 32.dp
-    }
-
-    val verticalPadding = when {
-        isCompact -> 16.dp
-        isSmall -> 20.dp
-        else -> 24.dp
-    }
-
-    val contentSpacing = when {
-        isCompact -> 8.dp
-        isSmall -> 12.dp
-        else -> 16.dp
     }
 
     val visualWeight = when {
@@ -314,8 +299,8 @@ fun WelcomePageContent(
                     translationY = contentOffset
                     alpha = contentAlpha
                 }
-                .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-            verticalArrangement = Arrangement.spacedBy(contentSpacing)
+                .padding(horizontal = responsive.horizontalPadding, vertical = responsive.largePadding),
+            verticalArrangement = Arrangement.spacedBy(responsive.largePadding)
         ) {
             Text(
                 text = page.title.uppercase(),
@@ -384,8 +369,10 @@ private fun PageIndicator(
     isSelected: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     val width by animateDpAsState(
-        targetValue = if (isSelected) 32.dp else 8.dp,
+        targetValue = if (isSelected) responsive.xlargePadding else responsive.mediumSpacing,
         animationSpec = spring(
             dampingRatio = 0.7f,
             stiffness = 300f
@@ -405,7 +392,7 @@ private fun PageIndicator(
     Box(
         modifier = modifier
             .width(width)
-            .height(8.dp)
+            .height(responsive.mediumSpacing)
             .clip(CircleShape)
             .background(color)
     )

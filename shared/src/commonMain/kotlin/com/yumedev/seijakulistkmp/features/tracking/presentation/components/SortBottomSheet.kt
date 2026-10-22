@@ -16,6 +16,7 @@ import dev.seyfarth.tablericons.outlined.ArrowDown
 import dev.seyfarth.tablericons.outlined.ArrowUp
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,6 +27,7 @@ fun SortBottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         modifier = modifier
@@ -33,17 +35,17 @@ fun SortBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 32.dp)
+                .padding(bottom = responsive.xlargePadding)
         ) {
             Text(
                 text = stringResource(Res.string.list_sort_title),
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
+                modifier = Modifier.padding(horizontal = responsive.xlargePadding, vertical = responsive.largePadding)
             )
 
             HorizontalDivider()
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(responsive.largePadding))
 
             Column(
                 modifier = Modifier
@@ -79,17 +81,17 @@ fun SortBottomSheet(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(responsive.largePadding))
 
             HorizontalDivider()
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(responsive.largePadding))
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    .padding(horizontal = responsive.xlargePadding),
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
                 FilterChip(
                     selected = ascending,
@@ -99,7 +101,7 @@ fun SortBottomSheet(
                         Icon(
                             imageVector = TablerIcons.Outlined.ArrowUp,
                             contentDescription = null,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(responsive.smallIconSize)
                         )
                     },
                     modifier = Modifier.weight(1f)
@@ -113,7 +115,7 @@ fun SortBottomSheet(
                         Icon(
                             imageVector = TablerIcons.Outlined.ArrowDown,
                             contentDescription = null,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(responsive.smallIconSize)
                         )
                     },
                     modifier = Modifier.weight(1f)
@@ -131,6 +133,7 @@ private fun SortOption(
     onSelect: (MediaListSortOption) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -139,14 +142,14 @@ private fun SortOption(
                 onClick = { onSelect(sortOption) },
                 role = Role.RadioButton
             )
-            .padding(horizontal = 24.dp, vertical = 12.dp),
+            .padding(horizontal = responsive.xlargePadding, vertical = responsive.mediumPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
             selected = sortOption == selectedSortOption,
             onClick = null
         )
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(responsive.largePadding))
         Text(
             text = label,
             style = MaterialTheme.typography.bodyLarge

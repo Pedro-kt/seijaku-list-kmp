@@ -21,6 +21,7 @@ import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.PlayerPlay
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun DetailTrailer(
@@ -28,11 +29,12 @@ fun DetailTrailer(
     onTrailerClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = responsive.horizontalPadding),
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         Text(
             text = stringResource(Res.string.detail_trailer),
@@ -44,7 +46,7 @@ fun DetailTrailer(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(responsive.cornerRadius))
                 .clickable { onTrailerClick(trailer.id, trailer.site) }
         ) {
             trailer.thumbnail?.let { thumbnailUrl ->
@@ -80,7 +82,7 @@ fun DetailTrailer(
                 Surface(
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier.size(responsive.largeIconSize)
                 ) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -90,7 +92,7 @@ fun DetailTrailer(
                             imageVector = TablerIcons.Filled.PlayerPlay,
                             contentDescription = "Play",
                             tint = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(32.dp)
+                            modifier = Modifier.size(responsive.mediumIconSize)
                         )
                     }
                 }
@@ -99,17 +101,17 @@ fun DetailTrailer(
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(12.dp)
+                    .padding(responsive.mediumPadding)
             ) {
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
+                    shape = RoundedCornerShape(responsive.smallSpacing),
                     color = Color.Black.copy(alpha = 0.6f)
                 ) {
                     Text(
                         text = trailer.site,
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.White,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = responsive.mediumSpacing, vertical = responsive.smallPadding)
                     )
                 }
             }
