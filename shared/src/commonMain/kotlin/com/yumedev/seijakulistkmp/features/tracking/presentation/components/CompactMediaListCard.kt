@@ -26,6 +26,7 @@ import dev.seyfarth.tablericons.outlined.Plus
 import dev.seyfarth.tablericons.outlined.Trash
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun CompactMediaListCard(
@@ -37,15 +38,16 @@ fun CompactMediaListCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(140.dp)
+            .height(responsive.minTouchTarget * 2.5f)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(responsive.cornerRadius),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
@@ -82,7 +84,7 @@ fun CompactMediaListCard(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(responsive.largePadding)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -99,7 +101,7 @@ fun CompactMediaListCard(
                             onClick = { showMenu = true },
                             shape = CircleShape,
                             color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(28.dp)
+                            modifier = Modifier.size(responsive.mediumIconSize)
                         ) {
                             Box(
                                 modifier = Modifier.fillMaxSize(),
@@ -108,7 +110,7 @@ fun CompactMediaListCard(
                                 Icon(
                                     imageVector = TablerIcons.Outlined.DotsVertical,
                                     contentDescription = stringResource(Res.string.filter_menu),
-                                    modifier = Modifier.size(18.dp),
+                                    modifier = Modifier.size(responsive.smallIconSize),
                                     tint = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
@@ -162,7 +164,7 @@ fun CompactMediaListCard(
                     color = Color.White
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(responsive.mediumSpacing))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -178,7 +180,7 @@ fun CompactMediaListCard(
                         modifier = Modifier.weight(1f)
                     )
 
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(responsive.mediumPadding))
 
                     val canIncrement = entry.status == MediaListStatus.CURRENT ||
                                        entry.status == MediaListStatus.REPEATING
@@ -186,7 +188,7 @@ fun CompactMediaListCard(
                     FilledIconButton(
                         onClick = onIncrementProgress,
                         enabled = canIncrement,
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(responsive.mediumIconSize),
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -195,7 +197,7 @@ fun CompactMediaListCard(
                         Icon(
                             imageVector = TablerIcons.Outlined.Plus,
                             contentDescription = stringResource(Res.string.list_increase),
-                            modifier = Modifier.size(18.dp),
+                            modifier = Modifier.size(responsive.smallIconSize),
                             tint = if (canIncrement) {
                                 MaterialTheme.colorScheme.onPrimary
                             } else {
@@ -245,6 +247,7 @@ private fun StatusChip(
     mediaType: MediaType,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val statusText = when (status) {
         MediaListStatus.CURRENT -> if (mediaType == MediaType.ANIME) {
             stringResource(Res.string.list_status_watching_short)
@@ -281,13 +284,13 @@ private fun StatusChip(
         color = MaterialTheme.colorScheme.primary
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            modifier = Modifier.padding(horizontal = responsive.mediumPadding, vertical = responsive.smallSpacing),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
         ) {
             Box(
                 modifier = Modifier
-                    .size(6.dp)
+                    .size(responsive.smallSpacing)
                     .background(statusIndicatorColor, CircleShape)
             )
             Text(
@@ -305,9 +308,10 @@ private fun ProgressIndicator(
     total: Int?,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
     ) {
         LinearProgressIndicator(
             progress = {
@@ -319,8 +323,8 @@ private fun ProgressIndicator(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(4.dp)
-                .clip(RoundedCornerShape(2.dp)),
+                .height(responsive.smallPadding)
+                .clip(RoundedCornerShape(responsive.smallPadding)),
             color = MaterialTheme.colorScheme.primary,
             trackColor = Color.White.copy(alpha = 0.3f)
         )

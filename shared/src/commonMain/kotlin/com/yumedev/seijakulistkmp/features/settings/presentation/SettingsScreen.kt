@@ -32,6 +32,7 @@ import dev.seyfarth.tablericons.outlined.ArrowLeft
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 class SettingsScreen : Screen {
     @Composable
@@ -254,12 +255,14 @@ fun SettingsScreenContent(
         },
         modifier = modifier
     ) { paddingValues ->
+        val responsive = ResponsiveTheme.values
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(vertical = responsive.largePadding),
+            verticalArrangement = Arrangement.spacedBy(responsive.xlargePadding)
         ) {
             item {
                 SettingsAppearanceSection(

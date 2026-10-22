@@ -12,6 +12,7 @@ import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaFormat
 import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaStatus
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun ExpandedSearchContent(
@@ -31,6 +32,7 @@ fun ExpandedSearchContent(
     modifier: Modifier = Modifier,
     autoFocus: Boolean = false
 ) {
+    val responsive = ResponsiveTheme.values
     var showFilterSheet by remember { mutableStateOf(false) }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -49,7 +51,7 @@ fun ExpandedSearchContent(
             selectedFilter = state.selectedFilter,
             onFilterSelect = onFilterSelect,
             onFiltersClick = { showFilterSheet = true },
-            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+            modifier = Modifier.padding(top = responsive.mediumPadding, bottom = responsive.largePadding)
         )
 
         LazyColumn(
@@ -59,7 +61,7 @@ fun ExpandedSearchContent(
             if (state.recentSearches.isNotEmpty()) {
                 item {
                     HorizontalDivider()
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(responsive.mediumSpacing))
                 }
 
                 items(
@@ -75,14 +77,14 @@ fun ExpandedSearchContent(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(responsive.mediumSpacing))
                     HorizontalDivider()
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(responsive.mediumSpacing))
                 }
             } else {
                 item {
                     HorizontalDivider()
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(responsive.mediumSpacing))
                 }
             }
 
@@ -107,7 +109,7 @@ fun ExpandedSearchContent(
             }
 
             item {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(responsive.largePadding))
             }
         }
     }

@@ -34,6 +34,7 @@ import seijakulistkmp.shared.generated.resources.Res
 import seijakulistkmp.shared.generated.resources.profile_top_anime
 import seijakulistkmp.shared.generated.resources.profile_top_manga
 import kotlin.math.roundToInt
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun ProfileTopFavoritesSection(
@@ -44,6 +45,7 @@ fun ProfileTopFavoritesSection(
     onReorderFavorites: (Int, Int, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val haptic = LocalHapticFeedback.current
     var draggedPosition by remember { mutableStateOf<Int?>(null) }
     var dragOffset by remember { mutableStateOf(Offset.Zero) }
@@ -51,21 +53,21 @@ fun ProfileTopFavoritesSection(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         Text(
             text = stringResource(if (isAnime) Res.string.profile_top_anime else Res.string.profile_top_manga),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
         )
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = responsive.horizontalPadding),
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
         ) {
             for (index in 0 until 5) {
                 val position = index + 1
@@ -106,7 +108,7 @@ fun ProfileTopFavoritesSection(
                                             change.consume()
                                             dragOffset += dragAmount
 
-                                            val cardWidth = 90.dp.toPx() + 12.dp.toPx()
+                                            val cardWidth = responsive.cardWidth.toPx() + responsive.spacingBetweenCards.toPx()
                                             val horizontalMovement = (dragOffset.x / cardWidth).roundToInt()
                                             val newTargetPosition = (position + horizontalMovement).coerceIn(1, 5)
 

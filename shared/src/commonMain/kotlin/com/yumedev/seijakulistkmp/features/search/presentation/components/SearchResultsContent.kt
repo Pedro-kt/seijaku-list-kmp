@@ -27,6 +27,7 @@ import dev.seyfarth.tablericons.outlined.MoodEmpty
 import dev.seyfarth.tablericons.outlined.Search
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun SearchResultsContent(
@@ -44,6 +45,7 @@ fun SearchResultsContent(
     onSaveClick: (SearchResultItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -61,7 +63,7 @@ fun SearchResultsContent(
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
                     ) {
                         CircularProgressIndicator()
                         Text(
@@ -90,13 +92,13 @@ fun SearchResultsContent(
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.padding(32.dp)
+                        verticalArrangement = Arrangement.spacedBy(responsive.largePadding),
+                        modifier = Modifier.padding(responsive.xlargePadding)
                     ) {
                         Icon(
                             imageVector = TablerIcons.Outlined.MoodEmpty,
                             contentDescription = null,
-                            modifier = Modifier.size(64.dp),
+                            modifier = Modifier.size(responsive.largeIconSize),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
@@ -124,13 +126,13 @@ fun SearchResultsContent(
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.padding(32.dp)
+                        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
+                        modifier = Modifier.padding(responsive.xlargePadding)
                     ) {
                         Icon(
                             imageVector = TablerIcons.Outlined.Search,
                             contentDescription = null,
-                            modifier = Modifier.size(64.dp),
+                            modifier = Modifier.size(responsive.largeIconSize),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
@@ -158,7 +160,7 @@ fun SearchResultsContent(
                             text = stringResource(Res.string.search_results_count, characterResults.size),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                            modifier = Modifier.padding(horizontal = responsive.horizontalPadding, vertical = responsive.mediumPadding)
                         )
                     }
 
@@ -181,12 +183,12 @@ fun SearchResultsContent(
                             )
                         )
                         HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp)
+                            modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
                         )
                     }
 
                     item {
-                        Spacer(modifier = Modifier.height(100.dp))
+                        Spacer(modifier = Modifier.height(responsive.xlargePadding * 2.5f))
                     }
                 }
             }
@@ -200,7 +202,7 @@ fun SearchResultsContent(
                             text = stringResource(Res.string.search_results_count, results.size),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                            modifier = Modifier.padding(horizontal = responsive.horizontalPadding, vertical = responsive.mediumPadding)
                         )
                     }
 
@@ -227,12 +229,12 @@ fun SearchResultsContent(
                             )
                         )
                         HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp)
+                            modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
                         )
                     }
 
                     item {
-                        Spacer(modifier = Modifier.height(100.dp))
+                        Spacer(modifier = Modifier.height(responsive.xlargePadding * 2.5f))
                     }
                 }
             }

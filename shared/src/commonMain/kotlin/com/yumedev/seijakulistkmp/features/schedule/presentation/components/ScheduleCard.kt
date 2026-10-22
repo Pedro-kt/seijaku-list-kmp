@@ -47,6 +47,7 @@ import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.Res
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun ScheduleCard(
@@ -56,6 +57,7 @@ fun ScheduleCard(
     modifier: Modifier = Modifier,
     showTime: Boolean = false
 ) {
+    val responsive = ResponsiveTheme.values
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
@@ -85,7 +87,7 @@ fun ScheduleCard(
             ) {
                 onClick(item.mediaId)
             },
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(responsive.cornerRadius),
         colors = CardDefaults.cardColors(
             containerColor = if (isAiringNow) {
                 MaterialTheme.colorScheme.surfaceContainerHighest
@@ -94,27 +96,27 @@ fun ScheduleCard(
             }
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 1.dp,
-            pressedElevation = 0.dp
+            defaultElevation = responsive.smallPadding,
+            pressedElevation = responsive.smallPadding
         )
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(0.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.smallPadding)
         ) {
             item.coverImageUrl?.let { imageUrl ->
                 AsyncImage(
                     model = imageUrl,
                     contentDescription = item.mediaTitle,
                     modifier = Modifier
-                        .width(70.dp)
-                        .height(100.dp)
+                        .width(responsive.cardWidth / 2)
+                        .height(responsive.minTouchTarget * 2)
                         .clip(
                             RoundedCornerShape(
-                                topStart = 12.dp,
-                                bottomStart = 12.dp,
-                                topEnd = 0.dp,
-                                bottomEnd = 0.dp
+                                topStart = responsive.cornerRadius,
+                                bottomStart = responsive.cornerRadius,
+                                topEnd = responsive.smallPadding,
+                                bottomEnd = responsive.smallPadding
                             )
                         ),
                     contentScale = ContentScale.Crop
@@ -124,12 +126,12 @@ fun ScheduleCard(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .height(100.dp)
-                    .padding(12.dp),
+                    .height(responsive.minTouchTarget * 2)
+                    .padding(responsive.mediumSpacing),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
                 ) {
                     Text(
                         text = item.mediaTitle,
@@ -141,7 +143,7 @@ fun ScheduleCard(
                     )
 
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -158,14 +160,14 @@ fun ScheduleCard(
                             )
 
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                                horizontalArrangement = Arrangement.spacedBy(responsive.smallPadding),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
                                     imageVector = TablerIcons.Filled.Star,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.tertiary,
-                                    modifier = Modifier.size(12.dp)
+                                    modifier = Modifier.size(responsive.mediumSpacing)
                                 )
                                 Text(
                                     text = "${score / 10.0}",
@@ -179,7 +181,7 @@ fun ScheduleCard(
                 }
 
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                    verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
                 ) {
                     if (showTime) {
                         Text(
@@ -196,14 +198,14 @@ fun ScheduleCard(
 
                     if (isAiringNow) {
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
                                 imageVector = TablerIcons.Filled.Circle,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(8.dp)
+                                modifier = Modifier.size(responsive.mediumSpacing)
                             )
                             Text(
                                 text = stringResource(Res.string.schedule_airing_now),
@@ -214,14 +216,14 @@ fun ScheduleCard(
                         }
                     } else {
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
                                 imageVector = TablerIcons.Outlined.Clock,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(12.dp)
+                                modifier = Modifier.size(responsive.mediumSpacing)
                             )
                             Text(
                                 text = "${stringResource(Res.string.schedule_in)} ${AiringScheduleTimeUtil.formatCountdown(currentTimeUntilAiring)}",

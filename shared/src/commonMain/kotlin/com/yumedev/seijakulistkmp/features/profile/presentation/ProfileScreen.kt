@@ -127,6 +127,7 @@ import seijakulistkmp.shared.generated.resources.profile_select_image
 import seijakulistkmp.shared.generated.resources.profile_remove_image
 import seijakulistkmp.shared.generated.resources.settings
 import kotlin.math.roundToInt
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 private fun ProfileError.toStringResource(): String {
@@ -382,6 +383,7 @@ fun ProfileContent(
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
+    val responsive = ResponsiveTheme.values
 
     val scrollOffset = scrollState.value
     val maxScroll = 200f
@@ -406,13 +408,12 @@ fun ProfileContent(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        // Tabs
         PrimaryTabRow(
             selectedTabIndex = selectedTab,
             modifier = Modifier
-                .padding(vertical = 8.dp)
+                .padding(vertical = responsive.mediumPadding)
                 .graphicsLayer {
-                    translationY = -40.dp.toPx()
+                    translationY = -responsive.minTouchTarget.toPx()
                 }
         ) {
             Tab(
@@ -427,7 +428,6 @@ fun ProfileContent(
             )
         }
 
-        // Stats Content
         val stats = if (selectedTab == 0) animeStats else mangaStats
         val isAnime = selectedTab == 0
 
@@ -435,28 +435,28 @@ fun ProfileContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .graphicsLayer {
-                    translationY = -40.dp.toPx()
+                    translationY = -responsive.minTouchTarget.toPx()
                 },
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(responsive.largePadding),
         ) {
             if (stats != null) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                        .padding(horizontal = responsive.horizontalPadding),
+                    verticalArrangement = Arrangement.spacedBy(responsive.largePadding)
                 ) {
                     ProfileStatsSection(
                         stats = stats,
                         isAnime = isAnime,
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(responsive.mediumSpacing))
 
                     ProfileDistributionSection(stats = stats)
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(responsive.largePadding))
 
                 val favorites = if (isAnime) favoriteAnime else favoriteManga
                 ProfileTopFavoritesSection(
@@ -470,7 +470,7 @@ fun ProfileContent(
 
 
                 if (isAnime) {
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(responsive.xlargePadding))
 
                     val getMediaList: GetMediaListUseCase = koinInject()
                     val allAnimeEntries by getMediaList(MediaType.ANIME).collectAsState(initial = emptyList())
@@ -498,7 +498,7 @@ fun ProfileContent(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(32.dp),
+                        .padding(responsive.xlargePadding),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -510,7 +510,7 @@ fun ProfileContent(
             }
         }
 
-            Spacer(modifier = Modifier.height(120.dp))
+            Spacer(modifier = Modifier.height(responsive.xlargePadding * 3))
         }
 
         ProfileTopAppBar(

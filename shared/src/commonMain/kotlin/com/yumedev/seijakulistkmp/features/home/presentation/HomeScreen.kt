@@ -56,6 +56,7 @@ import dev.seyfarth.tablericons.outlined.Search
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 class HomeScreen : Screen {
     @Composable
@@ -137,6 +138,8 @@ fun HomeScreenContent(
         }
     }
 
+    val responsive = ResponsiveTheme.values
+
     Scaffold(
         topBar = {
             HomeTopAppBar(
@@ -157,7 +160,6 @@ fun HomeScreenContent(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Tab Row
             TabRow(
                 selectedTabIndex = selectedTabIndex,
                 containerColor = MaterialTheme.colorScheme.surface,
@@ -168,10 +170,10 @@ fun HomeScreenContent(
                             Modifier
                                 .tabIndicatorOffset(tabPositions[selectedTabIndex])
                                 .fillMaxWidth()
-                                .height(3.dp)
+                                .height(responsive.smallPadding)
                                 .background(
                                     color = MaterialTheme.colorScheme.primary,
-                                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                                    shape = RoundedCornerShape(topStart = responsive.mediumPadding, topEnd = responsive.mediumPadding)
                                 )
                         )
                     }
@@ -182,7 +184,7 @@ fun HomeScreenContent(
                     onClick = { selectedTabIndex = 0 },
                     text = {
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
@@ -201,7 +203,7 @@ fun HomeScreenContent(
                     onClick = { selectedTabIndex = 1 },
                     text = {
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
@@ -285,6 +287,7 @@ private fun AnimeTabContent(
     onNavigateToSectionList: (SectionType, MediaType, String) -> Unit
 ) {
     val navigator = LocalNavigator.current
+    val responsive = ResponsiveTheme.values
 
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
@@ -295,12 +298,12 @@ private fun AnimeTabContent(
         LazyColumn(
             state = scrollState,
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.largeSpacing)
         ) {
         item {
             when {
                 state.isLoadingFeaturedAnime -> {
-                    FeaturedCarouselSkeleton(modifier = Modifier.padding(top = 16.dp))
+                    FeaturedCarouselSkeleton(modifier = Modifier.padding(top = responsive.horizontalPadding))
                 }
                 state.featuredAnimeError != null -> {
                     val title = state.featuredAnimeError.title
@@ -313,28 +316,28 @@ private fun AnimeTabContent(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                .padding(horizontal = responsive.horizontalPadding, vertical = responsive.horizontalPadding),
+                            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Surface(
                                 modifier = Modifier.weight(1f),
-                                shape = RoundedCornerShape(12.dp),
+                                shape = RoundedCornerShape(responsive.cornerRadius),
                                 color = MaterialTheme.colorScheme.surfaceVariant
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(12.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    modifier = Modifier.padding(responsive.mediumPadding),
+                                    horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Icon(
                                         imageVector = TablerIcons.Outlined.AlertCircle,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(20.dp)
+                                        modifier = Modifier.size(responsive.smallIconSize)
                                     )
                                     Column(
-                                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                                        verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
                                     ) {
                                         Text(
                                             text = title,
@@ -352,7 +355,7 @@ private fun AnimeTabContent(
                             }
                             FilledTonalButton(
                                 onClick = onFeaturedRetry,
-                                modifier = Modifier.height(40.dp)
+                                modifier = Modifier.height(responsive.smallButtonHeight)
                             ) {
                                 Text(
                                     text = stringResource(Res.string.retry),
@@ -366,7 +369,7 @@ private fun AnimeTabContent(
                     FeaturedCarousel(
                         items = state.featuredAnime,
                         currentPage = state.currentFeaturedAnimeIndex,
-                        modifier = Modifier.padding(top = 16.dp),
+                        modifier = Modifier.padding(top = responsive.horizontalPadding),
                         onItemClick = { item -> onAnimeClick(item.id) },
                         onUserInteraction = onFeaturedInteraction
                     )
@@ -375,7 +378,7 @@ private fun AnimeTabContent(
         }
 
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
             QuickFilterChips(
                 onFilterClick = { filter, label ->
                     navigator?.push(
@@ -383,7 +386,7 @@ private fun AnimeTabContent(
                     )
                 }
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
         }
 
         item {
@@ -437,7 +440,7 @@ private fun AnimeTabContent(
             )
         }
 
-            item { Spacer(modifier = Modifier.height(80.dp)) }
+            item { Spacer(modifier = Modifier.height(responsive.xlargePadding * 2)) }
         }
 
         if (state.isBottomSheetVisible && state.selectedMediaDetail != null) {
@@ -484,6 +487,7 @@ private fun MangaTabContent(
     onNavigateToSectionList: (SectionType, MediaType, String) -> Unit
 ) {
     val navigator = LocalNavigator.current
+    val responsive = ResponsiveTheme.values
 
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
@@ -494,13 +498,12 @@ private fun MangaTabContent(
         LazyColumn(
             state = scrollState,
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.largeSpacing)
         ) {
-        // Featured Manga Carousel
         item {
             when {
                 state.isLoadingFeaturedManga -> {
-                    FeaturedCarouselSkeleton(modifier = Modifier.padding(top = 16.dp))
+                    FeaturedCarouselSkeleton(modifier = Modifier.padding(top = responsive.horizontalPadding))
                 }
                 state.featuredMangaError != null -> {
                     val title = state.featuredMangaError.title
@@ -513,28 +516,28 @@ private fun MangaTabContent(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                .padding(horizontal = responsive.horizontalPadding, vertical = responsive.horizontalPadding),
+                            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Surface(
                                 modifier = Modifier.weight(1f),
-                                shape = RoundedCornerShape(12.dp),
+                                shape = RoundedCornerShape(responsive.cornerRadius),
                                 color = MaterialTheme.colorScheme.surfaceVariant
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(12.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    modifier = Modifier.padding(responsive.mediumPadding),
+                                    horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Icon(
                                         imageVector = TablerIcons.Outlined.AlertCircle,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(20.dp)
+                                        modifier = Modifier.size(responsive.smallIconSize)
                                     )
                                     Column(
-                                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                                        verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
                                     ) {
                                         Text(
                                             text = title,
@@ -552,7 +555,7 @@ private fun MangaTabContent(
                             }
                             FilledTonalButton(
                                 onClick = onFeaturedRetry,
-                                modifier = Modifier.height(40.dp)
+                                modifier = Modifier.height(responsive.smallButtonHeight)
                             ) {
                                 Text(
                                     text = stringResource(Res.string.retry),
@@ -566,7 +569,7 @@ private fun MangaTabContent(
                     FeaturedCarousel(
                         items = state.featuredManga,
                         currentPage = state.currentFeaturedMangaIndex,
-                        modifier = Modifier.padding(top = 16.dp),
+                        modifier = Modifier.padding(top = responsive.horizontalPadding),
                         onItemClick = { item -> onMangaClick(item.id) },
                         onUserInteraction = onFeaturedInteraction
                     )
@@ -575,7 +578,7 @@ private fun MangaTabContent(
         }
 
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
             QuickFilterChips(
                 onFilterClick = { filter, _ ->
                     navigator?.push(
@@ -583,7 +586,7 @@ private fun MangaTabContent(
                     )
                 }
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
         }
 
         // Publishing Now Section
@@ -676,7 +679,7 @@ private fun MangaTabContent(
             )
         }
 
-            item { Spacer(modifier = Modifier.height(80.dp)) }
+            item { Spacer(modifier = Modifier.height(responsive.xlargePadding * 2)) }
         }
 
         if (state.isBottomSheetVisible && state.selectedMediaDetail != null) {
@@ -714,6 +717,8 @@ private fun HomeTopAppBar(
     onNotificationsClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
+    val responsive = ResponsiveTheme.values
+
     TopAppBar(
         title = {
             Text(
@@ -722,9 +727,9 @@ private fun HomeTopAppBar(
         },
         actions = {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.padding(end = responsive.mediumPadding)
             ) {
                 ExpandableSearchChip(
                     isExpanded = isScrolled,
@@ -735,7 +740,7 @@ private fun HomeTopAppBar(
                     onClick = onCalendarClick,
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(responsive.minTouchTarget)
                 ) {
                     Box(
                         contentAlignment = Alignment.Center,
@@ -762,9 +767,10 @@ private fun ExpandableSearchChip(
     isExpanded: Boolean,
     onClick: () -> Unit
 ) {
-    // Animación del ancho con spring (muy expresivo)
+    val responsive = ResponsiveTheme.values
+
     val chipWidth by animateDpAsState(
-        targetValue = if (isExpanded) 120.dp else 40.dp,
+        targetValue = if (isExpanded) responsive.minTouchTarget * 2.5f else responsive.minTouchTarget,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessMedium
@@ -773,32 +779,24 @@ private fun ExpandableSearchChip(
 
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(20.dp),
-        color = if (isExpanded) {
-            MaterialTheme.colorScheme.surfaceContainerHighest
-        } else {
-            MaterialTheme.colorScheme.surfaceContainerHighest
-        },
+        shape = RoundedCornerShape(responsive.cornerRadius + responsive.smallPadding),
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
         modifier = Modifier
             .width(chipWidth)
-            .height(40.dp)
+            .height(responsive.minTouchTarget)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = responsive.mediumPadding),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = TablerIcons.Outlined.Search,
                 contentDescription = stringResource(Res.string.search),
-                tint = if (isExpanded) {
-                    MaterialTheme.colorScheme.onSurface
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                },
-                modifier = Modifier.size(24.dp)
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(responsive.iconSize)
             )
 
             AnimatedVisibility(
@@ -815,7 +813,7 @@ private fun ExpandableSearchChip(
                     text = stringResource(Res.string.search),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(start = 6.dp)
+                    modifier = Modifier.padding(start = responsive.smallPadding)
                 )
             }
         }

@@ -31,6 +31,7 @@ import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun DetailHeader(
@@ -49,18 +50,20 @@ fun DetailHeader(
     onAddToListClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .padding(horizontal = responsive.horizontalPadding),
+        verticalArrangement = Arrangement.spacedBy(responsive.largePadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
-                .width(160.dp)
-                .height(230.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .width(responsive.cardWidth)
+                .height(responsive.cardImageHeight)
+                .clip(RoundedCornerShape(responsive.cornerRadius))
         ) {
             coverImageUrl?.let { imageUrl ->
                 AsyncImage(
@@ -74,7 +77,7 @@ fun DetailHeader(
 
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -100,7 +103,7 @@ fun DetailHeader(
         }
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -111,7 +114,7 @@ fun DetailHeader(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
         ) {
             formattedScore?.let { score ->
                 StatCard(
@@ -123,12 +126,12 @@ fun DetailHeader(
                                 imageVector = TablerIcons.Filled.Star,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(responsive.smallIconSize)
                             )
                         },
                         value = score,
                         label = formattedVotes ?: "",
-                        modifier = Modifier.padding(vertical = 16.dp)
+                        modifier = Modifier.padding(vertical = responsive.largePadding)
                     )
                 }
             }
@@ -140,7 +143,7 @@ fun DetailHeader(
                     StatItem(
                         value = rank,
                         label = stringResource(Res.string.detail_ranking),
-                        modifier = Modifier.padding(vertical = 16.dp)
+                        modifier = Modifier.padding(vertical = responsive.largePadding)
                     )
                 }
             }
@@ -152,7 +155,7 @@ fun DetailHeader(
                     StatItem(
                         value = popularity,
                         label = stringResource(Res.string.detail_popularity),
-                        modifier = Modifier.padding(vertical = 16.dp)
+                        modifier = Modifier.padding(vertical = responsive.largePadding)
                     )
                 }
             }
@@ -212,12 +215,14 @@ private fun StatItem(
     modifier: Modifier = Modifier,
     icon: @Composable (() -> Unit)? = null
 ) {
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
             verticalAlignment = Alignment.CenterVertically
         ) {
             icon?.invoke()
@@ -240,6 +245,7 @@ private fun ExpressiveAddToListButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
@@ -264,7 +270,7 @@ private fun ExpressiveAddToListButton(
     Button(
         onClick = onClick,
         modifier = modifier
-            .height(48.dp)
+            .height(responsive.buttonHeight)
             .scale(scale),
         shape = RoundedCornerShape(50),
         colors = ButtonDefaults.buttonColors(
@@ -273,7 +279,7 @@ private fun ExpressiveAddToListButton(
         ),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = elevation.dp,
-            pressedElevation = 0.dp
+            pressedElevation = responsive.smallPadding
         ),
         interactionSource = interactionSource
     ) {
@@ -287,9 +293,11 @@ private fun ExpressiveAddToListButton(
 
 @Composable
 private fun NextAiringPill(
-    airingText: String, // Pre-formatted: "Ep. 12 en 2d"
+    airingText: String,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Surface(
         modifier = modifier,
         shape = SeijakuTheme.shapes.badge,
@@ -300,7 +308,7 @@ private fun NextAiringPill(
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSecondaryContainer,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = responsive.mediumPadding, vertical = responsive.smallPadding)
         )
     }
 }
