@@ -12,6 +12,7 @@ import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Copy
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun CharacterInfo(
@@ -21,6 +22,7 @@ fun CharacterInfo(
     nickname: String?,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val hasAnyInfo = age != null || height != null || birthday != null || nickname != null
     if (!hasAnyInfo) return
 
@@ -29,7 +31,7 @@ fun CharacterInfo(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = responsive.horizontalPadding)
     ) {
         data class InfoItem(val label: String, val value: String, val showCopyIcon: Boolean = false)
 
@@ -50,7 +52,7 @@ fun CharacterInfo(
 
             if (index < infoItems.size - 1) {
                 HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 12.dp),
+                    modifier = Modifier.padding(vertical = responsive.mediumPadding),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                 )
             }
@@ -66,6 +68,7 @@ private fun InfoRow(
     onCopyClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -78,7 +81,7 @@ private fun InfoRow(
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
         ) {
             Text(
                 text = value,
@@ -88,12 +91,12 @@ private fun InfoRow(
             if (showCopyIcon) {
                 IconButton(
                     onClick = onCopyClick,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(responsive.smallIconSize)
                 ) {
                     Icon(
                         imageVector = TablerIcons.Outlined.Copy,
                         contentDescription = "Copiar $label",
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(responsive.smallIconSize),
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )
                 }

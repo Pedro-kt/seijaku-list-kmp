@@ -32,6 +32,7 @@ import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.Res
 import seijakulistkmp.shared.generated.resources.profile_favorite_episode_number
 import seijakulistkmp.shared.generated.resources.profile_favorite_episode_short
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun FavoriteEpisodeCard(
@@ -40,21 +41,22 @@ fun FavoriteEpisodeCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
         ) {
             Box(
                 modifier = Modifier
-                    .width(120.dp)
-                    .height(68.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .width(responsive.cardWidth * 0.75f)
+                    .height(responsive.minTouchTarget * 1.4f)
+                    .clip(RoundedCornerShape(responsive.mediumSpacing))
             ) {
                 if (!episode.thumbnailUrl.isNullOrBlank()) {
                     AsyncImage(
@@ -84,7 +86,7 @@ fun FavoriteEpisodeCard(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .height(68.dp),
+                    .height(responsive.minTouchTarget * 1.4f),
                 verticalArrangement = Arrangement.Center
             ) {
                 if (!animeTitle.isNullOrBlank()) {
@@ -98,7 +100,7 @@ fun FavoriteEpisodeCard(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(responsive.smallPadding))
 
                 Text(
                     text = stringResource(Res.string.profile_favorite_episode_number, episode.episodeNumber),
@@ -121,7 +123,7 @@ fun FavoriteEpisodeCard(
 
         if (episode.rating != null) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(responsive.smallPadding),
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -129,7 +131,7 @@ fun FavoriteEpisodeCard(
                     Icon(
                         imageVector = TablerIcons.Filled.Star,
                         contentDescription = null,
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(responsive.smallIconSize),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }

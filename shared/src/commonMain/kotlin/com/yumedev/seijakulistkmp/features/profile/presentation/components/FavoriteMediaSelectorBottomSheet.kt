@@ -49,6 +49,7 @@ import seijakulistkmp.shared.generated.resources.list_status_watching
 import seijakulistkmp.shared.generated.resources.profile_no_entries_found
 import seijakulistkmp.shared.generated.resources.profile_score_format
 import seijakulistkmp.shared.generated.resources.profile_select_favorite
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +61,7 @@ fun FavoriteMediaSelectorBottomSheet(
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var selectedStatus by remember { mutableStateOf<MediaListStatus?>(null) }
 
@@ -77,9 +79,9 @@ fun FavoriteMediaSelectorBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = responsive.horizontalPadding)
+                .padding(bottom = responsive.xlargePadding),
+            verticalArrangement = Arrangement.spacedBy(responsive.largePadding)
         ) {
             Text(
                 text = stringResource(Res.string.profile_select_favorite),
@@ -88,8 +90,8 @@ fun FavoriteMediaSelectorBottomSheet(
             )
 
             LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(vertical = 4.dp)
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
+                contentPadding = PaddingValues(vertical = responsive.smallPadding)
             ) {
                 item {
                     ExpressiveFilterChip(
@@ -120,8 +122,8 @@ fun FavoriteMediaSelectorBottomSheet(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(400.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .height(responsive.cardImageHeight * 2f),
+                verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
             ) {
                 items(
                     items = filteredEntries,
@@ -138,7 +140,7 @@ fun FavoriteMediaSelectorBottomSheet(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(32.dp),
+                                .padding(responsive.xlargePadding),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -160,13 +162,14 @@ private fun MediaSelectorItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(responsive.mediumSpacing))
             .clickable(onClick = onClick)
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+            .padding(responsive.mediumSpacing),
+        horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         entry.mediaInfo?.coverImage?.let { coverUrl ->
@@ -174,15 +177,15 @@ private fun MediaSelectorItem(
                 model = coverUrl,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(width = 50.dp, height = 70.dp)
-                    .clip(RoundedCornerShape(6.dp)),
+                    .size(width = responsive.cardWidth * 0.3125f, height = responsive.minTouchTarget * 1.45f)
+                    .clip(RoundedCornerShape(responsive.smallSpacing)),
                 contentScale = ContentScale.Crop
             )
-        } ?: Spacer(modifier = Modifier.size(width = 50.dp, height = 70.dp))
+        } ?: Spacer(modifier = Modifier.size(width = responsive.cardWidth * 0.3125f, height = responsive.minTouchTarget * 1.45f))
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
         ) {
             entry.mediaInfo?.title?.let { title ->
                 Text(
