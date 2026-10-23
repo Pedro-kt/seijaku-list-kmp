@@ -334,7 +334,7 @@ private fun AnimeTabContent(
                                         imageVector = TablerIcons.Outlined.AlertCircle,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(responsive.smallIconSize)
+                                        modifier = Modifier.size(20.dp)
                                     )
                                     Column(
                                         verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
@@ -534,7 +534,7 @@ private fun MangaTabContent(
                                         imageVector = TablerIcons.Outlined.AlertCircle,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(responsive.smallIconSize)
+                                        modifier = Modifier.size(20.dp)
                                     )
                                     Column(
                                         verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
@@ -740,7 +740,7 @@ private fun HomeTopAppBar(
                     onClick = onCalendarClick,
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    modifier = Modifier.size(responsive.minTouchTarget)
+                    modifier = Modifier.size(40.dp)
                 ) {
                     Box(
                         contentAlignment = Alignment.Center,
@@ -770,7 +770,7 @@ private fun ExpandableSearchChip(
     val responsive = ResponsiveTheme.values
 
     val chipWidth by animateDpAsState(
-        targetValue = if (isExpanded) responsive.minTouchTarget * 2.5f else responsive.minTouchTarget,
+        targetValue = if (isExpanded) 100.dp else 40.dp,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessMedium
@@ -783,7 +783,7 @@ private fun ExpandableSearchChip(
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
         modifier = Modifier
             .width(chipWidth)
-            .height(responsive.minTouchTarget)
+            .height(40.dp)
     ) {
         Row(
             modifier = Modifier
@@ -796,7 +796,7 @@ private fun ExpandableSearchChip(
                 imageVector = TablerIcons.Outlined.Search,
                 contentDescription = stringResource(Res.string.search),
                 tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(responsive.iconSize)
+                modifier = Modifier.size(24.dp)
             )
 
             AnimatedVisibility(

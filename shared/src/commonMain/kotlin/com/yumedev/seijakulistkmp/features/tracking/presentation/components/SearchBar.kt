@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Search
 import dev.seyfarth.tablericons.outlined.X
@@ -70,7 +70,7 @@ fun AnimatedSearchBar(
                     imageVector = TablerIcons.Outlined.Search,
                     contentDescription = stringResource(Res.string.search),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(responsive.smallIconSize)
+                    modifier = Modifier.size(20.dp)
                 )
 
                 BasicTextField(
@@ -115,14 +115,13 @@ fun AnimatedSearchBar(
 
                 if (query.isNotEmpty()) {
                     IconButton(
-                        onClick = { onQueryChange("") },
-                        modifier = Modifier.size(responsive.smallIconSize)
+                        onClick = { onQueryChange("") }
                     ) {
                         Icon(
                             imageVector = TablerIcons.Outlined.X,
                             contentDescription = stringResource(Res.string.clear_search),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(responsive.smallIconSize)
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 }

@@ -84,7 +84,7 @@ fun UserAnimeListScreenContent(
                             enabled = uiState.entries.isNotEmpty(),
                             shape = CircleShape,
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            modifier = Modifier.size(responsive.minTouchTarget)
+                            modifier = Modifier.size(40.dp)
                         ) {
                             Box(
                                 contentAlignment = Alignment.Center,
@@ -103,7 +103,7 @@ fun UserAnimeListScreenContent(
                             enabled = uiState.entries.isNotEmpty(),
                             shape = CircleShape,
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            modifier = Modifier.size(responsive.minTouchTarget)
+                            modifier = Modifier.size(40.dp)
                         ) {
                             Box(
                                 contentAlignment = Alignment.Center,
@@ -124,7 +124,7 @@ fun UserAnimeListScreenContent(
                             onClick = { onEvent(UserAnimeListEvent.ShowSortBottomSheet) },
                             shape = CircleShape,
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            modifier = Modifier.size(responsive.minTouchTarget)
+                            modifier = Modifier.size(40.dp)
                         ) {
                             Box(
                                 contentAlignment = Alignment.Center,

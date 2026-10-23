@@ -21,7 +21,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.ConflictResolution
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.ImportConflict
 import org.jetbrains.compose.resources.stringResource

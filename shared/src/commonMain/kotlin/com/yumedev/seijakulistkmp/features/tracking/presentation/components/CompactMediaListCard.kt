@@ -101,7 +101,7 @@ fun CompactMediaListCard(
                             onClick = { showMenu = true },
                             shape = CircleShape,
                             color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(responsive.mediumIconSize)
+                            modifier = Modifier.size(32.dp)
                         ) {
                             Box(
                                 modifier = Modifier.fillMaxSize(),
@@ -110,7 +110,7 @@ fun CompactMediaListCard(
                                 Icon(
                                     imageVector = TablerIcons.Outlined.DotsVertical,
                                     contentDescription = stringResource(Res.string.filter_menu),
-                                    modifier = Modifier.size(responsive.smallIconSize),
+                                    modifier = Modifier.size(20.dp),
                                     tint = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
@@ -188,7 +188,7 @@ fun CompactMediaListCard(
                     FilledIconButton(
                         onClick = onIncrementProgress,
                         enabled = canIncrement,
-                        modifier = Modifier.size(responsive.mediumIconSize),
+                        modifier = Modifier.size(40.dp),
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -197,7 +197,7 @@ fun CompactMediaListCard(
                         Icon(
                             imageVector = TablerIcons.Outlined.Plus,
                             contentDescription = stringResource(Res.string.list_increase),
-                            modifier = Modifier.size(responsive.smallIconSize),
+                            modifier = Modifier.size(20.dp),
                             tint = if (canIncrement) {
                                 MaterialTheme.colorScheme.onPrimary
                             } else {

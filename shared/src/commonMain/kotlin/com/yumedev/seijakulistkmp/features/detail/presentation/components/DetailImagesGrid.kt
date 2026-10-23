@@ -14,7 +14,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
 

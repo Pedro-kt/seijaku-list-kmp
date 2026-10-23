@@ -58,7 +58,7 @@ fun ListMediaListCard(
                     model = entry.mediaInfo?.coverImage,
                     contentDescription = entry.mediaInfo?.title,
                     modifier = Modifier
-                        .width(responsive.cardWidth / 2)
+                        .width(85.dp)
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(responsive.mediumSpacing)),
                     contentScale = ContentScale.Crop
@@ -176,7 +176,7 @@ fun ListMediaListCard(
                                 onClick = { showMenu = true },
                                 shape = CircleShape,
                                 color = MaterialTheme.colorScheme.surfaceVariant,
-                                modifier = Modifier.size(responsive.mediumIconSize)
+                                modifier = Modifier.size(32.dp)
                             ) {
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
@@ -185,7 +185,7 @@ fun ListMediaListCard(
                                     Icon(
                                         imageVector = TablerIcons.Outlined.DotsVertical,
                                         contentDescription = stringResource(Res.string.filter_menu),
-                                        modifier = Modifier.size(responsive.smallIconSize),
+                                        modifier = Modifier.size(20.dp),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
@@ -240,7 +240,7 @@ fun ListMediaListCard(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(end = responsive.horizontalPadding, bottom = responsive.mediumSpacing)
-                    .size(responsive.mediumIconSize),
+                    .size(40.dp),
                 colors = IconButtonDefaults.filledIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -249,7 +249,7 @@ fun ListMediaListCard(
                 Icon(
                     imageVector = TablerIcons.Outlined.Plus,
                     contentDescription = stringResource(Res.string.list_increase),
-                    modifier = Modifier.size(responsive.smallIconSize),
+                    modifier = Modifier.size(20.dp),
                     tint = if (canIncrement) {
                         MaterialTheme.colorScheme.onPrimary
                     } else {

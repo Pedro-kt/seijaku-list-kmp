@@ -125,7 +125,7 @@ private fun QuickFilterChip(
         interactionSource = interactionSource
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = responsive.mediumPadding, vertical = responsive.mediumPadding),
+            modifier = Modifier.padding(horizontal = responsive.mediumPadding, vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -133,7 +133,7 @@ private fun QuickFilterChip(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(responsive.smallIconSize)
+                    .size(20.dp)
                     .scale(iconScale),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )

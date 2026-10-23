@@ -17,7 +17,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.search.presentation.model.Genre
 import com.yumedev.seijakulistkmp.features.search.presentation.model.toLabel
 import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
@@ -110,7 +110,7 @@ private fun GenreChip(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
-                    .size(ResponsiveTheme.values.smallIconSize)
+                    .size(20.dp)
                     .scale(iconScale)
             )
 

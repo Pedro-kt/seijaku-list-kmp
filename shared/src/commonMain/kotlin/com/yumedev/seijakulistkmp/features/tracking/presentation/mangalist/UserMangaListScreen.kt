@@ -85,7 +85,7 @@ fun UserMangaListScreenContent(
                             enabled = uiState.entries.isNotEmpty(),
                             shape = CircleShape,
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            modifier = Modifier.size(responsive.minTouchTarget)
+                            modifier = Modifier.size(40.dp)
                         ) {
                             Box(
                                 contentAlignment = Alignment.Center,
@@ -104,7 +104,7 @@ fun UserMangaListScreenContent(
                             enabled = uiState.entries.isNotEmpty(),
                             shape = CircleShape,
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            modifier = Modifier.size(responsive.minTouchTarget)
+                            modifier = Modifier.size(40.dp)
                         ) {
                             Box(
                                 contentAlignment = Alignment.Center,
@@ -125,7 +125,7 @@ fun UserMangaListScreenContent(
                             onClick = { onEvent(UserMangaListEvent.ShowSortBottomSheet) },
                             shape = CircleShape,
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            modifier = Modifier.size(responsive.minTouchTarget)
+                            modifier = Modifier.size(40.dp)
                         ) {
                             Box(
                                 contentAlignment = Alignment.Center,

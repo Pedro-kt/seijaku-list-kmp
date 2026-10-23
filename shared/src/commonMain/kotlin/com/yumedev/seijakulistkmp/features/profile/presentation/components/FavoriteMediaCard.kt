@@ -41,10 +41,10 @@ fun FavoriteMediaCard(
     Card(
         onClick = onClick,
         modifier = modifier
-            .size(width = responsive.cardWidth * 0.5625f, height = responsive.cardImageHeight * 0.7f),
+            .size(width = 105.dp, height = 150.dp),
         shape = RoundedCornerShape(responsive.mediumPadding),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = responsive.smallPadding / 2
+            defaultElevation = 2.dp
         )
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -60,7 +60,7 @@ fun FavoriteMediaCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(responsive.largeIconSize + responsive.mediumPadding)
+                    .height(60.dp)
                     .align(Alignment.BottomCenter)
                     .background(
                         brush = Brush.verticalGradient(
@@ -95,7 +95,7 @@ fun FavoriteMediaCard(
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
                         .padding(horizontal = responsive.smallSpacing, vertical = responsive.smallSpacing),
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White,
                     maxLines = 2,

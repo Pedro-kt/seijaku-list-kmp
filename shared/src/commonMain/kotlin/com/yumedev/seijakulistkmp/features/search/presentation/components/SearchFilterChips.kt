@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.toLabel
 import dev.seyfarth.tablericons.TablerIcons
@@ -73,7 +73,7 @@ fun SearchFilterChips(
                                 Icon(
                                     imageVector = TablerIcons.Outlined.AdjustmentsHorizontal,
                                     contentDescription = null,
-                                    modifier = Modifier.size(ResponsiveTheme.values.smallIconSize)
+                                    modifier = Modifier.size(16.dp)
                                 )
                                 Text(
                                     text = stringResource(Res.string.search_filters),

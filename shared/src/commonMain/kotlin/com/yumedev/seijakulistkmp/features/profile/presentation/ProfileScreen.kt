@@ -610,7 +610,7 @@ private fun ProfileTopAppBar(
             onClick = onEditClick,
             shape = CircleShape,
             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-            modifier = Modifier.size(responsive.minTouchTarget)
+            modifier = Modifier.size(40.dp)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -630,7 +630,7 @@ private fun ProfileTopAppBar(
             onClick = onSettingsClick,
             shape = CircleShape,
             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-            modifier = Modifier.size(responsive.minTouchTarget)
+            modifier = Modifier.size(40.dp)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -709,7 +709,7 @@ fun ProfileHeroSection(
                 Icon(
                     imageVector = TablerIcons.Outlined.Camera,
                     contentDescription = "Select avatar",
-                    modifier = Modifier.size(responsive.smallIconSize),
+                    modifier = Modifier.size(16.dp),
                     tint = MaterialTheme.colorScheme.onPrimary,
                 )
 
@@ -1067,7 +1067,7 @@ fun EditProfileBottomSheet(
                             Icon(
                                 imageVector = TablerIcons.Outlined.Photo,
                                 contentDescription = null,
-                                modifier = Modifier.size(responsive.iconSize),
+                                modifier = Modifier.size(32.dp),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Text(
@@ -1120,7 +1120,7 @@ fun EditProfileBottomSheet(
                     Icon(
                         imageVector = TablerIcons.Outlined.User,
                         contentDescription = null,
-                        modifier = Modifier.size(responsive.smallIconSize),
+                        modifier = Modifier.size(20.dp),
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),

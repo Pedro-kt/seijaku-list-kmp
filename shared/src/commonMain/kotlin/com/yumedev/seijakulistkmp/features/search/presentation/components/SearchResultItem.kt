@@ -68,7 +68,7 @@ fun SearchResultItem(
                     model = item.coverImage,
                     contentDescription = item.title,
                     modifier = Modifier
-                        .width(responsive.cardWidth / 2)
+                        .width(85.dp)
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(responsive.mediumSpacing)),
                     contentScale = ContentScale.Crop
@@ -116,7 +116,7 @@ fun SearchResultItem(
                                 Icon(
                                     imageVector = TablerIcons.Filled.Star,
                                     contentDescription = null,
-                                    modifier = Modifier.size(responsive.smallIconSize),
+                                    modifier = Modifier.size(16.dp),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
@@ -238,7 +238,7 @@ fun SearchResultItem(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(end = responsive.horizontalPadding, bottom = responsive.mediumSpacing)
-                    .size(responsive.mediumIconSize),
+                    .size(40.dp),
                 colors = IconButtonDefaults.filledIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = if (isSaved) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimaryContainer
@@ -247,7 +247,7 @@ fun SearchResultItem(
                 Icon(
                     imageVector = if (isSaved) TablerIcons.Filled.Bookmark else TablerIcons.Outlined.Bookmark,
                     contentDescription = if (isSaved) "Remove from saved" else "Save for later",
-                    modifier = Modifier.size(responsive.smallIconSize)
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }

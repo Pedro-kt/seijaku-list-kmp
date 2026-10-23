@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowRight
@@ -36,7 +36,7 @@ fun RecentSearchItem(
         Icon(
             imageVector = if (showClockIcon) TablerIcons.Outlined.Clock else TablerIcons.Outlined.TrendingUp,
             contentDescription = null,
-            modifier = Modifier.size(responsive.smallIconSize),
+            modifier = Modifier.size(20.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
@@ -46,13 +46,12 @@ fun RecentSearchItem(
             modifier = Modifier.weight(1f)
         )
         IconButton(
-            onClick = onRemoveClick,
-            modifier = Modifier.size(responsive.iconSize)
+            onClick = onRemoveClick
         ) {
             Icon(
                 imageVector = if (showClockIcon) TablerIcons.Outlined.X else TablerIcons.Outlined.ArrowRight,
                 contentDescription = if (showClockIcon) "Remove" else "Navigate",
-                modifier = Modifier.size(responsive.smallIconSize),
+                modifier = Modifier.size(18.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }

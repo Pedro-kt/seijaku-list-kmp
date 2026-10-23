@@ -314,7 +314,7 @@ private fun ErrorContent(
                 Icon(
                     imageVector = TablerIcons.Outlined.AlertCircle,
                     contentDescription = null,
-                    modifier = Modifier.size(responsive.largeIconSize),
+                    modifier = Modifier.size(48.dp),
                     tint = MaterialTheme.colorScheme.error
                 )
                 Text(

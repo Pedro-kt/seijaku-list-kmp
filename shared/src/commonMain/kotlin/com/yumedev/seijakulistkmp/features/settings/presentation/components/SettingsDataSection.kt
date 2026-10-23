@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.*
 import org.jetbrains.compose.resources.stringResource
@@ -129,7 +129,7 @@ private fun SettingsNavigationItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            modifier = Modifier.size(responsive.iconSize),
+            modifier = Modifier.size(24.dp),
             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
 
@@ -153,7 +153,7 @@ private fun SettingsNavigationItem(
         Icon(
             imageVector = TablerIcons.Outlined.ChevronRight,
             contentDescription = null,
-            modifier = Modifier.size(responsive.smallIconSize),
+            modifier = Modifier.size(20.dp),
             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
         )
     }
