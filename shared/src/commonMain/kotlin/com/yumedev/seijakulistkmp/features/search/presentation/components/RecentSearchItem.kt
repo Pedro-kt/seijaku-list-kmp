@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowRight
@@ -22,18 +23,20 @@ fun RecentSearchItem(
     modifier: Modifier = Modifier,
     showClockIcon: Boolean = true
 ) {
+    val responsive = ResponsiveTheme.values
+
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onSearchClick)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+            .padding(horizontal = responsive.horizontalPadding, vertical = responsive.smallSpacing),
+        horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = if (showClockIcon) TablerIcons.Outlined.Clock else TablerIcons.Outlined.TrendingUp,
             contentDescription = null,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(responsive.smallIconSize),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
@@ -44,12 +47,12 @@ fun RecentSearchItem(
         )
         IconButton(
             onClick = onRemoveClick,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(responsive.iconSize)
         ) {
             Icon(
                 imageVector = if (showClockIcon) TablerIcons.Outlined.X else TablerIcons.Outlined.ArrowRight,
                 contentDescription = if (showClockIcon) "Remove" else "Navigate",
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(responsive.smallIconSize),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }

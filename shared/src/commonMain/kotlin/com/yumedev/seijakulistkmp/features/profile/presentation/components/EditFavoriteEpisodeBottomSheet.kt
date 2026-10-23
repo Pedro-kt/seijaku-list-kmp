@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
@@ -76,6 +77,8 @@ fun EditFavoriteEpisodeBottomSheet(
         comment = episode.comment ?: ""
     }
 
+    val responsive = ResponsiveTheme.values
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
@@ -84,9 +87,9 @@ fun EditFavoriteEpisodeBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(horizontal = responsive.xlargePadding)
+                .padding(bottom = responsive.xlargePadding),
+            verticalArrangement = Arrangement.spacedBy(responsive.largePadding)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -109,7 +112,7 @@ fun EditFavoriteEpisodeBottomSheet(
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
             ) {
                 if (!animeTitle.isNullOrBlank()) {
                     Text(
@@ -126,11 +129,11 @@ fun EditFavoriteEpisodeBottomSheet(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(responsive.smallSpacing))
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
             ) {
                 Text(
                     text = stringResource(Res.string.profile_favorite_episode_rating_label),
@@ -138,7 +141,7 @@ fun EditFavoriteEpisodeBottomSheet(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     for (i in 1..5) {
@@ -170,7 +173,7 @@ fun EditFavoriteEpisodeBottomSheet(
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
             ) {
                 Text(
                     text = stringResource(Res.string.profile_favorite_episode_comment_label),
@@ -187,11 +190,11 @@ fun EditFavoriteEpisodeBottomSheet(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(responsive.smallSpacing))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
                 OutlinedButton(
                     onClick = onDismiss,

@@ -589,6 +589,8 @@ private fun ProfileTopAppBar(
     backgroundAlpha: Float,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -600,7 +602,7 @@ private fun ProfileTopAppBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = responsive.horizontalPadding),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -608,7 +610,7 @@ private fun ProfileTopAppBar(
             onClick = onEditClick,
             shape = CircleShape,
             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-            modifier = Modifier.size(40.dp)
+            modifier = Modifier.size(responsive.minTouchTarget)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -622,13 +624,13 @@ private fun ProfileTopAppBar(
             }
         }
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(responsive.smallSpacing))
 
         Surface(
             onClick = onSettingsClick,
             shape = CircleShape,
             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-            modifier = Modifier.size(40.dp)
+            modifier = Modifier.size(responsive.minTouchTarget)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -653,7 +655,9 @@ fun ProfileHeroSection(
     onRemoveAvatar: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val responsive = ResponsiveTheme.values
     var showAvatarMenu by remember { mutableStateOf(false) }
+
     Column(modifier = modifier) {
         Box(
             modifier = Modifier
@@ -664,7 +668,7 @@ fun ProfileHeroSection(
         ) {
             Box(
                 modifier = Modifier
-                    .padding(start = 16.dp)
+                    .padding(start = responsive.horizontalPadding)
                     .size(100.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surface),
@@ -705,7 +709,7 @@ fun ProfileHeroSection(
                 Icon(
                     imageVector = TablerIcons.Outlined.Camera,
                     contentDescription = "Select avatar",
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(responsive.smallIconSize),
                     tint = MaterialTheme.colorScheme.onPrimary,
                 )
 
@@ -746,12 +750,12 @@ fun ProfileHeroSection(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(top = 8.dp)
+                .padding(horizontal = responsive.horizontalPadding)
+                .padding(top = responsive.smallSpacing)
                 .graphicsLayer {
                     translationY = -40.dp.toPx()
                 },
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(responsive.smallPadding),
         ) {
             Text(
                 text = profile.name,
@@ -784,7 +788,7 @@ fun ProfileHeroSection(
             )
 
             if (!profile.about.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(responsive.smallSpacing))
                 Text(
                     text = profile.about,
                     style = MaterialTheme.typography.bodyMedium,
@@ -793,16 +797,16 @@ fun ProfileHeroSection(
             }
 
             if (!isAuthenticated) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(responsive.smallSpacing))
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     ),
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(responsive.smallSpacing),
                 ) {
                     Text(
                         text = stringResource(Res.string.profile_local_badge),
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        modifier = Modifier.padding(horizontal = responsive.mediumPadding, vertical = responsive.smallPadding),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                     )
@@ -819,9 +823,11 @@ fun ProfileStatsSection(
     isAnime: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val responsive = ResponsiveTheme.values
+
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
     ) {
         StatCard(
             value = stats.totalEntries.toString(),
@@ -837,7 +843,7 @@ fun ProfileStatsSection(
 
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
     ) {
         if (isAnime) {
             StatCard(
@@ -871,24 +877,26 @@ fun StatCard(
     label: String,
     modifier: Modifier = Modifier,
 ) {
+    val responsive = ResponsiveTheme.values
+
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         ),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(responsive.cornerRadius),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(responsive.largePadding),
         ) {
             Text(
                 text = value,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(responsive.smallPadding))
             Text(
                 text = label,
                 style = MaterialTheme.typography.bodySmall,
@@ -903,9 +911,11 @@ fun ProfileDistributionSection(
     stats: MediaListStats,
     modifier: Modifier = Modifier,
 ) {
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
     ) {
         Text(
             text = stringResource(Res.string.profile_distribution),
@@ -938,11 +948,12 @@ fun DistributionItem(
     total: Int,
     modifier: Modifier = Modifier,
 ) {
+    val responsive = ResponsiveTheme.values
     val percentage = if (total > 0) count.toFloat() / total else 0f
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(responsive.smallPadding),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -962,8 +973,8 @@ fun DistributionItem(
             progress = { percentage },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(6.dp)
-                .clip(RoundedCornerShape(3.dp)),
+                .height(responsive.smallPadding)
+                .clip(RoundedCornerShape(responsive.smallPadding / 2)),
             color = MaterialTheme.colorScheme.primary,
             trackColor = MaterialTheme.colorScheme.surfaceVariant,
         )
@@ -979,6 +990,7 @@ fun EditProfileBottomSheet(
     onBannerClick: () -> Unit,
     onRemoveBanner: () -> Unit,
 ) {
+    val responsive = ResponsiveTheme.values
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var name by remember { mutableStateOf(profile.name) }
     var about by remember { mutableStateOf(profile.about ?: "") }
@@ -991,13 +1003,13 @@ fun EditProfileBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 40.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+                .padding(horizontal = responsive.xlargePadding)
+                .padding(bottom = responsive.xlargePadding),
+            verticalArrangement = Arrangement.spacedBy(responsive.largePadding),
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(responsive.smallPadding),
             ) {
                 Text(
                     text = stringResource(Res.string.profile_edit_title),
@@ -1012,13 +1024,13 @@ fun EditProfileBottomSheet(
                 )
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(responsive.smallPadding))
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(responsive.cornerRadius))
                     .clickable {
                         if (profile.banner != null) {
                             showBannerMenu = true
@@ -1050,12 +1062,12 @@ fun EditProfileBottomSheet(
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                            verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
                         ) {
                             Icon(
                                 imageVector = TablerIcons.Outlined.Photo,
                                 contentDescription = null,
-                                modifier = Modifier.size(32.dp),
+                                modifier = Modifier.size(responsive.iconSize),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Text(
@@ -1108,12 +1120,12 @@ fun EditProfileBottomSheet(
                     Icon(
                         imageVector = TablerIcons.Outlined.User,
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(responsive.smallIconSize),
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(responsive.cornerRadius),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
@@ -1127,23 +1139,23 @@ fun EditProfileBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 5,
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(responsive.cornerRadius),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                 ),
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(responsive.smallSpacing))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
             ) {
                 OutlinedButton(
                     onClick = onDismiss,
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(responsive.cornerRadius),
                 ) {
                     Text(
                         text = stringResource(Res.string.profile_cancel_button),
@@ -1160,7 +1172,7 @@ fun EditProfileBottomSheet(
                     },
                     modifier = Modifier.weight(1f),
                     enabled = name.isNotBlank(),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(responsive.cornerRadius),
                 ) {
                     Text(
                         text = stringResource(Res.string.profile_save_button),

@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.ExpressiveFilterChip
@@ -21,11 +22,13 @@ fun SettingsAppearanceSection(
     onLanguageSelected: (LanguageMode) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = responsive.horizontalPadding),
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         Text(
             text = stringResource(Res.string.settings_appearance),
@@ -34,14 +37,14 @@ fun SettingsAppearanceSection(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
 
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)) {
             Text(
                 text = stringResource(Res.string.settings_theme),
                 style = MaterialTheme.typography.bodyLarge
             )
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
             ) {
                 ThemeChip(
                     label = stringResource(Res.string.settings_theme_system),
@@ -61,14 +64,14 @@ fun SettingsAppearanceSection(
             }
         }
 
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)) {
             Text(
                 text = stringResource(Res.string.settings_language),
                 style = MaterialTheme.typography.bodyLarge
             )
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
             ) {
                 ThemeChip(
                     label = stringResource(Res.string.settings_language_system),

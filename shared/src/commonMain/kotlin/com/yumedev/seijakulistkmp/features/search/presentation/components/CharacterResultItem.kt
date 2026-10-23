@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.search.presentation.model.CharacterResultItem
 
 @Composable
@@ -20,6 +21,8 @@ fun CharacterResultItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Surface(
         onClick = onClick,
         modifier = modifier
@@ -30,8 +33,8 @@ fun CharacterResultItem(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = responsive.horizontalPadding, vertical = responsive.smallSpacing),
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
         ) {
             AsyncImage(
                 model = item.image,
@@ -39,7 +42,7 @@ fun CharacterResultItem(
                 modifier = Modifier
                     .width(85.dp)
                     .fillMaxHeight()
-                    .clip(RoundedCornerShape(8.dp)),
+                    .clip(RoundedCornerShape(responsive.smallSpacing)),
                 contentScale = ContentScale.Crop
             )
 
@@ -50,7 +53,7 @@ fun CharacterResultItem(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
                 ) {
                     Text(
                         text = item.name,
@@ -63,11 +66,11 @@ fun CharacterResultItem(
 
                     if (item.mediaAppearances.isNotEmpty()) {
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                            verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
                         ) {
                             item.mediaAppearances.take(2).forEach { appearance ->
                                 Row(
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(responsive.smallPadding),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
@@ -138,7 +141,7 @@ private fun RoleBadge(
             text = label,
             style = MaterialTheme.typography.labelSmall,
             color = textColor,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+            modifier = Modifier.padding(horizontal = ResponsiveTheme.values.smallSpacing, vertical = ResponsiveTheme.values.smallPadding)
         )
     }
 }

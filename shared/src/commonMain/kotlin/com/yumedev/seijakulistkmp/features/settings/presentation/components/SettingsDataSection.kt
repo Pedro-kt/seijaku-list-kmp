@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.*
 import org.jetbrains.compose.resources.stringResource
@@ -27,11 +28,13 @@ fun SettingsDataSection(
     onAboutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = responsive.horizontalPadding),
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         Text(
             text = stringResource(Res.string.settings_data),
@@ -113,24 +116,26 @@ private fun SettingsNavigationItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+            .padding(vertical = responsive.verticalPadding),
+        horizontalArrangement = Arrangement.spacedBy(responsive.largePadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.size(responsive.iconSize),
             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
         ) {
             Text(
                 text = title,
@@ -148,7 +153,7 @@ private fun SettingsNavigationItem(
         Icon(
             imageVector = TablerIcons.Outlined.ChevronRight,
             contentDescription = null,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(responsive.smallIconSize),
             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
         )
     }

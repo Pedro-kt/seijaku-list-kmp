@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.search.presentation.model.SearchFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.toLabel
 import dev.seyfarth.tablericons.TablerIcons
@@ -24,11 +25,13 @@ fun SearchFilterChips(
     onFiltersClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     LazyRow(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
         verticalAlignment = Alignment.CenterVertically,
-        contentPadding = PaddingValues(horizontal = 16.dp)
+        contentPadding = PaddingValues(horizontal = responsive.horizontalPadding)
     ) {
         items(SearchFilter.entries) { filter ->
             val isSelected = selectedFilter == filter
@@ -64,13 +67,13 @@ fun SearchFilterChips(
                         onClick = onFiltersClick,
                         label = {
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(ResponsiveTheme.values.smallPadding),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
                                     imageVector = TablerIcons.Outlined.AdjustmentsHorizontal,
                                     contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
+                                    modifier = Modifier.size(ResponsiveTheme.values.smallIconSize)
                                 )
                                 Text(
                                     text = stringResource(Res.string.search_filters),

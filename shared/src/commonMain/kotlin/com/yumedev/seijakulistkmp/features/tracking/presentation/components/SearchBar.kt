@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Search
 import dev.seyfarth.tablericons.outlined.X
@@ -42,6 +43,8 @@ fun AnimatedSearchBar(
     val focusManager = LocalFocusManager.current
     var isFocused by remember { mutableStateOf(false) }
 
+    val responsive = ResponsiveTheme.values
+
     AnimatedVisibility(
         visible = visible,
         enter = slideInVertically(initialOffsetY = { -it }),
@@ -54,20 +57,20 @@ fun AnimatedSearchBar(
             tonalElevation = 2.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = responsive.horizontalPadding, vertical = responsive.smallSpacing)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    .padding(horizontal = responsive.horizontalPadding, vertical = responsive.mediumPadding),
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = TablerIcons.Outlined.Search,
                     contentDescription = stringResource(Res.string.search),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(responsive.smallIconSize)
                 )
 
                 BasicTextField(
@@ -113,13 +116,13 @@ fun AnimatedSearchBar(
                 if (query.isNotEmpty()) {
                     IconButton(
                         onClick = { onQueryChange("") },
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(responsive.smallIconSize)
                     ) {
                         Icon(
                             imageVector = TablerIcons.Outlined.X,
                             contentDescription = stringResource(Res.string.clear_search),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(responsive.smallIconSize)
                         )
                     }
                 }

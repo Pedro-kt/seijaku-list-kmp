@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.core.design.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.search.presentation.model.MoodFilter
 import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
 import org.jetbrains.compose.resources.stringResource
@@ -28,16 +29,18 @@ fun MoodCards(
     onMoodClick: (genres: List<String>, moodName: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = responsive.horizontalPadding),
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         moods.chunked(2).forEach { rowMoods ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
                 rowMoods.forEach { mood ->
                     val moodName = stringResource(mood.titleRes)
@@ -112,15 +115,15 @@ private fun MoodCard(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(ResponsiveTheme.values.largePadding),
+                verticalArrangement = Arrangement.spacedBy(ResponsiveTheme.values.smallSpacing)
             ) {
                 Icon(
                     imageVector = mood.icon,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
-                        .size(24.dp)
+                        .size(ResponsiveTheme.values.iconSize)
                         .scale(iconScale)
                         .rotate(iconRotation)
                 )
