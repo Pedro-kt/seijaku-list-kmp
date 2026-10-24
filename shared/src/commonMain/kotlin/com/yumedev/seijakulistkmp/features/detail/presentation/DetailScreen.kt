@@ -389,7 +389,17 @@ fun DetailScreenContent(
     val scrollState = rememberScrollState()
     val responsive = ResponsiveTheme.values
 
+    val initialColor = remember(mediaDetail.title) {
+        val hash = mediaDetail.title.hashCode()
+        val hue = (hash % 360).toFloat().let { if (it < 0) it + 360 else it }
+        Color.hsl(hue, 0.6f, 0.5f)
+    }
+
+    var dominantColor by remember(mediaDetail.coverImageUrl) { mutableStateOf(initialColor) }
+
     val showTitleInTopBar = scrollState.value > 300
+
+    val topBarColor = if (showTitleInTopBar) null else dominantColor
 
     Scaffold(
         topBar = {
@@ -398,7 +408,8 @@ fun DetailScreenContent(
                 onFavoriteClick = onFavoriteClick,
                 onShareClick = onShareClick,
                 isFavorite = mediaDetail.isFavorite,
-                title = if (showTitleInTopBar) mediaDetail.title else null
+                title = if (showTitleInTopBar) mediaDetail.title else null,
+                backgroundColor = topBarColor
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -424,7 +435,8 @@ fun DetailScreenContent(
                 popularityText = mediaDetail.popularityText,
                 nextAiringText = mediaDetail.nextAiringText,
                 isInList = mediaDetail.isInList,
-                onAddToListClick = { showAddToListBottomSheet = true }
+                onAddToListClick = { showAddToListBottomSheet = true },
+                onDominantColorExtracted = { color -> dominantColor = color }
             )
 
             listEntry?.let { entry ->

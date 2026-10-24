@@ -8,18 +8,23 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -48,14 +53,42 @@ fun DetailHeader(
     nextAiringText: String?,
     isInList: Boolean,
     onAddToListClick: () -> Unit,
+    onDominantColorExtracted: (Color) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val responsive = ResponsiveTheme.values
 
+    val generatedColor = remember(title) {
+        val hash = title.hashCode()
+        val hue = (hash % 360).toFloat().let { if (it < 0) it + 360 else it }
+        Color.hsl(hue, 0.6f, 0.5f)
+    }
+
+    var dominantColor by remember(coverImageUrl) { mutableStateOf(generatedColor) }
+
+    LaunchedEffect(dominantColor) {
+        onDominantColorExtracted(dominantColor)
+    }
+
+    val backgroundColor = dominantColor
+
+    val backgroundGradient = Brush.verticalGradient(
+        colors = listOf(
+            backgroundColor.copy(alpha = 0.5f),
+            backgroundColor.copy(alpha = 0.3f),
+            MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+            MaterialTheme.colorScheme.surface
+        ),
+        startY = 0f,
+        endY = 1200f
+    )
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = responsive.horizontalPadding),
+            .background(backgroundGradient)
+            .padding(horizontal = responsive.horizontalPadding)
+            .padding(top = responsive.largePadding),
         verticalArrangement = Arrangement.spacedBy(responsive.largePadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -65,14 +98,15 @@ fun DetailHeader(
                 .height(responsive.cardImageHeight)
                 .clip(RoundedCornerShape(responsive.cornerRadius))
         ) {
-            coverImageUrl?.let { imageUrl ->
-                AsyncImage(
-                    model = imageUrl,
-                    contentDescription = title,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            }
+            AsyncImage(
+                model = coverImageUrl,
+                contentDescription = title,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+                onSuccess = {
+
+                }
+            )
         }
 
         Column(
@@ -126,7 +160,7 @@ fun DetailHeader(
                                 imageVector = TablerIcons.Filled.Star,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(responsive.smallIconSize)
+                                modifier = Modifier.size(20.dp)
                             )
                         },
                         value = score,
@@ -199,7 +233,7 @@ private fun StatCard(
     Surface(
         onClick = { /* Stats are not clickable, just visual feedback */ },
         modifier = modifier.scale(scale),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+        color = MaterialTheme.colorScheme.surfaceVariant,
         shape = SeijakuTheme.shapes.cardAsymmetric,
         tonalElevation = elevation.dp,
         interactionSource = interactionSource
