@@ -1,5 +1,6 @@
 package com.yumedev.seijakulistkmp.features.main.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -46,7 +47,12 @@ fun MainScreenContent() {
     var selectedItem by remember { mutableStateOf<BottomNavItem>(BottomNavItem.Home) }
     var isSearchExpanded by remember { mutableStateOf(false) }
     var shouldExpandSearch by remember { mutableStateOf(false) }
+    val navigationStack = remember { mutableStateListOf<BottomNavItem>(BottomNavItem.Home) }
 
+    BackHandler(enabled = navigationStack.size > 1) {
+        navigationStack.removeLast()
+        selectedItem = navigationStack.last()
+    }
 
     LaunchedEffect(selectedItem) {
         if (selectedItem != BottomNavItem.Search) {
@@ -62,7 +68,12 @@ fun MainScreenContent() {
                 NavigationBar {
                     TabNavigationItems(
                         selectedItem = selectedItem,
-                        onItemSelected = { selectedItem = it }
+                        onItemSelected = { newItem ->
+                            if (navigationStack.lastOrNull() != newItem) {
+                                navigationStack.add(newItem)
+                            }
+                            selectedItem = newItem
+                        }
                     )
                 }
             }
