@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.yumedev.seijakulistkmp.di.initKoin
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -15,6 +16,8 @@ class SeijakuApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        initializeCrashlytics()
+
         initKoin(googleWebClientId = BuildConfig.GOOGLE_WEB_CLIENT_ID) {
             androidLogger()
             androidContext(this@SeijakuApplication)
@@ -22,6 +25,16 @@ class SeijakuApplication : Application() {
 
         createNotificationChannel()
         applyLanguage()
+    }
+
+    private fun initializeCrashlytics() {
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
+
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            FirebaseCrashlytics.getInstance().recordException(throwable)
+            defaultHandler?.uncaughtException(thread, throwable)
+        }
     }
 
     private fun createNotificationChannel() {

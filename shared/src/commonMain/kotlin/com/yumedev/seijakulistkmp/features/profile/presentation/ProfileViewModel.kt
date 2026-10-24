@@ -40,6 +40,7 @@ class ProfileViewModel(
     private val observeAllFavoriteEpisodes: ObserveAllFavoriteEpisodesUseCase,
     private val updateFavoriteEpisode: UpdateFavoriteEpisodeUseCase,
     private val deleteFavoriteEpisode: DeleteFavoriteEpisodeUseCase,
+    private val mediaListDao: com.yumedev.seijakulistkmp.features.tracking.data.local.dao.MediaListDao,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -65,28 +66,37 @@ class ProfileViewModel(
 
     private fun loadProfile() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+            try {
+                _uiState.update { it.copy(isLoading = true, error = null) }
 
-            when (ensureLocalProfileExists()) {
-                is Result.Success -> {
-                    getCurrentProfile().collect { profile ->
+                when (ensureLocalProfileExists()) {
+                    is Result.Success -> {
+                        getCurrentProfile().collect { profile ->
+                            _uiState.update {
+                                it.copy(
+                                    profile = profile,
+                                    isLoading = false,
+                                    error = null,
+                                )
+                            }
+                        }
+                    }
+
+                    is Result.Failure -> {
                         _uiState.update {
                             it.copy(
-                                profile = profile,
                                 isLoading = false,
-                                error = null,
+                                error = ProfileError.LoadingError,
                             )
                         }
                     }
                 }
-
-                is Result.Failure -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = ProfileError.LoadingError,
-                        )
-                    }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = ProfileError.LoadingError,
+                    )
                 }
             }
         }
@@ -94,38 +104,57 @@ class ProfileViewModel(
 
     private fun loadStats() {
         viewModelScope.launch {
-            getListStats(MediaType.ANIME).collect { stats ->
-                _uiState.update { it.copy(animeStats = stats) }
+            try {
+                getListStats(MediaType.ANIME).collect { stats ->
+                    _uiState.update { it.copy(animeStats = stats) }
+                }
+            } catch (e: Exception) {
             }
         }
         viewModelScope.launch {
-            getListStats(MediaType.MANGA).collect { stats ->
-                _uiState.update { it.copy(mangaStats = stats) }
+            try {
+                getListStats(MediaType.MANGA).collect { stats ->
+                    _uiState.update { it.copy(mangaStats = stats) }
+                }
+            } catch (e: Exception) {
             }
         }
     }
 
     private fun loadFavorites() {
         viewModelScope.launch {
-            getFavoriteMedia.observe(MediaType.ANIME).collect { favorites ->
-                _uiState.update { it.copy(favoriteAnime = favorites) }
+            try {
+                getFavoriteMedia.observe(MediaType.ANIME).collect { favorites ->
+                    _uiState.update { it.copy(favoriteAnime = favorites) }
+                }
+            } catch (e: Exception) {
             }
         }
         viewModelScope.launch {
-            getFavoriteMedia.observe(MediaType.MANGA).collect { favorites ->
-                _uiState.update { it.copy(favoriteManga = favorites) }
+            try {
+                getFavoriteMedia.observe(MediaType.MANGA).collect { favorites ->
+                    _uiState.update { it.copy(favoriteManga = favorites) }
+                }
+            } catch (e: Exception) {
             }
         }
     }
 
     private fun loadFavoriteEpisodes() {
         viewModelScope.launch {
-            observeAllFavoriteEpisodes().collect { episodes ->
+            try {
+                observeAllFavoriteEpisodes().collect { episodes ->
+                    _uiState.update {
+                        it.copy(
+                            favoriteEpisodes = episodes,
+                            isFavoriteEpisodesLoading = false
+                        )
+                    }
+                    updateGroupedEpisodes()
+                }
+            } catch (e: Exception) {
                 _uiState.update {
-                    it.copy(
-                        favoriteEpisodes = episodes,
-                        isFavoriteEpisodesLoading = false
-                    )
+                    it.copy(isFavoriteEpisodesLoading = false)
                 }
             }
         }
@@ -450,6 +479,88 @@ class ProfileViewModel(
                     _uiState.update { it.copy(error = ProfileError.SavingError) }
                 }
             }
+        }
+    }
+
+    fun onToggleEpisodesSearch() {
+        _uiState.update {
+            val newVisible = !it.isEpisodesSearchVisible
+            it.copy(
+                isEpisodesSearchVisible = newVisible,
+                episodesSearchQuery = if (newVisible) it.episodesSearchQuery else ""
+            )
+        }
+        if (!_uiState.value.isEpisodesSearchVisible) {
+            updateGroupedEpisodes()
+        }
+    }
+
+    fun onEpisodesSearchQueryChange(query: String) {
+        _uiState.update { it.copy(episodesSearchQuery = query) }
+        updateGroupedEpisodes()
+    }
+
+    fun onEpisodesSortChange(sortOption: com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption) {
+        _uiState.update { it.copy(episodesSortBy = sortOption) }
+        updateGroupedEpisodes()
+    }
+
+    fun onToggleAnimeGroup(mediaId: Int) {
+        _uiState.update {
+            val newExpandedGroups = if (it.expandedAnimeGroups.contains(mediaId)) {
+                it.expandedAnimeGroups - mediaId
+            } else {
+                it.expandedAnimeGroups + mediaId
+            }
+            it.copy(expandedAnimeGroups = newExpandedGroups)
+        }
+    }
+
+    private fun updateGroupedEpisodes() {
+        viewModelScope.launch {
+            val currentState = _uiState.value
+            val episodes = currentState.favoriteEpisodes
+
+            val filtered = if (currentState.episodesSearchQuery.isBlank()) {
+                episodes
+            } else {
+                val query = currentState.episodesSearchQuery.lowercase()
+                episodes.filter { episode ->
+                    episode.episodeTitle.lowercase().contains(query)
+                }
+            }
+
+            val sorted = when (currentState.episodesSortBy) {
+                com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption.RATING -> {
+                    filtered.sortedWith(
+                        compareByDescending<com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode> { it.rating ?: -1 }
+                            .thenByDescending { it.markedAt }
+                    )
+                }
+                com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption.ALPHABETICALLY -> {
+                    filtered.sortedBy { it.episodeTitle.lowercase() }
+                }
+            }
+
+            val mediaIds = sorted.map { it.mediaId }.distinct()
+
+            val animeTitles = if (mediaIds.isNotEmpty()) {
+                mediaListDao.getMediaEntriesByIds(mediaIds, MediaType.ANIME.name)
+                    .associate { it.mediaId to it.mediaTitle }
+            } else {
+                emptyMap()
+            }
+
+            val grouped = sorted.groupBy { it.mediaId }
+                .map { (mediaId, groupEpisodes) ->
+                    com.yumedev.seijakulistkmp.features.profile.presentation.model.AnimeGroup(
+                        mediaId = mediaId,
+                        animeTitle = animeTitles[mediaId] ?: "Anime $mediaId",
+                        episodes = groupEpisodes
+                    )
+                }
+
+            _uiState.update { it.copy(groupedFavoriteEpisodes = grouped) }
         }
     }
 }

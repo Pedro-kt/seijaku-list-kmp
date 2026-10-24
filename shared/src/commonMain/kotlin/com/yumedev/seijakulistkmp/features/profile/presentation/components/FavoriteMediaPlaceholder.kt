@@ -31,7 +31,7 @@ fun FavoriteMediaPlaceholder(
     Card(
         onClick = onClick,
         modifier = modifier
-            .size(width = 90.dp, height = 140.dp),
+            .size(width = 105.dp, height = 150.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)

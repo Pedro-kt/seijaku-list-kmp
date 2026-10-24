@@ -22,6 +22,7 @@ import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
 import com.yumedev.seijakulistkmp.core.utils.rememberUrlOpener
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
+import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeVariant
 import com.yumedev.seijakulistkmp.features.settings.presentation.components.*
 import com.yumedev.seijakulistkmp.features.settings.presentation.model.SettingsUiState
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.ConflictResolutionDialog
@@ -32,6 +33,7 @@ import dev.seyfarth.tablericons.outlined.ArrowLeft
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 class SettingsScreen : Screen {
     @Composable
@@ -60,6 +62,7 @@ class SettingsScreen : Screen {
             appVersion = appVersion,
             buildNumber = buildNumber,
             onThemeSelected = viewModel::onThemeSelected,
+            onThemeVariantSelected = viewModel::onThemeVariantSelected,
             onLanguageSelected = { languageMode ->
                 viewModel.onLanguageSelected(languageMode)
                 activityRecreator.recreate()
@@ -216,6 +219,7 @@ fun SettingsScreenContent(
     appVersion: String,
     buildNumber: String,
     onThemeSelected: (ThemeMode) -> Unit,
+    onThemeVariantSelected: (ThemeVariant) -> Unit,
     onLanguageSelected: (LanguageMode) -> Unit,
     onAiringNotificationsToggle: (Boolean) -> Unit,
     onSfwModeToggle: (Boolean) -> Unit,
@@ -254,18 +258,22 @@ fun SettingsScreenContent(
         },
         modifier = modifier
     ) { paddingValues ->
+        val responsive = ResponsiveTheme.values
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(vertical = responsive.largePadding),
+            verticalArrangement = Arrangement.spacedBy(responsive.xlargePadding)
         ) {
             item {
                 SettingsAppearanceSection(
                     selectedTheme = state.selectedTheme,
+                    selectedThemeVariant = state.selectedThemeVariant,
                     selectedLanguage = state.selectedLanguage,
                     onThemeSelected = onThemeSelected,
+                    onThemeVariantSelected = onThemeVariantSelected,
                     onLanguageSelected = onLanguageSelected
                 )
             }

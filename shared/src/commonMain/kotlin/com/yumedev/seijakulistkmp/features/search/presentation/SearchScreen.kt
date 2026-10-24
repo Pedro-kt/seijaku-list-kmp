@@ -1,5 +1,6 @@
 package com.yumedev.seijakulistkmp.features.search.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -23,6 +24,12 @@ import com.yumedev.seijakulistkmp.features.search.presentation.model.toApiValue
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaType as SearchMediaType
+
+private enum class SearchViewState {
+    COLLAPSED,
+    EXPANDED,
+    RESULTS
+}
 
 class SearchScreen(
     private val quickFilter: QuickFilter? = null
@@ -68,6 +75,7 @@ fun SearchScreenContent(
 
     var hasHandledNavigation by remember { mutableStateOf(false) }
     var hasExecutedQuickFilter by remember { mutableStateOf(false) }
+    val searchStateStack = remember { mutableStateListOf<SearchViewState>(SearchViewState.COLLAPSED) }
 
     val isExpanded = if (shouldExpandOnStart && !hasHandledNavigation) {
         true
@@ -102,6 +110,46 @@ fun SearchScreenContent(
         onExpandedChange(state.isExpanded || state.hasSearched)
     }
 
+    val currentSearchState = when {
+        state.hasSearched -> SearchViewState.RESULTS
+        isExpanded -> SearchViewState.EXPANDED
+        else -> SearchViewState.COLLAPSED
+    }
+
+    LaunchedEffect(currentSearchState) {
+        if (searchStateStack.lastOrNull() != currentSearchState) {
+            searchStateStack.add(currentSearchState)
+        }
+    }
+
+    fun handleSearchBack() {
+        if (searchStateStack.size > 1) {
+            searchStateStack.removeLast()
+            val previousState = searchStateStack.last()
+
+            when (previousState) {
+                SearchViewState.COLLAPSED -> {
+                    if (state.hasSearched) {
+                        viewModel.clearSearchResults()
+                    }
+                    if (state.isExpanded) {
+                        viewModel.collapseSearch()
+                    }
+                }
+                SearchViewState.EXPANDED -> {
+                    if (state.hasSearched) {
+                        viewModel.clearSearchResults()
+                    }
+                }
+                SearchViewState.RESULTS -> {}
+            }
+        }
+    }
+
+    BackHandler(enabled = searchStateStack.size > 1 && quickFilter == null) {
+        handleSearchBack()
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.surface
@@ -133,7 +181,7 @@ fun SearchScreenContent(
                     if (quickFilter != null) {
                         navigator?.pop()
                     } else {
-                        viewModel.clearSearchResults()
+                        handleSearchBack()
                     }
                 },
                 onRetry = {
@@ -151,7 +199,7 @@ fun SearchScreenContent(
                 viewModel.updateSearchQuery(query)
             },
             onBackClick = {
-                viewModel.collapseSearch()
+                handleSearchBack()
             },
             onSearch = {
                 if (state.searchQuery.isNotBlank()) {

@@ -21,6 +21,7 @@ import coil3.compose.AsyncImage
 import com.yumedev.seijakulistkmp.features.character.presentation.model.MediaAppearanceUiModel
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun CharacterAppearsIn(
@@ -28,22 +29,23 @@ fun CharacterAppearsIn(
     onMediaClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     if (media.isEmpty()) return
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         Text(
             text = stringResource(Res.string.character_appears_in),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
         )
 
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
+            contentPadding = PaddingValues(horizontal = responsive.horizontalPadding)
         ) {
             items(media) { mediaItem ->
                 MediaAppearanceCard(
@@ -61,15 +63,16 @@ private fun MediaAppearanceCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Column(
-        modifier = modifier.width(140.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier.width(responsive.cardWidth * 0.875f),
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .height(responsive.cardImageHeight)
+                .clip(RoundedCornerShape(responsive.cornerRadius))
                 .clickable(onClick = onClick)
         ) {
             AsyncImage(
@@ -82,7 +85,7 @@ private fun MediaAppearanceCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(80.dp)
+                    .height(responsive.largeIconSize + responsive.mediumIconSize)
                     .align(Alignment.BottomCenter)
                     .background(
                         Brush.verticalGradient(
@@ -105,13 +108,13 @@ private fun MediaAppearanceCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomStart)
-                    .padding(10.dp)
+                    .padding(responsive.smallPadding * 2.5f)
             )
         }
 
         FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.smallPadding),
+            verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
         ) {
             val parts = media.typeLabel.split(" · ")
 
@@ -125,7 +128,7 @@ private fun MediaAppearanceCard(
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = responsive.smallPadding * 2.5f, vertical = responsive.smallPadding)
                     )
                 }
             }
@@ -140,7 +143,7 @@ private fun MediaAppearanceCard(
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = responsive.smallPadding * 2.5f, vertical = responsive.smallPadding)
                     )
                 }
             }

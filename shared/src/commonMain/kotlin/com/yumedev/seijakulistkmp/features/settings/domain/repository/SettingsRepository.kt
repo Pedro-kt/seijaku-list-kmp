@@ -2,12 +2,16 @@ package com.yumedev.seijakulistkmp.features.settings.domain.repository
 
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
+import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeVariant
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCardType
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
     fun getThemeMode(): Flow<ThemeMode>
     suspend fun setThemeMode(themeMode: ThemeMode)
+
+    fun getThemeVariant(): Flow<ThemeVariant>
+    suspend fun setThemeVariant(themeVariant: ThemeVariant)
 
     fun getLanguageMode(): Flow<LanguageMode>
     suspend fun setLanguageMode(languageMode: LanguageMode)

@@ -24,6 +24,7 @@ import dev.seyfarth.tablericons.outlined.Plus
 import dev.seyfarth.tablericons.outlined.Trash
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun ListMediaListCard(
@@ -35,6 +36,7 @@ fun ListMediaListCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -42,15 +44,15 @@ fun ListMediaListCard(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(140.dp),
+            .height(responsive.minTouchTarget * 3),
         color = MaterialTheme.colorScheme.surface
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    .padding(horizontal = responsive.horizontalPadding, vertical = responsive.mediumSpacing),
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
                 AsyncImage(
                     model = entry.mediaInfo?.coverImage,
@@ -58,7 +60,7 @@ fun ListMediaListCard(
                     modifier = Modifier
                         .width(85.dp)
                         .fillMaxHeight()
-                        .clip(RoundedCornerShape(8.dp)),
+                        .clip(RoundedCornerShape(responsive.mediumSpacing)),
                     contentScale = ContentScale.Crop
                 )
 
@@ -69,7 +71,7 @@ fun ListMediaListCard(
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -86,7 +88,7 @@ fun ListMediaListCard(
                                 modifier = Modifier.weight(1f)
                             )
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(responsive.mediumSpacing))
 
                             ListStatusChip(
                                 status = entry.status,
@@ -95,7 +97,7 @@ fun ListMediaListCard(
                         }
 
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             val total = when (entry.mediaType) {
@@ -143,7 +145,7 @@ fun ListMediaListCard(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(end = 40.dp),
+                            .padding(end = responsive.minTouchTarget),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -161,13 +163,13 @@ fun ListMediaListCard(
                             },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(4.dp)
-                                .clip(RoundedCornerShape(2.dp)),
+                                .height(responsive.smallPadding)
+                                .clip(RoundedCornerShape(responsive.smallPadding / 2)),
                             color = MaterialTheme.colorScheme.primary,
                             trackColor = MaterialTheme.colorScheme.surfaceVariant
                         )
 
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(responsive.mediumSpacing))
 
                         Box {
                             Surface(
@@ -183,7 +185,7 @@ fun ListMediaListCard(
                                     Icon(
                                         imageVector = TablerIcons.Outlined.DotsVertical,
                                         contentDescription = stringResource(Res.string.filter_menu),
-                                        modifier = Modifier.size(16.dp),
+                                        modifier = Modifier.size(20.dp),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
@@ -237,8 +239,8 @@ fun ListMediaListCard(
                 enabled = canIncrement,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 16.dp, bottom = 8.dp)
-                    .size(32.dp),
+                    .padding(end = responsive.horizontalPadding, bottom = responsive.mediumSpacing)
+                    .size(40.dp),
                 colors = IconButtonDefaults.filledIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -247,7 +249,7 @@ fun ListMediaListCard(
                 Icon(
                     imageVector = TablerIcons.Outlined.Plus,
                     contentDescription = stringResource(Res.string.list_increase),
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(20.dp),
                     tint = if (canIncrement) {
                         MaterialTheme.colorScheme.onPrimary
                     } else {
@@ -295,6 +297,7 @@ private fun ListStatusChip(
     mediaType: MediaType,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val statusText = when (status) {
         MediaListStatus.CURRENT -> if (mediaType == MediaType.ANIME) {
             stringResource(Res.string.list_status_watching_short)
@@ -326,7 +329,7 @@ private fun ListStatusChip(
     }
 
     Surface(
-        shape = RoundedCornerShape(4.dp),
+        shape = RoundedCornerShape(responsive.smallPadding),
         color = statusColor.copy(alpha = 0.2f),
         modifier = modifier
     ) {
@@ -334,7 +337,7 @@ private fun ListStatusChip(
             text = statusText,
             style = MaterialTheme.typography.labelSmall,
             color = statusColor,
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            modifier = Modifier.padding(horizontal = responsive.smallSpacing, vertical = 2.dp)
         )
     }
 }

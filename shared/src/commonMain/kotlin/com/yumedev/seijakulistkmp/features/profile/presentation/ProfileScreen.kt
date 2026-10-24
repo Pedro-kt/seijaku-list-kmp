@@ -127,6 +127,7 @@ import seijakulistkmp.shared.generated.resources.profile_select_image
 import seijakulistkmp.shared.generated.resources.profile_remove_image
 import seijakulistkmp.shared.generated.resources.settings
 import kotlin.math.roundToInt
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 private fun ProfileError.toStringResource(): String {
@@ -174,7 +175,11 @@ class ProfileScreen : Screen {
             onReorderFavorites = viewModel::onReorderFavorites,
             onEpisodeFavoriteClick = { episode ->
                 selectedEpisode = episode
-            }
+            },
+            onToggleEpisodesSearch = viewModel::onToggleEpisodesSearch,
+            onEpisodesSearchQueryChange = viewModel::onEpisodesSearchQueryChange,
+            onEpisodesSortChange = viewModel::onEpisodesSortChange,
+            onToggleAnimeGroup = viewModel::onToggleAnimeGroup
         )
 
 
@@ -220,6 +225,10 @@ fun ProfileScreenContent(
     onRemoveFavorite: (Int) -> Unit,
     onReorderFavorites: (Int, Int, Boolean) -> Unit,
     onEpisodeFavoriteClick: (FavoriteEpisode) -> Unit,
+    onToggleEpisodesSearch: () -> Unit,
+    onEpisodesSearchQueryChange: (String) -> Unit,
+    onEpisodesSortChange: (com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption) -> Unit,
+    onToggleAnimeGroup: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -253,7 +262,12 @@ fun ProfileScreenContent(
                     favoriteAnime = uiState.favoriteAnime,
                     favoriteManga = uiState.favoriteManga,
                     favoriteEpisodes = uiState.favoriteEpisodes,
+                    groupedFavoriteEpisodes = uiState.groupedFavoriteEpisodes,
                     isFavoriteEpisodesLoading = uiState.isFavoriteEpisodesLoading,
+                    isEpisodesSearchVisible = uiState.isEpisodesSearchVisible,
+                    episodesSearchQuery = uiState.episodesSearchQuery,
+                    episodesSortBy = uiState.episodesSortBy,
+                    expandedAnimeGroups = uiState.expandedAnimeGroups,
                     selectedTab = uiState.selectedTab,
                     isAuthenticated = uiState.isAuthenticated,
                     onTabChanged = onTabChanged,
@@ -263,6 +277,10 @@ fun ProfileScreenContent(
                     onFavoriteClick = { entry -> },
                     onReorderFavorites = onReorderFavorites,
                     onEpisodeFavoriteClick = onEpisodeFavoriteClick,
+                    onToggleEpisodesSearch = onToggleEpisodesSearch,
+                    onEpisodesSearchQueryChange = onEpisodesSearchQueryChange,
+                    onEpisodesSortChange = onEpisodesSortChange,
+                    onToggleAnimeGroup = onToggleAnimeGroup,
                     onAvatarClick = {
                         filePicker.pickImage(
                             onImageSelected = { uri ->
@@ -341,7 +359,12 @@ fun ProfileContent(
     favoriteAnime: List<com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry>,
     favoriteManga: List<com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry>,
     favoriteEpisodes: List<com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode>,
+    groupedFavoriteEpisodes: List<com.yumedev.seijakulistkmp.features.profile.presentation.model.AnimeGroup>,
     isFavoriteEpisodesLoading: Boolean,
+    isEpisodesSearchVisible: Boolean,
+    episodesSearchQuery: String,
+    episodesSortBy: com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption,
+    expandedAnimeGroups: Set<Int>,
     selectedTab: Int,
     isAuthenticated: Boolean,
     onTabChanged: (Int) -> Unit,
@@ -353,9 +376,14 @@ fun ProfileContent(
     onFavoriteClick: (com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry) -> Unit,
     onReorderFavorites: (Int, Int, Boolean) -> Unit,
     onEpisodeFavoriteClick: (FavoriteEpisode) -> Unit,
+    onToggleEpisodesSearch: () -> Unit,
+    onEpisodesSearchQueryChange: (String) -> Unit,
+    onEpisodesSortChange: (com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption) -> Unit,
+    onToggleAnimeGroup: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
+    val responsive = ResponsiveTheme.values
 
     val scrollOffset = scrollState.value
     val maxScroll = 200f
@@ -380,13 +408,12 @@ fun ProfileContent(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        // Tabs
         PrimaryTabRow(
             selectedTabIndex = selectedTab,
             modifier = Modifier
-                .padding(vertical = 8.dp)
+                .padding(vertical = responsive.mediumPadding)
                 .graphicsLayer {
-                    translationY = -40.dp.toPx()
+                    translationY = -responsive.minTouchTarget.toPx()
                 }
         ) {
             Tab(
@@ -401,7 +428,6 @@ fun ProfileContent(
             )
         }
 
-        // Stats Content
         val stats = if (selectedTab == 0) animeStats else mangaStats
         val isAnime = selectedTab == 0
 
@@ -409,28 +435,28 @@ fun ProfileContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .graphicsLayer {
-                    translationY = -40.dp.toPx()
+                    translationY = -responsive.minTouchTarget.toPx()
                 },
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(responsive.largePadding),
         ) {
             if (stats != null) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                        .padding(horizontal = responsive.horizontalPadding),
+                    verticalArrangement = Arrangement.spacedBy(responsive.largePadding)
                 ) {
                     ProfileStatsSection(
                         stats = stats,
                         isAnime = isAnime,
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(responsive.mediumSpacing))
 
                     ProfileDistributionSection(stats = stats)
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(responsive.largePadding))
 
                 val favorites = if (isAnime) favoriteAnime else favoriteManga
                 ProfileTopFavoritesSection(
@@ -444,7 +470,7 @@ fun ProfileContent(
 
 
                 if (isAnime) {
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(responsive.xlargePadding))
 
                     val getMediaList: GetMediaListUseCase = koinInject()
                     val allAnimeEntries by getMediaList(MediaType.ANIME).collectAsState(initial = emptyList())
@@ -453,10 +479,18 @@ fun ProfileContent(
                     }
 
                     FavoriteEpisodesSection(
-                        favoriteEpisodes = favoriteEpisodes,
+                        groupedEpisodes = groupedFavoriteEpisodes,
                         animeTitles = animeTitles,
                         isLoading = isFavoriteEpisodesLoading,
+                        isSearchVisible = isEpisodesSearchVisible,
+                        searchQuery = episodesSearchQuery,
+                        currentSort = episodesSortBy,
+                        expandedGroups = expandedAnimeGroups,
                         onEpisodeClick = onEpisodeFavoriteClick,
+                        onToggleSearch = onToggleEpisodesSearch,
+                        onSearchQueryChange = onEpisodesSearchQueryChange,
+                        onSortChange = onEpisodesSortChange,
+                        onToggleGroup = onToggleAnimeGroup,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -464,7 +498,7 @@ fun ProfileContent(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(32.dp),
+                        .padding(responsive.xlargePadding),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -476,7 +510,7 @@ fun ProfileContent(
             }
         }
 
-            Spacer(modifier = Modifier.height(120.dp))
+            Spacer(modifier = Modifier.height(responsive.xlargePadding * 3))
         }
 
         ProfileTopAppBar(
@@ -555,6 +589,8 @@ private fun ProfileTopAppBar(
     backgroundAlpha: Float,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -566,7 +602,7 @@ private fun ProfileTopAppBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = responsive.horizontalPadding),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -588,7 +624,7 @@ private fun ProfileTopAppBar(
             }
         }
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(responsive.smallSpacing))
 
         Surface(
             onClick = onSettingsClick,
@@ -619,7 +655,9 @@ fun ProfileHeroSection(
     onRemoveAvatar: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val responsive = ResponsiveTheme.values
     var showAvatarMenu by remember { mutableStateOf(false) }
+
     Column(modifier = modifier) {
         Box(
             modifier = Modifier
@@ -630,7 +668,7 @@ fun ProfileHeroSection(
         ) {
             Box(
                 modifier = Modifier
-                    .padding(start = 16.dp)
+                    .padding(start = responsive.horizontalPadding)
                     .size(100.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surface),
@@ -712,12 +750,12 @@ fun ProfileHeroSection(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(top = 8.dp)
+                .padding(horizontal = responsive.horizontalPadding)
+                .padding(top = responsive.smallSpacing)
                 .graphicsLayer {
                     translationY = -40.dp.toPx()
                 },
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(responsive.smallPadding),
         ) {
             Text(
                 text = profile.name,
@@ -750,7 +788,7 @@ fun ProfileHeroSection(
             )
 
             if (!profile.about.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(responsive.smallSpacing))
                 Text(
                     text = profile.about,
                     style = MaterialTheme.typography.bodyMedium,
@@ -759,16 +797,16 @@ fun ProfileHeroSection(
             }
 
             if (!isAuthenticated) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(responsive.smallSpacing))
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     ),
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(responsive.smallSpacing),
                 ) {
                     Text(
                         text = stringResource(Res.string.profile_local_badge),
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        modifier = Modifier.padding(horizontal = responsive.mediumPadding, vertical = responsive.smallPadding),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                     )
@@ -785,9 +823,11 @@ fun ProfileStatsSection(
     isAnime: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val responsive = ResponsiveTheme.values
+
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
     ) {
         StatCard(
             value = stats.totalEntries.toString(),
@@ -803,7 +843,7 @@ fun ProfileStatsSection(
 
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
     ) {
         if (isAnime) {
             StatCard(
@@ -837,24 +877,26 @@ fun StatCard(
     label: String,
     modifier: Modifier = Modifier,
 ) {
+    val responsive = ResponsiveTheme.values
+
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         ),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(responsive.cornerRadius),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(responsive.largePadding),
         ) {
             Text(
                 text = value,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(responsive.smallPadding))
             Text(
                 text = label,
                 style = MaterialTheme.typography.bodySmall,
@@ -869,9 +911,11 @@ fun ProfileDistributionSection(
     stats: MediaListStats,
     modifier: Modifier = Modifier,
 ) {
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
     ) {
         Text(
             text = stringResource(Res.string.profile_distribution),
@@ -904,11 +948,12 @@ fun DistributionItem(
     total: Int,
     modifier: Modifier = Modifier,
 ) {
+    val responsive = ResponsiveTheme.values
     val percentage = if (total > 0) count.toFloat() / total else 0f
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(responsive.smallPadding),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -928,8 +973,8 @@ fun DistributionItem(
             progress = { percentage },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(6.dp)
-                .clip(RoundedCornerShape(3.dp)),
+                .height(responsive.smallPadding)
+                .clip(RoundedCornerShape(responsive.smallPadding / 2)),
             color = MaterialTheme.colorScheme.primary,
             trackColor = MaterialTheme.colorScheme.surfaceVariant,
         )
@@ -945,6 +990,7 @@ fun EditProfileBottomSheet(
     onBannerClick: () -> Unit,
     onRemoveBanner: () -> Unit,
 ) {
+    val responsive = ResponsiveTheme.values
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var name by remember { mutableStateOf(profile.name) }
     var about by remember { mutableStateOf(profile.about ?: "") }
@@ -957,13 +1003,13 @@ fun EditProfileBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 40.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+                .padding(horizontal = responsive.xlargePadding)
+                .padding(bottom = responsive.xlargePadding),
+            verticalArrangement = Arrangement.spacedBy(responsive.largePadding),
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(responsive.smallPadding),
             ) {
                 Text(
                     text = stringResource(Res.string.profile_edit_title),
@@ -978,13 +1024,13 @@ fun EditProfileBottomSheet(
                 )
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(responsive.smallPadding))
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(responsive.cornerRadius))
                     .clickable {
                         if (profile.banner != null) {
                             showBannerMenu = true
@@ -1016,7 +1062,7 @@ fun EditProfileBottomSheet(
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                            verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
                         ) {
                             Icon(
                                 imageVector = TablerIcons.Outlined.Photo,
@@ -1079,7 +1125,7 @@ fun EditProfileBottomSheet(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(responsive.cornerRadius),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
@@ -1093,23 +1139,23 @@ fun EditProfileBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 5,
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(responsive.cornerRadius),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                 ),
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(responsive.smallSpacing))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
             ) {
                 OutlinedButton(
                     onClick = onDismiss,
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(responsive.cornerRadius),
                 ) {
                     Text(
                         text = stringResource(Res.string.profile_cancel_button),
@@ -1126,7 +1172,7 @@ fun EditProfileBottomSheet(
                     },
                     modifier = Modifier.weight(1f),
                     enabled = name.isNotBlank(),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(responsive.cornerRadius),
                 ) {
                     Text(
                         text = stringResource(Res.string.profile_save_button),

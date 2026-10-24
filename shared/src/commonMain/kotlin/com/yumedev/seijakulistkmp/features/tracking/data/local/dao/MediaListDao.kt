@@ -159,4 +159,11 @@ interface MediaListDao {
         WHERE media_id = :mediaId AND media_type = :mediaType
     """)
     suspend fun removeFavorite(mediaId: Int, mediaType: String, updatedAt: Long)
+
+    @Query("""
+        SELECT *
+        FROM media_list_entries
+        WHERE media_id IN (:mediaIds) AND media_type = :mediaType
+    """)
+    suspend fun getMediaEntriesByIds(mediaIds: List<Int>, mediaType: String): List<MediaListEntryEntity>
 }

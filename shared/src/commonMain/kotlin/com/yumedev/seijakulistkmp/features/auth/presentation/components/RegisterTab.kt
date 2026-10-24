@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.core.utils.getPlatformContext
 import com.yumedev.seijakulistkmp.features.auth.presentation.AuthState
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Eye
 import dev.seyfarth.tablericons.outlined.EyeOff
@@ -44,6 +45,7 @@ fun RegisterTab(
     onNavigateToLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsiveValues = ResponsiveTheme.values
     val focusManager = LocalFocusManager.current
 
     Box(
@@ -54,8 +56,8 @@ fun RegisterTab(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(responsiveValues.horizontalPadding),
+            verticalArrangement = Arrangement.spacedBy(responsiveValues.verticalPadding)
         ) {
             Text(
                 text = stringResource(Res.string.auth_register_title),
@@ -267,7 +269,7 @@ fun RegisterTab(
                 onClick = onRegister,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(responsiveValues.buttonHeight),
                 shape = RoundedCornerShape(12.dp),
                 enabled = state.isRegisterFormValid && !state.isLoading
             ) {

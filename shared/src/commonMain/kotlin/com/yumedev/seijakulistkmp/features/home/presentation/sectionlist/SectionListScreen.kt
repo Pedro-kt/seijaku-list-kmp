@@ -26,6 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 data class SectionListScreen(
     val sectionType: SectionType,
@@ -64,6 +65,7 @@ fun SectionListScreenContent(
     onLoadMore: () -> Unit,
     onRetry: () -> Unit
 ) {
+    val responsive = ResponsiveTheme.values
     val listState = rememberLazyGridState()
 
     LaunchedEffect(listState) {
@@ -111,18 +113,18 @@ fun SectionListScreenContent(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(32.dp),
+                            .padding(responsive.xlargePadding),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
                         Icon(
                             imageVector = TablerIcons.Outlined.AlertCircle,
                             contentDescription = null,
-                            modifier = Modifier.size(64.dp),
+                            modifier = Modifier.size(responsive.largeIconSize),
                             tint = MaterialTheme.colorScheme.error
                         )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(responsive.largePadding))
 
                         Text(
                             text = state.error,
@@ -131,7 +133,7 @@ fun SectionListScreenContent(
                             color = MaterialTheme.colorScheme.onSurface
                         )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(responsive.largePadding))
 
                         Button(onClick = onRetry) {
                             Text("Retry")
@@ -143,15 +145,16 @@ fun SectionListScreenContent(
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(3),
                         state = listState,
-                        contentPadding = PaddingValues(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(responsive.horizontalPadding),
+                        horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
+                        verticalArrangement = Arrangement.spacedBy(responsive.largePadding),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(state.items) { item ->
                             AnimeCard(
                                 item = item,
-                                onClick = { onItemClick(item) }
+                                onClick = { onItemClick(item) },
+                                useAspectRatio = true
                             )
                         }
 
@@ -160,11 +163,11 @@ fun SectionListScreenContent(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(16.dp),
+                                        .padding(responsive.horizontalPadding),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     CircularProgressIndicator(
-                                        modifier = Modifier.size(24.dp)
+                                        modifier = Modifier.size(responsive.smallIconSize)
                                     )
                                 }
                             }

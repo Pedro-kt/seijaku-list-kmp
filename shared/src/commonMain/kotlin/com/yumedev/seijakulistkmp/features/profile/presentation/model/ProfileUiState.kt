@@ -20,4 +20,10 @@ data class ProfileUiState(
     val showFavoriteSelectorDialog: Boolean = false,
     val selectedFavoritePosition: Int? = null,
     val isAuthenticated: Boolean = false,
+    val episodesSearchQuery: String = "",
+    val isEpisodesSearchVisible: Boolean = false,
+    val episodesSortBy: EpisodeSortOption = EpisodeSortOption.RATING,
+    val episodesAscending: Boolean = false,
+    val expandedAnimeGroups: Set<Int> = emptySet(),
+    val groupedFavoriteEpisodes: List<AnimeGroup> = emptyList(),
 )

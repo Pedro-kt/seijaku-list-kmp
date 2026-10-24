@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.character.presentation.model.VoiceActorUiModel
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
@@ -26,20 +27,22 @@ fun CharacterVoiceActors(
 ) {
     if (voiceActors.isEmpty()) return
 
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         Text(
             text = stringResource(Res.string.character_voice_actor),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
         )
 
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
+            contentPadding = PaddingValues(start = responsive.horizontalPadding, end = responsive.horizontalPadding)
         ) {
             items(voiceActors) { voiceActor ->
                 VoiceActorItem(voiceActor = voiceActor)
@@ -53,10 +56,12 @@ private fun VoiceActorItem(
     voiceActor: VoiceActorUiModel,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier.width(80.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
     ) {
         Box(
             modifier = Modifier

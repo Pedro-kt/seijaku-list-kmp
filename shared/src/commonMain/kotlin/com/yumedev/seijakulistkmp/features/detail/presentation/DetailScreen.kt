@@ -36,6 +36,7 @@ import dev.seyfarth.tablericons.outlined.AlertCircle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 data class DetailScreen(
     val mediaId: Int,
@@ -48,9 +49,29 @@ data class DetailScreen(
         val state by viewModel.state.collectAsState()
         val urlOpener = rememberUrlOpener()
         val shareHelper = rememberShareHelper()
+        val snackbarHostState = remember { SnackbarHostState() }
 
         LaunchedEffect(mediaId, mediaType) {
             viewModel.loadMediaDetail(mediaId, mediaType)
+        }
+
+        LaunchedEffect(Unit) {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is DetailEvent.ShowError -> {
+                        snackbarHostState.showSnackbar(
+                            message = event.message,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                    is DetailEvent.ShowSuccess -> {
+                        snackbarHostState.showSnackbar(
+                            message = event.message,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                }
+            }
         }
 
         when {
@@ -67,6 +88,7 @@ data class DetailScreen(
                 DetailScreenContent(
                     mediaDetail = mediaDetailUi,
                     listEntry = state.listEntry,
+                    snackbarHostState = snackbarHostState,
                     onBackClick = { navigator.pop() },
                     onFavoriteClick = { viewModel.toggleFavorite() },
                     onShareClick = {
@@ -112,6 +134,8 @@ data class DetailScreen(
 
 @Composable
 private fun LoadingContent(onBack: () -> Unit) {
+    val responsive = ResponsiveTheme.values
+
     Scaffold(
         topBar = {
             DetailTopBar(
@@ -128,66 +152,66 @@ private fun LoadingContent(onBack: () -> Unit) {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.xlargePadding)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                    .padding(horizontal = responsive.horizontalPadding),
+                verticalArrangement = Arrangement.spacedBy(responsive.largePadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 ShimmerBox(
                     modifier = Modifier
-                        .width(160.dp)
-                        .height(230.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                        .width(responsive.cardWidth)
+                        .height(responsive.cardImageHeight)
+                        .clip(RoundedCornerShape(responsive.cornerRadius))
                 )
 
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     ShimmerBox(
                         modifier = Modifier
                             .fillMaxWidth(0.7f)
-                            .height(28.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                            .height(responsive.largeIconSize / 2)
+                            .clip(RoundedCornerShape(responsive.mediumPadding))
                     )
                 }
 
                 ShimmerBox(
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
-                        .height(16.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .height(responsive.largePadding)
+                        .clip(RoundedCornerShape(responsive.mediumPadding))
                 )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                 ) {
                     repeat(3) {
                         Surface(
                             modifier = Modifier.weight(1f),
                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(responsive.cornerRadius)
                         ) {
                             Column(
-                                modifier = Modifier.padding(vertical = 16.dp),
+                                modifier = Modifier.padding(vertical = responsive.largePadding),
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                             ) {
                                 ShimmerBox(
                                     modifier = Modifier
-                                        .size(48.dp, 24.dp)
-                                        .clip(RoundedCornerShape(8.dp))
+                                        .size(responsive.minTouchTarget, responsive.iconSize)
+                                        .clip(RoundedCornerShape(responsive.mediumPadding))
                                 )
                                 ShimmerBox(
                                     modifier = Modifier
-                                        .size(60.dp, 16.dp)
-                                        .clip(RoundedCornerShape(8.dp))
+                                        .size(responsive.minTouchTarget + responsive.mediumPadding, responsive.largePadding)
+                                        .clip(RoundedCornerShape(responsive.mediumPadding))
                                 )
                             }
                         }
@@ -197,32 +221,32 @@ private fun LoadingContent(onBack: () -> Unit) {
                 ShimmerBox(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
+                        .height(responsive.buttonHeight)
                         .clip(RoundedCornerShape(50))
                 )
             }
 
             Column(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.padding(horizontal = responsive.horizontalPadding),
+                verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
             ) {
                 ShimmerBox(
                     modifier = Modifier
-                        .width(120.dp)
-                        .height(24.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .width(responsive.minTouchTarget * 2.5f)
+                        .height(responsive.iconSize)
+                        .clip(RoundedCornerShape(responsive.mediumPadding))
                 )
                 repeat(4) {
                     ShimmerBox(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(16.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                            .height(responsive.largePadding)
+                            .clip(RoundedCornerShape(responsive.mediumPadding))
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(responsive.largePadding))
         }
     }
 }
@@ -263,6 +287,8 @@ private fun ErrorContent(
     onRetry: () -> Unit,
     onBack: () -> Unit
 ) {
+    val responsive = ResponsiveTheme.values
+
     Scaffold(
         topBar = {
             DetailTopBar(
@@ -282,13 +308,13 @@ private fun ErrorContent(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(32.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.largePadding),
+                modifier = Modifier.padding(responsive.xlargePadding)
             ) {
                 Icon(
                     imageVector = TablerIcons.Outlined.AlertCircle,
                     contentDescription = null,
-                    modifier = Modifier.size(64.dp),
+                    modifier = Modifier.size(48.dp),
                     tint = MaterialTheme.colorScheme.error
                 )
                 Text(
@@ -343,6 +369,7 @@ private fun rememberMediaDetailUiModel(mediaDetail: MediaDetail): MediaDetailUiM
 fun DetailScreenContent(
     mediaDetail: MediaDetailUiModel,
     listEntry: com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry?,
+    snackbarHostState: SnackbarHostState,
     onBackClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onShareClick: () -> Unit,
@@ -360,8 +387,19 @@ fun DetailScreenContent(
 ) {
     var showAddToListBottomSheet by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
+    val responsive = ResponsiveTheme.values
+
+    val initialColor = remember(mediaDetail.title) {
+        val hash = mediaDetail.title.hashCode()
+        val hue = (hash % 360).toFloat().let { if (it < 0) it + 360 else it }
+        Color.hsl(hue, 0.6f, 0.5f)
+    }
+
+    var dominantColor by remember(mediaDetail.coverImageUrl) { mutableStateOf(initialColor) }
 
     val showTitleInTopBar = scrollState.value > 300
+
+    val topBarColor = if (showTitleInTopBar) null else dominantColor
 
     Scaffold(
         topBar = {
@@ -370,9 +408,11 @@ fun DetailScreenContent(
                 onFavoriteClick = onFavoriteClick,
                 onShareClick = onShareClick,
                 isFavorite = mediaDetail.isFavorite,
-                title = if (showTitleInTopBar) mediaDetail.title else null
+                title = if (showTitleInTopBar) mediaDetail.title else null,
+                backgroundColor = topBarColor
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = modifier
     ) { paddingValues ->
         Column(
@@ -380,7 +420,7 @@ fun DetailScreenContent(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.xlargePadding)
         ) {
             DetailHeader(
                 coverImageUrl = mediaDetail.coverImageUrl,
@@ -395,7 +435,8 @@ fun DetailScreenContent(
                 popularityText = mediaDetail.popularityText,
                 nextAiringText = mediaDetail.nextAiringText,
                 isInList = mediaDetail.isInList,
-                onAddToListClick = { showAddToListBottomSheet = true }
+                onAddToListClick = { showAddToListBottomSheet = true },
+                onDominantColorExtracted = { color -> dominantColor = color }
             )
 
             listEntry?.let { entry ->
@@ -410,7 +451,7 @@ fun DetailScreenContent(
                     totalChapters = mediaDetail.totalChapters,
                     onIncrementProgress = onIncrementProgress,
                     onEditClick = { showAddToListBottomSheet = true },
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
                 )
             }
 
@@ -460,7 +501,7 @@ fun DetailScreenContent(
                 onImageClick = onImageClick
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(responsive.largePadding))
         }
     }
 

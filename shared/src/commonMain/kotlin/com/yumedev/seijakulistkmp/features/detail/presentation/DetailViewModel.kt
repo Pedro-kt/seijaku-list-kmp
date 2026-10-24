@@ -16,18 +16,22 @@ import com.yumedev.seijakulistkmp.features.profile.domain.usecase.GetCurrentProf
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.CachedMediaInfo
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListPriority
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.ValidationError
 import com.yumedev.seijakulistkmp.features.tracking.domain.validator.MediaListValidator
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.AddToListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.CheckInListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListEntryUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.UpdateListEntryUseCase
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -46,6 +50,9 @@ class DetailViewModel(
 
     private val _state = MutableStateFlow(DetailState())
     val state: StateFlow<DetailState> = _state.asStateFlow()
+
+    private val _events = Channel<DetailEvent>()
+    val events: Flow<DetailEvent> = _events.receiveAsFlow()
 
     private var observeListEntryJob: Job? = null
     private var observeFavoriteEpisodesJob: Job? = null
@@ -203,7 +210,7 @@ class DetailViewModel(
             val isChangingStatus = currentListEntry != null && currentListEntry.status != status
 
             if (isChangingStatus && !MediaListValidator.isStatusAllowed(status, currentDetail.status)) {
-                // TODO: Show error to user
+                _events.send(DetailEvent.ShowError("Cannot change to this status while media is ${currentDetail.status}"))
                 return@launch
             }
 
@@ -219,17 +226,24 @@ class DetailViewModel(
                 mediaStatus = currentDetail.status
             )
             if (validation is MediaListValidator.ValidationResult.Invalid) {
-                // TODO: Show error to user using validation.error (use ValidationErrorMapper.toLocalizedMessage() in UI)
+                val errorMessage = when (val error = validation.error) {
+                    is ValidationError.ProgressNotZeroForPlanning -> "Progress must be 0 when status is Planning"
+                    is ValidationError.ProgressNotCompleteForCompleted -> "Progress must be complete when status is Completed"
+                    is ValidationError.ProgressNegative -> "Progress cannot be negative"
+                    is ValidationError.ProgressExceedsMaxAllowed -> "Progress exceeds max allowed: ${error.maxAllowed}"
+                    is ValidationError.ProgressExceedsTotal -> "Progress exceeds total episodes/chapters"
+                }
+                _events.send(DetailEvent.ShowError(errorMessage))
                 return@launch
             }
 
             if (!MediaListValidator.isScoreValid(score)) {
-                // TODO: Show error to user
+                _events.send(DetailEvent.ShowError("Score must be between 0 and 100"))
                 return@launch
             }
 
             if (!MediaListValidator.isNoteLengthValid(note)) {
-                // TODO: Show error to user
+                _events.send(DetailEvent.ShowError("Note is too long (max 2000 characters)"))
                 return@launch
             }
 
@@ -287,7 +301,7 @@ class DetailViewModel(
                     }
                 }
                 is Result.Failure -> {
-                    // TODO: Handle error
+                    _events.send(DetailEvent.ShowError("Failed to save to list: ${result.exception.message}"))
                 }
             }
         }
@@ -310,7 +324,7 @@ class DetailViewModel(
                 total = total,
                 mediaStatus = currentDetail.status
             )) {
-                // TODO: Show error to user (e.g., "Cannot increment progress while status is Planning")
+                _events.send(DetailEvent.ShowError("Cannot increment progress with current status"))
                 return@launch
             }
 

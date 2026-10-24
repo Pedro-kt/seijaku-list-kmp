@@ -21,8 +21,9 @@ class RegisterWithEmailUseCase(
             return Result.Failure(AuthError.WeakPassword("Password cannot be empty"))
         }
 
-        if (password.length < 6) {
-            return Result.Failure(AuthError.WeakPassword())
+        val passwordValidation = validatePasswordStrength(password)
+        if (passwordValidation != null) {
+            return Result.Failure(AuthError.WeakPassword(passwordValidation))
         }
 
         if (password != confirmPassword) {
@@ -35,5 +36,16 @@ class RegisterWithEmailUseCase(
     private fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
         return email.matches(emailRegex)
+    }
+
+    private fun validatePasswordStrength(password: String): String? {
+        return when {
+            password.length < 12 -> "Password must be at least 12 characters long"
+            !password.any { it.isUpperCase() } -> "Password must contain at least one uppercase letter"
+            !password.any { it.isLowerCase() } -> "Password must contain at least one lowercase letter"
+            !password.any { it.isDigit() } -> "Password must contain at least one number"
+            !password.any { !it.isLetterOrDigit() } -> "Password must contain at least one special character"
+            else -> null
+        }
     }
 }

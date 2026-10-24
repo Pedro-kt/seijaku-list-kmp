@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.search.presentation.model.MoodFilter
 import org.jetbrains.compose.resources.stringResource
 
@@ -17,12 +18,14 @@ fun MoodChips(
     onMoodClick: (MoodFilter) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     FlowRow(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(horizontal = responsive.horizontalPadding),
+        horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
+        verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
     ) {
         moods.forEach { mood ->
             MoodChip(
@@ -39,6 +42,8 @@ private fun MoodChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(24.dp),
@@ -46,8 +51,8 @@ private fun MoodChip(
         modifier = modifier
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(horizontal = responsive.largePadding, vertical = responsive.mediumPadding),
+            horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(

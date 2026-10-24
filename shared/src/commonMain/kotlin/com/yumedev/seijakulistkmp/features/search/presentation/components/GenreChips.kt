@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.search.presentation.model.Genre
 import com.yumedev.seijakulistkmp.features.search.presentation.model.toLabel
 import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
@@ -27,16 +28,18 @@ fun GenreChips(
     onGenreClick: (Genre, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = responsive.horizontalPadding),
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         genres.chunked(3).forEach { rowGenres ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
                 rowGenres.forEach { genre ->
                     val genreLabel = genre.toLabel()
@@ -99,7 +102,7 @@ private fun GenreChip(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 14.dp),
+                .padding(horizontal = ResponsiveTheme.values.mediumPadding, vertical = ResponsiveTheme.values.mediumPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(

@@ -26,6 +26,7 @@ import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Bookmark
 import dev.seyfarth.tablericons.filled.Star
 import dev.seyfarth.tablericons.outlined.Bookmark
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun SearchResultItem(
@@ -35,6 +36,7 @@ fun SearchResultItem(
     onSaveClick: ((SearchResultItem) -> Unit)? = null,
     isSaved: Boolean = false
 ) {
+    val responsive = ResponsiveTheme.values
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
@@ -50,7 +52,7 @@ fun SearchResultItem(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(140.dp)
+            .height(responsive.minTouchTarget * 3)
             .scale(scale),
         color = MaterialTheme.colorScheme.surface,
         interactionSource = interactionSource
@@ -59,8 +61,8 @@ fun SearchResultItem(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    .padding(horizontal = responsive.horizontalPadding, vertical = responsive.mediumSpacing),
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
                 AsyncImage(
                     model = item.coverImage,
@@ -68,7 +70,7 @@ fun SearchResultItem(
                     modifier = Modifier
                         .width(85.dp)
                         .fillMaxHeight()
-                        .clip(RoundedCornerShape(8.dp)),
+                        .clip(RoundedCornerShape(responsive.mediumSpacing)),
                     contentScale = ContentScale.Crop
                 )
 
@@ -79,7 +81,7 @@ fun SearchResultItem(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -97,13 +99,13 @@ fun SearchResultItem(
                         )
 
                         if (item.status != null) {
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(responsive.mediumSpacing))
                             StatusBadge(status = item.status)
                         }
                     }
 
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         if (item.rating != null) {
@@ -114,7 +116,7 @@ fun SearchResultItem(
                                 Icon(
                                     imageVector = TablerIcons.Filled.Star,
                                     contentDescription = null,
-                                    modifier = Modifier.size(14.dp),
+                                    modifier = Modifier.size(16.dp),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
@@ -195,33 +197,33 @@ fun SearchResultItem(
 
                 if (item.genres.isNotEmpty()) {
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         item.genres.take(2).forEach { genre ->
                             Surface(
-                                shape = RoundedCornerShape(4.dp),
+                                shape = RoundedCornerShape(responsive.smallPadding),
                                 color = MaterialTheme.colorScheme.secondaryContainer
                             ) {
                                 Text(
                                     text = genre,
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                    modifier = Modifier.padding(horizontal = responsive.smallSpacing, vertical = 2.dp)
                                 )
                             }
                         }
 
                         if (item.genres.size > 2) {
                             Surface(
-                                shape = RoundedCornerShape(4.dp),
+                                shape = RoundedCornerShape(responsive.smallPadding),
                                 color = MaterialTheme.colorScheme.secondaryContainer
                             ) {
                                 Text(
                                     text = "+${item.genres.size - 2}",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                    modifier = Modifier.padding(horizontal = responsive.smallSpacing, vertical = 2.dp)
                                 )
                             }
                         }
@@ -235,8 +237,8 @@ fun SearchResultItem(
                 onClick = { onSaveClick(item) },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 16.dp, bottom = 8.dp)
-                    .size(32.dp),
+                    .padding(end = responsive.horizontalPadding, bottom = responsive.mediumSpacing)
+                    .size(40.dp),
                 colors = IconButtonDefaults.filledIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = if (isSaved) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimaryContainer
@@ -245,7 +247,7 @@ fun SearchResultItem(
                 Icon(
                     imageVector = if (isSaved) TablerIcons.Filled.Bookmark else TablerIcons.Outlined.Bookmark,
                     contentDescription = if (isSaved) "Remove from saved" else "Save for later",
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
@@ -258,6 +260,7 @@ private fun StatusBadge(
     status: String,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val (backgroundColor, textColor, label) = when (status) {
         "RELEASING" -> Triple(
             MaterialTheme.colorScheme.primaryContainer,
@@ -287,7 +290,7 @@ private fun StatusBadge(
     }
 
     Surface(
-        shape = RoundedCornerShape(4.dp),
+        shape = RoundedCornerShape(responsive.smallPadding),
         color = backgroundColor,
         modifier = modifier
     ) {
@@ -295,7 +298,7 @@ private fun StatusBadge(
             text = label,
             style = MaterialTheme.typography.labelSmall,
             color = textColor,
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            modifier = Modifier.padding(horizontal = responsive.smallSpacing, vertical = 2.dp)
         )
     }
 }

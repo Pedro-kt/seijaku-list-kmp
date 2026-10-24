@@ -26,6 +26,11 @@ class AuthRepositoryImpl(
         return try {
             val authResult = auth.signInWithEmailAndPassword(email, password)
             val user = authResult.user ?: return Result.Failure(AuthError.UserNotFound())
+
+            if (!user.isEmailVerified) {
+                return Result.Failure(AuthError.EmailNotVerified())
+            }
+
             Result.Success(user.toAuthUser())
         } catch (e: FirebaseAuthException) {
             Result.Failure(mapFirebaseException(e))
@@ -38,6 +43,15 @@ class AuthRepositoryImpl(
         return try {
             val authResult = auth.createUserWithEmailAndPassword(email, password)
             val user = authResult.user ?: return Result.Failure(AuthError.Unknown("Failed to create user"))
+
+            // Send email verification automatically after signup
+            try {
+                user.sendEmailVerification()
+            } catch (e: Exception) {
+                // Log but don't fail signup if verification email fails to send
+                // User can request it again later
+            }
+
             Result.Success(user.toAuthUser())
         } catch (e: FirebaseAuthException) {
             Result.Failure(mapFirebaseException(e))
@@ -98,6 +112,18 @@ class AuthRepositoryImpl(
             Result.Failure(mapFirebaseException(e))
         } catch (e: Exception) {
             Result.Failure(AuthError.Unknown(e.message ?: "Failed to send reset email"))
+        }
+    }
+
+    override suspend fun sendEmailVerification(): Result<Unit> {
+        return try {
+            val user = auth.currentUser ?: return Result.Failure(AuthError.UserNotFound())
+            user.sendEmailVerification()
+            Result.Success(Unit)
+        } catch (e: FirebaseAuthException) {
+            Result.Failure(mapFirebaseException(e))
+        } catch (e: Exception) {
+            Result.Failure(AuthError.Unknown(e.message ?: "Failed to send verification email"))
         }
     }
 

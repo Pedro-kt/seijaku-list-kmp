@@ -1,9 +1,11 @@
 package com.yumedev.seijakulistkmp
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
@@ -13,8 +15,12 @@ import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import com.yumedev.seijakulistkmp.features.main.presentation.MainScreen
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
+import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeVariant
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeModeUseCase
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeVariantUseCase
+import com.yumedev.seijakulistkmp.ui.theme.ProvideResponsiveValues
 import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
+import com.yumedev.seijakulistkmp.ui.theme.rememberWindowSizeClass
 import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
 
@@ -32,8 +38,10 @@ fun App() {
 
     KoinContext {
         val getThemeModeUseCase: GetThemeModeUseCase = koinInject()
+        val getThemeVariantUseCase: GetThemeVariantUseCase = koinInject()
 
         val themeMode by getThemeModeUseCase().collectAsState(initial = ThemeMode.SYSTEM)
+        val themeVariant by getThemeVariantUseCase().collectAsState(initial = ThemeVariant.SUMI)
         val isSystemInDark = isSystemInDarkTheme()
 
         val darkTheme = when (themeMode) {
@@ -42,9 +50,22 @@ fun App() {
             ThemeMode.SYSTEM -> isSystemInDark
         }
 
-        SeijakuTheme(darkTheme = darkTheme) {
-            Navigator(MainScreen()) { navigator ->
-                SlideTransition(navigator)
+        SeijakuTheme(
+            darkTheme = darkTheme,
+            themeVariant = themeVariant
+        ) {
+            BoxWithConstraints {
+                val density = LocalDensity.current
+                val widthDp = with(density) {
+                    constraints.maxWidth.toDp().value.toInt()
+                }
+                val windowSizeClass = rememberWindowSizeClass(widthDp)
+
+                ProvideResponsiveValues(windowSizeClass) {
+                    Navigator(MainScreen()) { navigator ->
+                        SlideTransition(navigator)
+                    }
+                }
             }
         }
     }

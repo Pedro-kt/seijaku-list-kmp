@@ -1,11 +1,15 @@
 package com.yumedev.seijakulistkmp.features.detail.presentation.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.seyfarth.tablericons.TablerIcons
@@ -21,8 +25,22 @@ fun DetailTopBar(
     onShareClick: () -> Unit,
     isFavorite: Boolean = false,
     title: String? = null,
+    backgroundColor: Color? = null,
     modifier: Modifier = Modifier
 ) {
+    val surfaceColor = MaterialTheme.colorScheme.surface
+
+    val targetColor = if (backgroundColor != null) {
+        backgroundColor.copy(alpha = 0.5f)
+    } else {
+        surfaceColor
+    }
+
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = targetColor,
+        animationSpec = tween(durationMillis = 300)
+    )
+
     TopAppBar(
         title = {
             if (title != null) {
@@ -99,7 +117,7 @@ fun DetailTopBar(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+            containerColor = animatedBackgroundColor
         ),
         modifier = modifier
     )

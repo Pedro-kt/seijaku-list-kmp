@@ -2,11 +2,13 @@ package com.yumedev.seijakulistkmp.features.settings.presentation.model
 
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
+import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeVariant
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.ImportConflict
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.ImportResult
 
 data class SettingsUiState(
     val selectedTheme: ThemeMode = ThemeMode.SYSTEM,
+    val selectedThemeVariant: ThemeVariant = ThemeVariant.SUMI,
     val selectedLanguage: LanguageMode = LanguageMode.SYSTEM,
     val airingNotificationsEnabled: Boolean = false,
     val sfwModeEnabled: Boolean = true,
@@ -16,6 +18,9 @@ data class SettingsUiState(
     val userHandle: String = "",
     val isLoggedIn: Boolean = false,
     val isImporting: Boolean = false,
+    val isSyncing: Boolean = false,
+    val syncMessage: String? = null,
+    val clearCacheMessage: String? = null,
     val importResult: ImportResult? = null,
     val showImportResultDialog: Boolean = false,
     val showConflictDialog: Boolean = false,

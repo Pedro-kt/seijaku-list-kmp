@@ -55,6 +55,7 @@ import seijakulistkmp.shared.generated.resources.status_not_yet_released
 import seijakulistkmp.shared.generated.resources.status_not_yet_aired
 import seijakulistkmp.shared.generated.resources.status_cancelled
 import seijakulistkmp.shared.generated.resources.status_hiatus
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun FeaturedCarousel(
@@ -66,6 +67,7 @@ fun FeaturedCarousel(
 ) {
     if (items.isEmpty()) return
 
+    val responsive = ResponsiveTheme.values
     val pagerState = rememberPagerState(
         initialPage = currentPage,
         pageCount = { items.size }
@@ -88,7 +90,7 @@ fun FeaturedCarousel(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
     ) {
         // Carousel
         HorizontalPager(
@@ -104,9 +106,8 @@ fun FeaturedCarousel(
             )
         }
 
-        // Expressive Page Indicators
         Row(
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
             verticalAlignment = Alignment.CenterVertically
         ) {
             repeat(items.size) { index ->
@@ -123,6 +124,7 @@ private fun FeaturedCarouselItem(
     item: FeaturedMediaItem,
     onClick: () -> Unit
 ) {
+    val responsive = ResponsiveTheme.values
     val imageUrl = item.coverImageUrl
 
     val imageColors = rememberImageColors(
@@ -142,9 +144,9 @@ private fun FeaturedCarouselItem(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = responsive.horizontalPadding)
             .scale(scale),
-        shape = RoundedCornerShape(32.dp),
+        shape = RoundedCornerShape(responsive.xlargePadding),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFF1C1C1E)
         ),
@@ -153,7 +155,7 @@ private fun FeaturedCarouselItem(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(responsive.featuredCarouselHeight)
         ) {
             imageUrl?.let { url ->
                 AsyncImage(
@@ -182,8 +184,8 @@ private fun FeaturedCarouselItem(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(responsive.largePadding),
+                verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
             ) {
                 item.status?.let { rawStatus ->
                     val statusText = when (rawStatus) {
@@ -246,8 +248,10 @@ private fun ExpressivePageIndicator(
     isActive: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     val width by animateDpAsState(
-        targetValue = if (isActive) 24.dp else 8.dp,
+        targetValue = if (isActive) responsive.xlargePadding else responsive.mediumSpacing,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessMedium
@@ -255,7 +259,7 @@ private fun ExpressivePageIndicator(
     )
 
     val height by animateDpAsState(
-        targetValue = 8.dp,
+        targetValue = responsive.mediumSpacing,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessMedium

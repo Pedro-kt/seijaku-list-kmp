@@ -15,6 +15,7 @@ import com.yumedev.seijakulistkmp.features.search.presentation.model.QuickFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.RecentSearch
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun CollapsedSearchContent(
@@ -27,6 +28,7 @@ fun CollapsedSearchContent(
     onMoodClick: (genres: List<String>, moodName: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -34,14 +36,14 @@ fun CollapsedSearchContent(
 
         CollapsedSearchBar(
             onSearchClick = onSearchClick,
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier.padding(top = responsive.mediumSpacing)
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(responsive.mediumPadding))
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.largePadding)
         ) {
             item {
                 QuickFilterChips(
@@ -52,13 +54,13 @@ fun CollapsedSearchContent(
             if (state.recentSearches.isNotEmpty()) {
                 item {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                     ) {
                         Text(
                             text = stringResource(Res.string.search_recent_searches),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 16.dp)
+                            modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
                         )
                     }
                 }
@@ -78,19 +80,19 @@ fun CollapsedSearchContent(
 
             item {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                 ) {
                     Text(
                         text = stringResource(Res.string.mood_what_are_you_looking_for),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
                     )
                     Text(
                         text = stringResource(Res.string.mood_subtitle),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
                     )
                 }
             }
@@ -104,13 +106,13 @@ fun CollapsedSearchContent(
 
             item {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
                 ) {
                     Text(
                         text = stringResource(Res.string.search_explore_by_genre),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
                     )
                     GenreChips(
                         genres = Genre.all(),

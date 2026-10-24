@@ -22,6 +22,7 @@ import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ExternalLink
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun DetailExternalLinks(
@@ -32,20 +33,21 @@ fun DetailExternalLinks(
 ) {
     if (links.isEmpty()) return
 
+    val responsive = ResponsiveTheme.values
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         Text(
             text = stringResource(Res.string.detail_watch_on),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
         )
 
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
+            contentPadding = PaddingValues(horizontal = responsive.horizontalPadding)
         ) {
             items(links) { link ->
                 ExternalLinkChip(
@@ -63,23 +65,24 @@ private fun ExternalLinkChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val backgroundColor = link.backgroundColor
     val textColor = link.textColor
 
     Surface(
         modifier = modifier
-            .height(40.dp)
-            .clip(RoundedCornerShape(20.dp))
+            .height(responsive.minTouchTarget)
+            .clip(RoundedCornerShape(responsive.minTouchTarget / 2))
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(responsive.minTouchTarget / 2),
         color = backgroundColor,
         tonalElevation = 0.dp
     ) {
         Row(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(horizontal = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(horizontal = responsive.mediumPadding),
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Icon or logo
@@ -87,7 +90,7 @@ private fun ExternalLinkChip(
                 AsyncImage(
                     model = link.iconUrl,
                     contentDescription = link.siteName,
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(responsive.smallIconSize),
                     contentScale = ContentScale.Fit
                 )
             } else {
@@ -95,7 +98,7 @@ private fun ExternalLinkChip(
                     imageVector = TablerIcons.Outlined.ExternalLink,
                     contentDescription = null,
                     tint = textColor,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(responsive.smallIconSize)
                 )
             }
 

@@ -22,6 +22,7 @@ import dev.seyfarth.tablericons.outlined.PlayerPlay
 import dev.seyfarth.tablericons.outlined.Star
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun DetailChaptersList(
@@ -41,13 +42,14 @@ fun DetailChaptersList(
 
     if (!hasContent) return
 
+    val responsive = ResponsiveTheme.values
     var isExpanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = responsive.horizontalPadding),
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -75,7 +77,7 @@ fun DetailChaptersList(
             }
         }
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
         ) {
             when (type) {
                 MediaType.MANGA -> {
@@ -119,7 +121,7 @@ fun DetailChaptersList(
                 OutlinedButton(
                     onClick = { isExpanded = !isExpanded },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp)
+                    shape = RoundedCornerShape(responsive.buttonHeight / 2)
                 ) {
                     Text(
                         text = if (isExpanded) {
@@ -147,24 +149,25 @@ private fun EpisodeItem(
     onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(responsive.cornerRadius))
             .clickable(onClick = onClick)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .width(120.dp)
-                    .height(70.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .width(responsive.cardWidth * 0.75f)
+                    .height(responsive.minTouchTarget * 1.5f)
+                    .clip(RoundedCornerShape(responsive.mediumSpacing))
             ) {
                 if (!episode.thumbnail.isNullOrBlank()) {
                     AsyncImage(
@@ -177,7 +180,7 @@ private fun EpisodeItem(
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(8.dp)
+                        shape = RoundedCornerShape(responsive.mediumSpacing)
                     ) {
                         Box(
                             modifier = Modifier.fillMaxSize(),
@@ -196,7 +199,7 @@ private fun EpisodeItem(
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
             ) {
                 // Title
                 Text(
@@ -208,19 +211,19 @@ private fun EpisodeItem(
                 )
 
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(responsive.smallPadding),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     episode.site?.let { site ->
                         Surface(
-                            shape = RoundedCornerShape(4.dp),
+                            shape = RoundedCornerShape(responsive.smallPadding),
                             color = MaterialTheme.colorScheme.primaryContainer
                         ) {
                             Text(
                                 text = site,
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                modifier = Modifier.padding(horizontal = responsive.smallSpacing, vertical = 2.dp)
                             )
                         }
                     }
@@ -264,22 +267,23 @@ private fun ChapterItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(responsive.mediumSpacing),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(responsive.mediumPadding),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(responsive.mediumSpacing),
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
             ) {
                 Text(
@@ -287,14 +291,14 @@ private fun ChapterItem(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(horizontal = responsive.mediumPadding, vertical = responsive.mediumSpacing)
                 )
             }
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(horizontal = responsive.mediumPadding),
+                verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
             ) {
                 Text(
                     text = title,
@@ -313,13 +317,13 @@ private fun ChapterItem(
             }
             rating?.let { score ->
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(responsive.smallPadding),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = TablerIcons.Filled.Star,
                         contentDescription = null,
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(responsive.smallIconSize),
                         tint = MaterialTheme.colorScheme.primary
                     )
                     Text(

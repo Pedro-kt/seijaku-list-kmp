@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun DetailGenres(
@@ -26,11 +27,12 @@ fun DetailGenres(
 ) {
     if (genres.isEmpty()) return
 
+    val responsive = ResponsiveTheme.values
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = responsive.horizontalPadding),
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         Text(
             text = stringResource(Res.string.detail_genres),
@@ -40,8 +42,8 @@ fun DetailGenres(
 
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
+            verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
         ) {
             genres.forEach { genre ->
                 GenreChip(genre = genre)
@@ -55,6 +57,7 @@ private fun GenreChip(
     genre: String,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
@@ -87,7 +90,7 @@ private fun GenreChip(
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSecondaryContainer,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = responsive.horizontalPadding, vertical = responsive.mediumSpacing)
         )
     }
 }

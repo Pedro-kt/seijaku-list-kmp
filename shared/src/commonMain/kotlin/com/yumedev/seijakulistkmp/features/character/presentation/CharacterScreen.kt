@@ -29,6 +29,7 @@ import dev.seyfarth.tablericons.outlined.AlertCircle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 data class CharacterScreen(
     val characterId: Int
@@ -94,6 +95,7 @@ private fun CharacterScreenContent(
     onMediaClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val scrollState = rememberScrollState()
 
     val showTitleInTopBar = scrollState.value > 350
@@ -114,7 +116,7 @@ private fun CharacterScreenContent(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.xlargePadding)
         ) {
             CharacterHeader(
                 imageUrl = characterDetail.imageUrl,
@@ -146,13 +148,14 @@ private fun CharacterScreenContent(
                 voiceActors = characterDetail.voiceActors
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(responsive.largePadding))
         }
     }
 }
 
 @Composable
 private fun LoadingContent(onBack: () -> Unit) {
+    val responsive = ResponsiveTheme.values
     Scaffold(
         topBar = {
             CharacterTopBar(
@@ -168,59 +171,59 @@ private fun LoadingContent(onBack: () -> Unit) {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.xlargePadding)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = responsive.horizontalPadding),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.largePadding)
             ) {
                 ShimmerBox(
                     modifier = Modifier
-                        .size(180.dp)
-                        .clip(RoundedCornerShape(90.dp))
+                        .size(responsive.largeIconSize * 3)
+                        .clip(RoundedCornerShape(responsive.largeIconSize * 1.5f))
                 )
 
                 ShimmerBox(
                     modifier = Modifier
-                        .width(200.dp)
-                        .height(32.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .width(responsive.cardWidth + responsive.largePadding)
+                        .height(responsive.mediumIconSize)
+                        .clip(RoundedCornerShape(responsive.mediumSpacing))
                 )
 
                 ShimmerBox(
                     modifier = Modifier
-                        .width(120.dp)
-                        .height(20.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .width(responsive.cardWidth - responsive.largePadding)
+                        .height(responsive.smallIconSize)
+                        .clip(RoundedCornerShape(responsive.mediumSpacing))
                 )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
                 ) {
                     repeat(3) {
                         Surface(
                             modifier = Modifier.weight(1f),
                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(responsive.cornerRadius)
                         ) {
                             Column(
-                                modifier = Modifier.padding(vertical = 16.dp),
+                                modifier = Modifier.padding(vertical = responsive.largePadding),
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
                             ) {
                                 ShimmerBox(
                                     modifier = Modifier
-                                        .size(48.dp, 24.dp)
-                                        .clip(RoundedCornerShape(8.dp))
+                                        .size(responsive.minTouchTarget, responsive.smallIconSize)
+                                        .clip(RoundedCornerShape(responsive.mediumSpacing))
                                 )
                                 ShimmerBox(
                                     modifier = Modifier
-                                        .size(60.dp, 16.dp)
-                                        .clip(RoundedCornerShape(8.dp))
+                                        .size(responsive.minTouchTarget + responsive.largePadding, responsive.smallIconSize)
+                                        .clip(RoundedCornerShape(responsive.mediumSpacing))
                                 )
                             }
                         }
@@ -229,8 +232,8 @@ private fun LoadingContent(onBack: () -> Unit) {
             }
 
             Column(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.padding(horizontal = responsive.horizontalPadding),
+                verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
                 repeat(3) {
                     Row(
@@ -239,21 +242,21 @@ private fun LoadingContent(onBack: () -> Unit) {
                     ) {
                         ShimmerBox(
                             modifier = Modifier
-                                .width(100.dp)
-                                .height(20.dp)
-                                .clip(RoundedCornerShape(8.dp))
+                                .width(responsive.cardWidth - responsive.largePadding)
+                                .height(responsive.smallIconSize)
+                                .clip(RoundedCornerShape(responsive.mediumSpacing))
                         )
                         ShimmerBox(
                             modifier = Modifier
-                                .width(120.dp)
-                                .height(20.dp)
-                                .clip(RoundedCornerShape(8.dp))
+                                .width(responsive.cardWidth)
+                                .height(responsive.smallIconSize)
+                                .clip(RoundedCornerShape(responsive.mediumSpacing))
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(responsive.largePadding))
         }
     }
 }
@@ -294,6 +297,7 @@ private fun ErrorContent(
     onRetry: () -> Unit,
     onBack: () -> Unit
 ) {
+    val responsive = ResponsiveTheme.values
     Scaffold(
         topBar = {
             CharacterTopBar(
@@ -312,13 +316,13 @@ private fun ErrorContent(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(32.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.largePadding),
+                modifier = Modifier.padding(responsive.xlargePadding)
             ) {
                 Icon(
                     imageVector = TablerIcons.Outlined.AlertCircle,
                     contentDescription = null,
-                    modifier = Modifier.size(64.dp),
+                    modifier = Modifier.size(48.dp),
                     tint = MaterialTheme.colorScheme.error
                 )
                 Text(

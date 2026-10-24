@@ -26,6 +26,7 @@ import coil3.compose.AsyncImage
 import com.yumedev.seijakulistkmp.features.home.presentation.model.AnimeCardItem
 import com.yumedev.seijakulistkmp.ui.theme.ExpressiveMotion
 import com.yumedev.seijakulistkmp.ui.theme.InteractionAnimations
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
@@ -35,9 +36,11 @@ fun AnimeCard(
     item: AnimeCardItem,
     onClick: () -> Unit,
     onLongClick: () -> Unit = {},
-    cardWidth: Dp = 120.dp,
+    cardWidth: Dp = ResponsiveTheme.values.cardWidth,
+    useAspectRatio: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val responsiveValues = ResponsiveTheme.values
     val cardShape = RoundedCornerShape(16.dp)
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -49,7 +52,7 @@ fun AnimeCard(
 
     Column (
         modifier = modifier
-            .width(cardWidth)
+            .then(if (!useAspectRatio) Modifier.width(cardWidth) else Modifier)
             .scale(scale)
     ) {
         Column(
@@ -58,7 +61,13 @@ fun AnimeCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(170.dp)
+                    .then(
+                        if (useAspectRatio) {
+                            Modifier.aspectRatio(0.7f)
+                        } else {
+                            Modifier.height(responsiveValues.cardImageHeight)
+                        }
+                    )
                     .clip(cardShape)
                     .combinedClickable(
                         interactionSource = interactionSource,
@@ -132,7 +141,10 @@ fun AnimeCard(
                                         text = genre,
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                        modifier = Modifier.padding(
+                                            horizontal = responsiveValues.chipPadding + 2.dp,
+                                            vertical = responsiveValues.chipPadding / 2
+                                        ),
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )

@@ -121,9 +121,9 @@ class FavoriteEpisodeRepositoryImpl(
         return try {
             val favorites = favoriteEpisodeDao.getAllByUser(userId)
                 .map { it.toDomain() }
-            Result.Success(favorites)
+            Result.success(favorites)
         } catch (e: Exception) {
-            Result.Failure(e)
+            Result.failure(e)
         }
     }
 

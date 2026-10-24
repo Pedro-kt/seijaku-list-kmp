@@ -28,6 +28,7 @@ import coil3.compose.AsyncImage
 import com.yumedev.seijakulistkmp.features.detail.presentation.model.CharacterUiModel
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun DetailCharacters(
@@ -38,20 +39,21 @@ fun DetailCharacters(
 ) {
     if (characters.isEmpty()) return
 
+    val responsive = ResponsiveTheme.values
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         Text(
             text = stringResource(Res.string.detail_main_characters),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
         )
 
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
+            contentPadding = PaddingValues(horizontal = responsive.horizontalPadding)
         ) {
             items(characters) { character ->
                 CharacterItem(
@@ -69,6 +71,7 @@ private fun CharacterItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
@@ -90,14 +93,14 @@ private fun CharacterItem(
 
     Column(
         modifier = modifier
-            .width(64.dp)
+            .width(responsive.largeIconSize)
             .scale(scale),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
     ) {
         Box(
             modifier = Modifier
-                .size(64.dp)
+                .size(responsive.largeIconSize)
                 .scale(avatarScale)
                 .clip(CircleShape)
                 .clickable(

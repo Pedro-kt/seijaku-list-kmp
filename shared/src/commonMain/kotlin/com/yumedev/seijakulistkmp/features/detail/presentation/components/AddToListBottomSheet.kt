@@ -30,6 +30,7 @@ import dev.seyfarth.tablericons.outlined.Star
 import dev.seyfarth.tablericons.outlined.X
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 private fun shouldShowProgress(status: MediaListStatus): Boolean {
     return status == MediaListStatus.CURRENT || status == MediaListStatus.REPEATING
@@ -174,6 +175,8 @@ fun AddToListBottomSheet(
         previousStatus = selectedStatus
     }
 
+    val responsive = ResponsiveTheme.values
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         modifier = modifier,
@@ -191,17 +194,16 @@ fun AddToListBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 32.dp)
+                .padding(horizontal = responsive.horizontalPadding)
+                .padding(bottom = responsive.xlargePadding)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.xlargePadding)
         ) {
-            // Header
             Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.largePadding)
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
                 ) {
                     Text(
                         text = stringResource(Res.string.list_edit_title),
@@ -221,9 +223,8 @@ fun AddToListBottomSheet(
                 )
             }
 
-            // Status Section
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
             ) {
                 Text(
                     text = stringResource(Res.string.list_status),
@@ -232,8 +233,8 @@ fun AddToListBottomSheet(
                 )
 
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
+                    verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                 ) {
                     getStatusOptions(mediaType, mediaStatus).forEach { status ->
                         val isEnabled = isStatusEnabled(status, mediaStatus)
@@ -247,7 +248,7 @@ fun AddToListBottomSheet(
                                 Icon(
                                     imageVector = getStatusIcon(status),
                                     contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
+                                    modifier = Modifier.size(responsive.smallIconSize)
                                 )
                             },
                             enabled = isEnabled
@@ -258,7 +259,7 @@ fun AddToListBottomSheet(
 
             if (shouldShowPriority(selectedStatus)) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                 ) {
                     Text(
                         text = stringResource(Res.string.list_priority),
@@ -267,8 +268,8 @@ fun AddToListBottomSheet(
                     )
 
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
+                        verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                     ) {
                         MediaListPriority.entries.forEach { priorityOption ->
                             FilterChip(
@@ -285,7 +286,7 @@ fun AddToListBottomSheet(
 
             if (shouldShowProgress(selectedStatus)) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                 ) {
                     Text(
                         text = stringResource(
@@ -304,7 +305,7 @@ fun AddToListBottomSheet(
                         FilledIconButton(
                             onClick = { if (progress > 0) progress-- },
                             enabled = selectedStatus != MediaListStatus.COMPLETED && progress > 0,
-                            modifier = Modifier.size(40.dp),
+                            modifier = Modifier.size(responsive.minTouchTarget),
                             shape = CircleShape,
                             colors = IconButtonDefaults.filledIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -313,11 +314,11 @@ fun AddToListBottomSheet(
                             Icon(
                                 imageVector = TablerIcons.Outlined.Minus,
                                 contentDescription = stringResource(Res.string.list_decrease),
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(responsive.smallIconSize)
                             )
                         }
 
-                        Spacer(modifier = Modifier.width(20.dp))
+                        Spacer(modifier = Modifier.width(responsive.largePadding))
 
                         Text(
                             text = buildString {
@@ -331,7 +332,7 @@ fun AddToListBottomSheet(
                             fontWeight = FontWeight.Bold
                         )
 
-                        Spacer(modifier = Modifier.width(20.dp))
+                        Spacer(modifier = Modifier.width(responsive.largePadding))
 
                         FilledIconButton(
                             onClick = {
@@ -340,7 +341,7 @@ fun AddToListBottomSheet(
                                 }
                             },
                             enabled = selectedStatus != MediaListStatus.COMPLETED && (maxProgress == null || progress < maxProgress),
-                            modifier = Modifier.size(40.dp),
+                            modifier = Modifier.size(responsive.minTouchTarget),
                             shape = CircleShape,
                             colors = IconButtonDefaults.filledIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -349,21 +350,21 @@ fun AddToListBottomSheet(
                             Icon(
                                 imageVector = TablerIcons.Outlined.Plus,
                                 contentDescription = stringResource(Res.string.list_increase),
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(responsive.smallIconSize)
                             )
                         }
                     }
 
                     if (maxProgress != null && maxProgress > 0) {
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                            verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
                         ) {
                             LinearProgressIndicator(
                                 progress = { (progress.toFloat() / maxProgress.toFloat()).coerceIn(0f, 1f) },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(6.dp)
-                                    .clip(RoundedCornerShape(3.dp)),
+                                    .height(responsive.smallSpacing)
+                                    .clip(RoundedCornerShape(responsive.smallPadding)),
                                 color = MaterialTheme.colorScheme.primary,
                                 trackColor = MaterialTheme.colorScheme.surfaceVariant
                             )
@@ -386,7 +387,7 @@ fun AddToListBottomSheet(
 
             if (shouldShowScore(selectedStatus)) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -420,7 +421,7 @@ fun AddToListBottomSheet(
                             Icon(
                                 imageVector = if (isFilled) TablerIcons.Filled.Star else TablerIcons.Outlined.Star,
                                 contentDescription = null,
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(responsive.smallIconSize),
                                 tint = if (isFilled) {
                                     MaterialTheme.colorScheme.primary
                                 } else {
@@ -428,7 +429,7 @@ fun AddToListBottomSheet(
                                 }
                             )
                             if (index < 9) {
-                                Spacer(modifier = Modifier.width(2.dp))
+                                Spacer(modifier = Modifier.width(responsive.smallPadding))
                             }
                         }
                     }
@@ -441,14 +442,14 @@ fun AddToListBottomSheet(
                         },
                         valueRange = 0f..10f,
                         steps = 19,
-                        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
+                        modifier = Modifier.padding(horizontal = responsive.horizontalPadding).fillMaxWidth()
                     )
                 }
             }
 
             if (shouldShowRewatches(selectedStatus)) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                 ) {
                     Text(
                         text = stringResource(Res.string.list_rewatches),
@@ -463,7 +464,7 @@ fun AddToListBottomSheet(
                     ) {
                         FilledIconButton(
                             onClick = { if (rewatches > 0) rewatches-- },
-                            modifier = Modifier.size(48.dp),
+                            modifier = Modifier.size(responsive.minTouchTarget),
                             shape = CircleShape,
                             colors = IconButtonDefaults.filledIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -475,7 +476,7 @@ fun AddToListBottomSheet(
                             )
                         }
 
-                        Spacer(modifier = Modifier.width(24.dp))
+                        Spacer(modifier = Modifier.width(responsive.xlargePadding))
 
                         Text(
                             text = rewatches.toString(),
@@ -483,11 +484,11 @@ fun AddToListBottomSheet(
                             fontWeight = FontWeight.Bold
                         )
 
-                        Spacer(modifier = Modifier.width(24.dp))
+                        Spacer(modifier = Modifier.width(responsive.xlargePadding))
 
                         FilledIconButton(
                             onClick = { rewatches++ },
-                            modifier = Modifier.size(48.dp),
+                            modifier = Modifier.size(responsive.minTouchTarget),
                             shape = CircleShape,
                             colors = IconButtonDefaults.filledIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -504,12 +505,12 @@ fun AddToListBottomSheet(
 
             Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                 ) {
                     OutlinedButton(
                         onClick = onDismiss,
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(24.dp)
+                        shape = RoundedCornerShape(responsive.xlargePadding)
                     ) {
                         Text(
                             text = stringResource(Res.string.list_cancel),
@@ -531,7 +532,7 @@ fun AddToListBottomSheet(
                             onDismiss()
                         },
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(24.dp),
+                        shape = RoundedCornerShape(responsive.xlargePadding),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
                         )

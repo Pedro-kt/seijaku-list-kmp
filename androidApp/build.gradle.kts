@@ -1,9 +1,12 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+import java.io.FileInputStream
 
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics.gradle)
     alias(libs.plugins.secrets.gradle.plugin)
 }
 
@@ -22,6 +25,11 @@ dependencies {
 
     implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)
+
+    implementation(platform(libs.firebase.bom))
+
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
 }
 
 android {
@@ -54,6 +62,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

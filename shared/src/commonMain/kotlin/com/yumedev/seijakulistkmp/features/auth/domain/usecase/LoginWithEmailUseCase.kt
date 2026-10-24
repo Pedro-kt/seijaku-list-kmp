@@ -21,10 +21,6 @@ class LoginWithEmailUseCase(
             return Result.Failure(AuthError.WeakPassword("Password cannot be empty"))
         }
 
-        if (password.length < 6) {
-            return Result.Failure(AuthError.WeakPassword())
-        }
-
         return authRepository.signInWithEmail(email.trim(), password)
     }
 

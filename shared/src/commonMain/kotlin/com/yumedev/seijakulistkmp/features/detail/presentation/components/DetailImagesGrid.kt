@@ -14,6 +14,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
 
@@ -25,11 +26,13 @@ fun DetailImagesGrid(
 ) {
     if (images.isEmpty()) return
 
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = responsive.horizontalPadding),
+        verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         Text(
             text = stringResource(Res.string.detail_images),
@@ -39,8 +42,8 @@ fun DetailImagesGrid(
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
+            verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
             modifier = Modifier.height(calculateGridHeight(images.size))
         ) {
             items(images.take(6)) { imageUrl ->
@@ -59,10 +62,12 @@ private fun ImageItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Box(
         modifier = modifier
             .aspectRatio(1f)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(responsive.cornerRadius))
             .clickable(onClick = onClick)
     ) {
         AsyncImage(

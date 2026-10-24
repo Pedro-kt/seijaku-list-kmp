@@ -4,6 +4,7 @@ import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.coroutines.toFlowSettings
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
+import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeVariant
 import com.yumedev.seijakulistkmp.features.settings.domain.repository.SettingsRepository
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.MediaListCardType
 import kotlinx.coroutines.flow.Flow
@@ -28,6 +29,21 @@ class SettingsRepositoryImpl(
 
     override suspend fun setThemeMode(themeMode: ThemeMode) {
         settings.putString(KEY_THEME_MODE, themeMode.name)
+    }
+
+    override fun getThemeVariant(): Flow<ThemeVariant> {
+        return flowSettings.getStringFlow(KEY_THEME_VARIANT, ThemeVariant.SUMI.name)
+            .map { variantName ->
+                try {
+                    ThemeVariant.valueOf(variantName)
+                } catch (e: IllegalArgumentException) {
+                    ThemeVariant.SUMI
+                }
+            }
+    }
+
+    override suspend fun setThemeVariant(themeVariant: ThemeVariant) {
+        settings.putString(KEY_THEME_VARIANT, themeVariant.name)
     }
 
     override fun getLanguageMode(): Flow<LanguageMode> {
@@ -82,6 +98,7 @@ class SettingsRepositoryImpl(
 
     companion object {
         private const val KEY_THEME_MODE = "theme_mode"
+        private const val KEY_THEME_VARIANT = "theme_variant"
         private const val KEY_LANGUAGE_MODE = "language_mode"
         private const val KEY_SFW_MODE = "sfw_mode"
         private const val KEY_CARD_TYPE = "card_type"

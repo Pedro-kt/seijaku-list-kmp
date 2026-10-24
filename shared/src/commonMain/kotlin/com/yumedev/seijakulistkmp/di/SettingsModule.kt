@@ -9,11 +9,13 @@ import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetCardTypeUs
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetLanguageModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetSfwModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeModeUseCase
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeVariantUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetAiringNotificationsUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetCardTypeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetLanguageModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetSfwModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetThemeModeUseCase
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetThemeVariantUseCase
 import com.yumedev.seijakulistkmp.features.settings.presentation.SettingsViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -28,6 +30,8 @@ val settingsModule = module {
 
     factoryOf(::GetThemeModeUseCase)
     factoryOf(::SetThemeModeUseCase)
+    factoryOf(::GetThemeVariantUseCase)
+    factoryOf(::SetThemeVariantUseCase)
     factoryOf(::GetLanguageModeUseCase)
     factoryOf(::SetLanguageModeUseCase)
     factoryOf(::GetSfwModeUseCase)

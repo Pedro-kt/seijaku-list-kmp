@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.core.utils.getPlatformContext
 import com.yumedev.seijakulistkmp.features.auth.presentation.AuthState
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Eye
 import dev.seyfarth.tablericons.outlined.EyeOff
@@ -40,6 +41,7 @@ fun LoginTab(
     onNavigateToRegister: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsiveValues = ResponsiveTheme.values
     val focusManager = LocalFocusManager.current
     var showForgotPasswordDialog by remember { mutableStateOf(false) }
 
@@ -51,8 +53,8 @@ fun LoginTab(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(responsiveValues.horizontalPadding),
+            verticalArrangement = Arrangement.spacedBy(responsiveValues.verticalPadding),
         ) {
             Text(
                 text = stringResource(Res.string.auth_login_title),
@@ -182,7 +184,7 @@ fun LoginTab(
                 onClick = onLogin,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(responsiveValues.buttonHeight),
                 shape = RoundedCornerShape(12.dp),
                 enabled = state.isLoginFormValid && !state.isLoading
             ) {

@@ -51,7 +51,6 @@ class SyncFavoriteEpisodesWithFirestoreUseCase(
                 }
             }
         } catch (e: Exception) {
-            //TODO
         }
 
         val localEpisodes = favoriteEpisodeDao.getAllByUser(userId).map { it.toDomain() }
@@ -103,8 +102,6 @@ class SyncFavoriteEpisodesWithFirestoreUseCase(
                         ).toEntity()
                         favoriteEpisodeDao.insert(updatedEntity)
                         uploaded++
-                    } else {
-                        //TODO
                     }
                 }
 
@@ -118,13 +115,10 @@ class SyncFavoriteEpisodesWithFirestoreUseCase(
                         ).toEntity()
                         favoriteEpisodeDao.insert(updatedEntity)
                         merged++
-                    } else {
-                        //TODO
                     }
                 }
             }
         }
-
 
         return Result.Success(
             SyncResult(

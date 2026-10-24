@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Search
 import dev.seyfarth.tablericons.outlined.X
@@ -42,6 +43,8 @@ fun AnimatedSearchBar(
     val focusManager = LocalFocusManager.current
     var isFocused by remember { mutableStateOf(false) }
 
+    val responsive = ResponsiveTheme.values
+
     AnimatedVisibility(
         visible = visible,
         enter = slideInVertically(initialOffsetY = { -it }),
@@ -54,13 +57,13 @@ fun AnimatedSearchBar(
             tonalElevation = 2.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = responsive.horizontalPadding, vertical = responsive.smallSpacing)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    .padding(horizontal = responsive.horizontalPadding, vertical = responsive.mediumPadding),
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -112,8 +115,7 @@ fun AnimatedSearchBar(
 
                 if (query.isNotEmpty()) {
                     IconButton(
-                        onClick = { onQueryChange("") },
-                        modifier = Modifier.size(20.dp)
+                        onClick = { onQueryChange("") }
                     ) {
                         Icon(
                             imageVector = TablerIcons.Outlined.X,

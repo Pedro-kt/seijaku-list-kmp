@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun FavoriteMediaCard(
@@ -36,11 +37,12 @@ fun FavoriteMediaCard(
     onLongPress: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Card(
         onClick = onClick,
         modifier = modifier
-            .size(width = 90.dp, height = 140.dp),
-        shape = RoundedCornerShape(12.dp),
+            .size(width = 105.dp, height = 150.dp),
+        shape = RoundedCornerShape(responsive.mediumPadding),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
         )
@@ -72,14 +74,14 @@ fun FavoriteMediaCard(
 
             Surface(
                 modifier = Modifier
-                    .padding(6.dp)
+                    .padding(responsive.smallSpacing)
                     .align(Alignment.TopEnd),
-                shape = RoundedCornerShape(6.dp),
+                shape = RoundedCornerShape(responsive.smallSpacing),
                 color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Text(
                     text = "#$position",
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                    modifier = Modifier.padding(horizontal = responsive.smallSpacing, vertical = responsive.smallPadding / 2),
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -92,8 +94,8 @@ fun FavoriteMediaCard(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
-                        .padding(horizontal = 6.dp, vertical = 6.dp),
-                    style = MaterialTheme.typography.labelSmall,
+                        .padding(horizontal = responsive.smallSpacing, vertical = responsive.smallSpacing),
+                    style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White,
                     maxLines = 2,

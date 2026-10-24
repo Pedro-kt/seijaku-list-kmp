@@ -21,6 +21,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.ConflictResolution
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.ImportConflict
 import org.jetbrains.compose.resources.stringResource
@@ -44,6 +45,8 @@ fun ConflictResolutionDialog(
     onDismiss: () -> Unit,
     onResolveAll: (ConflictResolution) -> Unit
 ) {
+    val responsive = ResponsiveTheme.values
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -58,26 +61,26 @@ fun ConflictResolutionDialog(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(responsive.mediumPadding))
 
                 Text(
                     text = stringResource(Res.string.conflict_resolution_already_exist),
                     style = MaterialTheme.typography.bodySmall
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(responsive.smallSpacing))
 
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
                 ) {
                     items(conflicts) { conflict ->
                         ConflictCard(conflict = conflict)
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(responsive.largePadding))
 
                 Text(
                     text = stringResource(Res.string.conflict_resolution_choose_action),
@@ -87,7 +90,7 @@ fun ConflictResolutionDialog(
         },
         confirmButton = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
             ) {
                 Button(
                     onClick = { onResolveAll(ConflictResolution.UseImported) },
@@ -113,18 +116,20 @@ fun ConflictResolutionDialog(
 
 @Composable
 private fun ConflictCard(conflict: ImportConflict) {
+    val responsive = ResponsiveTheme.values
+
     Card(
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(responsive.smallSpacing),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(responsive.mediumPadding)
         ) {
             Text(
                 text = conflict.localEntry.mediaInfo?.title ?: stringResource(Res.string.unknown),
                 style = MaterialTheme.typography.titleSmall
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(responsive.smallPadding))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -146,7 +151,7 @@ private fun ConflictCard(conflict: ImportConflict) {
                     )
                 }
 
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(responsive.largePadding))
 
                 Column {
                     Text(

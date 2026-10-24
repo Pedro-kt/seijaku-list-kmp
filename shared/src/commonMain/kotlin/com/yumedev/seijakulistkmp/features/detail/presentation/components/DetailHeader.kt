@@ -8,18 +8,23 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +36,7 @@ import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun DetailHeader(
@@ -47,34 +53,65 @@ fun DetailHeader(
     nextAiringText: String?,
     isInList: Boolean,
     onAddToListClick: () -> Unit,
+    onDominantColorExtracted: (Color) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
+    val generatedColor = remember(title) {
+        val hash = title.hashCode()
+        val hue = (hash % 360).toFloat().let { if (it < 0) it + 360 else it }
+        Color.hsl(hue, 0.6f, 0.5f)
+    }
+
+    var dominantColor by remember(coverImageUrl) { mutableStateOf(generatedColor) }
+
+    LaunchedEffect(dominantColor) {
+        onDominantColorExtracted(dominantColor)
+    }
+
+    val backgroundColor = dominantColor
+
+    val backgroundGradient = Brush.verticalGradient(
+        colors = listOf(
+            backgroundColor.copy(alpha = 0.5f),
+            backgroundColor.copy(alpha = 0.3f),
+            MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+            MaterialTheme.colorScheme.surface
+        ),
+        startY = 0f,
+        endY = 1200f
+    )
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .background(backgroundGradient)
+            .padding(horizontal = responsive.horizontalPadding)
+            .padding(top = responsive.largePadding),
+        verticalArrangement = Arrangement.spacedBy(responsive.largePadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
-                .width(160.dp)
-                .height(230.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .width(responsive.cardWidth)
+                .height(responsive.cardImageHeight)
+                .clip(RoundedCornerShape(responsive.cornerRadius))
         ) {
-            coverImageUrl?.let { imageUrl ->
-                AsyncImage(
-                    model = imageUrl,
-                    contentDescription = title,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            }
+            AsyncImage(
+                model = coverImageUrl,
+                contentDescription = title,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+                onSuccess = {
+
+                }
+            )
         }
 
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -100,7 +137,7 @@ fun DetailHeader(
         }
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -111,7 +148,7 @@ fun DetailHeader(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
         ) {
             formattedScore?.let { score ->
                 StatCard(
@@ -123,12 +160,12 @@ fun DetailHeader(
                                 imageVector = TablerIcons.Filled.Star,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                         },
                         value = score,
                         label = formattedVotes ?: "",
-                        modifier = Modifier.padding(vertical = 16.dp)
+                        modifier = Modifier.padding(vertical = responsive.largePadding)
                     )
                 }
             }
@@ -140,7 +177,7 @@ fun DetailHeader(
                     StatItem(
                         value = rank,
                         label = stringResource(Res.string.detail_ranking),
-                        modifier = Modifier.padding(vertical = 16.dp)
+                        modifier = Modifier.padding(vertical = responsive.largePadding)
                     )
                 }
             }
@@ -152,7 +189,7 @@ fun DetailHeader(
                     StatItem(
                         value = popularity,
                         label = stringResource(Res.string.detail_popularity),
-                        modifier = Modifier.padding(vertical = 16.dp)
+                        modifier = Modifier.padding(vertical = responsive.largePadding)
                     )
                 }
             }
@@ -196,7 +233,7 @@ private fun StatCard(
     Surface(
         onClick = { /* Stats are not clickable, just visual feedback */ },
         modifier = modifier.scale(scale),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+        color = MaterialTheme.colorScheme.surfaceVariant,
         shape = SeijakuTheme.shapes.cardAsymmetric,
         tonalElevation = elevation.dp,
         interactionSource = interactionSource
@@ -212,12 +249,14 @@ private fun StatItem(
     modifier: Modifier = Modifier,
     icon: @Composable (() -> Unit)? = null
 ) {
+    val responsive = ResponsiveTheme.values
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
             verticalAlignment = Alignment.CenterVertically
         ) {
             icon?.invoke()
@@ -240,6 +279,7 @@ private fun ExpressiveAddToListButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
@@ -264,7 +304,7 @@ private fun ExpressiveAddToListButton(
     Button(
         onClick = onClick,
         modifier = modifier
-            .height(48.dp)
+            .height(responsive.buttonHeight)
             .scale(scale),
         shape = RoundedCornerShape(50),
         colors = ButtonDefaults.buttonColors(
@@ -273,7 +313,7 @@ private fun ExpressiveAddToListButton(
         ),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = elevation.dp,
-            pressedElevation = 0.dp
+            pressedElevation = responsive.smallPadding
         ),
         interactionSource = interactionSource
     ) {
@@ -287,9 +327,11 @@ private fun ExpressiveAddToListButton(
 
 @Composable
 private fun NextAiringPill(
-    airingText: String, // Pre-formatted: "Ep. 12 en 2d"
+    airingText: String,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Surface(
         modifier = modifier,
         shape = SeijakuTheme.shapes.badge,
@@ -300,7 +342,7 @@ private fun NextAiringPill(
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSecondaryContainer,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = responsive.mediumPadding, vertical = responsive.smallPadding)
         )
     }
 }

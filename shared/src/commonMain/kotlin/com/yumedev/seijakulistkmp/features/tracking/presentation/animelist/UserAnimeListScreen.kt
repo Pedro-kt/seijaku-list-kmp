@@ -39,6 +39,7 @@ import dev.seyfarth.tablericons.outlined.Search
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 class UserAnimeListScreen : Screen {
     @Composable
@@ -64,6 +65,7 @@ fun UserAnimeListScreenContent(
     onEvent: (UserAnimeListEvent) -> Unit,
     onNavigateToDetail: (Int) -> Unit
 ) {
+    val responsive = ResponsiveTheme.values
     val toastManager = rememberToastManager()
     val focusManager = LocalFocusManager.current
 
@@ -73,9 +75,9 @@ fun UserAnimeListScreenContent(
                 title = { Text(stringResource(Res.string.my_anime_list)) },
                 actions = {
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(responsive.smallPadding),
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(end = 8.dp)
+                        modifier = Modifier.padding(end = responsive.mediumSpacing)
                     ) {
                         Surface(
                             onClick = { onEvent(UserAnimeListEvent.ToggleSearch) },
@@ -270,11 +272,12 @@ private fun StatusFilterChips(
     onStatusSelected: (MediaListStatus?) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     LazyRow(
         modifier = modifier
             .fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(horizontal = responsive.horizontalPadding, vertical = responsive.mediumSpacing),
+        horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
     ) {
         item {
             ExpressiveFilterChip(
@@ -348,13 +351,14 @@ private fun ErrorState(
     error: String,
     onRetry: () -> Unit
 ) {
+    val responsive = ResponsiveTheme.values
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.largePadding)
         ) {
             Text(
                 text = stringResource(Res.string.error),
@@ -365,7 +369,7 @@ private fun ErrorState(
                 text = error,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 32.dp)
+                modifier = Modifier.padding(horizontal = responsive.xlargePadding)
             )
             Button(onClick = onRetry) {
                 Text(stringResource(Res.string.retry))
@@ -378,13 +382,14 @@ private fun ErrorState(
 private fun EmptyState(
     selectedStatus: MediaListStatus?
 ) {
+    val responsive = ResponsiveTheme.values
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
         ) {
             Text(
                 text = if (selectedStatus != null) {
@@ -401,7 +406,7 @@ private fun EmptyState(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 32.dp)
+                    modifier = Modifier.padding(horizontal = responsive.xlargePadding)
                 )
             }
         }
@@ -415,11 +420,12 @@ private fun AnimeListContent(
     onEvent: (UserAnimeListEvent) -> Unit,
     onNavigateToDetail: (Int) -> Unit
 ) {
+    val responsive = ResponsiveTheme.values
     when (cardType) {
         MediaListCardType.Compact -> {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(top = 16.dp, bottom = 100.dp),
+                contentPadding = PaddingValues(top = responsive.largePadding, bottom = 100.dp),
                 verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
                 items(entries, key = { it.id }) { entry ->
@@ -443,7 +449,7 @@ private fun AnimeListContent(
                         }
                     )
                     HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
                     )
                 }
             }
@@ -452,9 +458,9 @@ private fun AnimeListContent(
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 100.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                contentPadding = PaddingValues(start = responsive.horizontalPadding, end = responsive.horizontalPadding, top = responsive.largePadding, bottom = 100.dp),
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
+                verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
                 items(entries, key = { it.id }) { entry ->
                     MediaListCard(

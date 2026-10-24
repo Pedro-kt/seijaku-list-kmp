@@ -47,6 +47,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import seijakulistkmp.shared.generated.resources.Res
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 class AiringScheduleScreen : Screen {
     @Composable
@@ -72,6 +73,7 @@ fun AiringScheduleScreenContent(
     onNavigateToAnimeDetail: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -138,7 +140,7 @@ fun AiringScheduleScreenContent(
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(vertical = 8.dp)
+                        contentPadding = PaddingValues(vertical = responsive.mediumSpacing)
                     ) {
                         state.scheduleDays.forEach { scheduleDay ->
                             stickyHeader(key = "header_${scheduleDay.dayOfWeek}") {
@@ -153,7 +155,7 @@ fun AiringScheduleScreenContent(
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(32.dp),
+                                            .padding(responsive.xlargePadding),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
@@ -186,12 +188,12 @@ fun AiringScheduleScreenContent(
                                             timezone = state.selectedTimezone.timeZone,
                                             onClick = onNavigateToAnimeDetail,
                                             showTime = false,
-                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                                            modifier = Modifier.padding(horizontal = responsive.horizontalPadding, vertical = responsive.smallPadding)
                                         )
                                     }
 
                                     item(key = "spacer_${scheduleDay.dayOfWeek}_${timeSlot.displayTime}") {
-                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Spacer(modifier = Modifier.height(responsive.mediumSpacing))
                                     }
                                 }
                             }

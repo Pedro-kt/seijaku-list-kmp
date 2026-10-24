@@ -18,6 +18,7 @@ import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Copy
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun CharacterHeader(
@@ -30,31 +31,32 @@ fun CharacterHeader(
     formattedRanking: String?,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val clipboardManager = rememberClipboardManager()
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = responsive.horizontalPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(responsive.largePadding)
     ) {
         AsyncImage(
             model = imageUrl,
             contentDescription = name,
             modifier = Modifier
-                .size(180.dp)
+                .size(responsive.largeIconSize * 3)
                 .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
             ) {
                 Text(
                     text = name,
@@ -64,12 +66,12 @@ fun CharacterHeader(
                 )
                 IconButton(
                     onClick = { clipboardManager.copyToClipboard(name) },
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(responsive.smallIconSize)
                 ) {
                     Icon(
                         imageVector = TablerIcons.Outlined.Copy,
                         contentDescription = "Copiar nombre",
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(responsive.smallIconSize),
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 }
@@ -78,7 +80,7 @@ fun CharacterHeader(
             nameNative?.let {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
                 ) {
                     Text(
                         text = it,
@@ -88,12 +90,12 @@ fun CharacterHeader(
                     )
                     IconButton(
                         onClick = { clipboardManager.copyToClipboard(it) },
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(responsive.smallIconSize)
                     ) {
                         Icon(
                             imageVector = TablerIcons.Outlined.Copy,
                             contentDescription = "Copiar nombre nativo",
-                            modifier = Modifier.size(16.dp),
+                            modifier = Modifier.size(responsive.smallIconSize),
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
                     }
@@ -102,14 +104,14 @@ fun CharacterHeader(
 
             roleLabel?.let { label ->
                 Surface(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(responsive.cornerRadius),
                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier.padding(top = responsive.smallPadding)
                 ) {
                     Text(
                         text = label,
                         style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                        modifier = Modifier.padding(horizontal = responsive.mediumPadding, vertical = responsive.smallSpacing)
                     )
                 }
             }
@@ -117,7 +119,7 @@ fun CharacterHeader(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
         ) {
             formattedFavorites?.let { favorites ->
                 StatCard(
@@ -152,15 +154,16 @@ private fun StatCard(
     value: String,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(responsive.cornerRadius)
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 16.dp),
+            modifier = Modifier.padding(vertical = responsive.largePadding),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
         ) {
             Text(
                 text = value,

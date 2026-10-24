@@ -31,6 +31,7 @@ import seijakulistkmp.shared.generated.resources.import_result_successful
 import seijakulistkmp.shared.generated.resources.import_result_summary
 import seijakulistkmp.shared.generated.resources.import_result_title
 import seijakulistkmp.shared.generated.resources.import_result_total_processed
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun ImportResultDialog(
@@ -38,6 +39,7 @@ fun ImportResultDialog(
     onDismiss: () -> Unit,
     onResolveConflicts: () -> Unit
 ) {
+    val responsive = ResponsiveTheme.values
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -46,20 +48,20 @@ fun ImportResultDialog(
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
                 Card(
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(responsive.mediumSpacing),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(responsive.largePadding)
                     ) {
                         Text(
                             text = stringResource(Res.string.import_result_summary),
                             style = MaterialTheme.typography.titleSmall
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(responsive.mediumSpacing))
 
                         ResultRow(label = stringResource(Res.string.import_result_total_processed), value = importResult.totalProcessed.toString())
                         ResultRow(label = stringResource(Res.string.import_result_successful), value = importResult.successCount.toString())
@@ -70,18 +72,18 @@ fun ImportResultDialog(
 
                 if (importResult.hasErrors) {
                     Card(
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(responsive.mediumSpacing),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier.padding(responsive.largePadding)
                         ) {
                             Text(
                                 text = stringResource(Res.string.import_result_errors),
                                 style = MaterialTheme.typography.titleSmall,
                                 color = MaterialTheme.colorScheme.error
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
                             importResult.errors.take(3).forEach { error ->
                                 Text(
                                     text = "• ${error.message}",
@@ -124,6 +126,7 @@ fun ImportResultDialog(
 
 @Composable
 private fun ResultRow(label: String, value: String) {
+    val responsive = ResponsiveTheme.values
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -132,7 +135,7 @@ private fun ResultRow(label: String, value: String) {
             text = label,
             style = MaterialTheme.typography.bodyMedium
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(responsive.mediumSpacing))
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,

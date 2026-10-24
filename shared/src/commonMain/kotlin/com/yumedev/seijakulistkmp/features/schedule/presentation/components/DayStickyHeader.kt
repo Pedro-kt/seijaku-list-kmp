@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.schedule.domain.model.ScheduleDay
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Calendar
@@ -33,6 +34,8 @@ fun DayStickyHeader(
     timezone: TimeZone,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surface,
@@ -41,9 +44,9 @@ fun DayStickyHeader(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = responsive.horizontalPadding, vertical = responsive.mediumPadding),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
         ) {
             Icon(
                 imageVector = TablerIcons.Outlined.Calendar,
@@ -72,14 +75,14 @@ fun DayStickyHeader(
             if (scheduleDay.isToday) {
                 Surface(
                     color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(responsive.smallSpacing)
                 ) {
                     Text(
                         text = stringResource(Res.string.schedule_today),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = responsive.smallSpacing, vertical = responsive.smallPadding)
                     )
                 }
             }

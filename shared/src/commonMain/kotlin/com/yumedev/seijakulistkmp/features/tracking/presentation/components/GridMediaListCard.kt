@@ -27,6 +27,7 @@ import dev.seyfarth.tablericons.outlined.Plus
 import dev.seyfarth.tablericons.outlined.Trash
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 
 @Composable
 fun GridMediaListCard(
@@ -38,6 +39,7 @@ fun GridMediaListCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -54,7 +56,7 @@ fun GridMediaListCard(
                 .fillMaxWidth()
                 .aspectRatio(0.7f)
                 .clickable(onClick = onClick),
-            shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 0.dp, bottomEnd = 0.dp),
+            shape = RoundedCornerShape(topStart = responsive.cornerRadius, topEnd = responsive.cornerRadius, bottomStart = 0.dp, bottomEnd = 0.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
             )
@@ -89,7 +91,7 @@ fun GridMediaListCard(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(8.dp)
+                        .padding(responsive.mediumPadding)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -106,7 +108,7 @@ fun GridMediaListCard(
                                 onClick = { showMenu = true },
                                 shape = CircleShape,
                                 color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(responsive.smallIconSize)
                             ) {
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
@@ -115,7 +117,7 @@ fun GridMediaListCard(
                                     Icon(
                                         imageVector = TablerIcons.Outlined.DotsVertical,
                                         contentDescription = stringResource(Res.string.filter_menu),
-                                        modifier = Modifier.size(16.dp),
+                                        modifier = Modifier.size(responsive.smallIconSize * 0.7f),
                                         tint = MaterialTheme.colorScheme.onPrimary
                                     )
                                 }
@@ -171,7 +173,7 @@ fun GridMediaListCard(
                         FilledIconButton(
                             onClick = onIncrementProgress,
                             enabled = canIncrement,
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier.size(responsive.mediumIconSize),
                             colors = IconButtonDefaults.filledIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -180,7 +182,7 @@ fun GridMediaListCard(
                             Icon(
                                 imageVector = TablerIcons.Outlined.Plus,
                                 contentDescription = stringResource(Res.string.list_increase),
-                                modifier = Modifier.size(18.dp),
+                                modifier = Modifier.size(responsive.smallIconSize),
                                 tint = if (canIncrement) {
                                     MaterialTheme.colorScheme.onPrimary
                                 } else {
@@ -196,11 +198,11 @@ fun GridMediaListCard(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = imageColors.value.dominant,
-            shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+            shape = RoundedCornerShape(bottomStart = responsive.cornerRadius, bottomEnd = responsive.cornerRadius)
         ) {
             Column(
-                modifier = Modifier.padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                modifier = Modifier.padding(responsive.mediumPadding),
+                verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
             ) {
                 Text(
                     text = entry.mediaInfo?.title ?: stringResource(Res.string.no_title),
@@ -260,6 +262,7 @@ private fun GridStatusChip(
     mediaType: MediaType,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     val statusText = when (status) {
         MediaListStatus.CURRENT -> if (mediaType == MediaType.ANIME) {
             stringResource(Res.string.list_status_watching_short)
@@ -297,7 +300,7 @@ private fun GridStatusChip(
     ) {
         Text(
             text = statusText,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = responsive.mediumPadding, vertical = responsive.smallPadding),
             style = MaterialTheme.typography.labelSmall,
             color = statusIndicatorColor.getContrastColor()
         )
@@ -312,6 +315,7 @@ private fun GridProgressIndicator(
     textColor: Color,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -327,13 +331,13 @@ private fun GridProgressIndicator(
             },
             modifier = Modifier
                 .weight(1f)
-                .height(4.dp)
-                .clip(RoundedCornerShape(2.dp)),
+                .height(responsive.smallPadding)
+                .clip(RoundedCornerShape(responsive.smallPadding)),
             color = progressColor,
             trackColor = progressColor.copy(alpha = 0.3f)
         )
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(responsive.mediumPadding))
 
         Text(
             text = if (total != null) "$progress/$total" else "$progress",
