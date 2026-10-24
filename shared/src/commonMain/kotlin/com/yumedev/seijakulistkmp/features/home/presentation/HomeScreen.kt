@@ -28,6 +28,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.layout.ContentScale
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
@@ -53,6 +57,7 @@ import dev.seyfarth.tablericons.outlined.Calendar
 import dev.seyfarth.tablericons.outlined.Book
 import dev.seyfarth.tablericons.outlined.DeviceTv
 import dev.seyfarth.tablericons.outlined.Search
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import seijakulistkmp.shared.generated.resources.*
@@ -718,12 +723,33 @@ private fun HomeTopAppBar(
     onProfileClick: () -> Unit
 ) {
     val responsive = ResponsiveTheme.values
+    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
 
     TopAppBar(
         title = {
-            Text(
-                text = stringResource(Res.string.app_name)
-            )
+            Surface(
+                shape = RoundedCornerShape(50),
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                modifier = Modifier
+                    .height(40.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(horizontal = responsive.mediumPadding)
+                ) {
+                    Image(
+                        painter = painterResource(
+                            if (isDarkTheme) Res.drawable.seijaku_lockup_blanco
+                            else Res.drawable.seijaku_lockup_negro
+                        ),
+                        contentDescription = stringResource(Res.string.app_name),
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.height(28.dp)
+                    )
+                }
+            }
         },
         actions = {
             Row(
