@@ -37,6 +37,7 @@ fun AnimeCard(
     onClick: () -> Unit,
     onLongClick: () -> Unit = {},
     cardWidth: Dp = ResponsiveTheme.values.cardWidth,
+    useAspectRatio: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val responsiveValues = ResponsiveTheme.values
@@ -51,7 +52,7 @@ fun AnimeCard(
 
     Column (
         modifier = modifier
-            .width(cardWidth)
+            .then(if (!useAspectRatio) Modifier.width(cardWidth) else Modifier)
             .scale(scale)
     ) {
         Column(
@@ -60,7 +61,13 @@ fun AnimeCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(responsiveValues.cardImageHeight)
+                    .then(
+                        if (useAspectRatio) {
+                            Modifier.aspectRatio(0.7f)
+                        } else {
+                            Modifier.height(responsiveValues.cardImageHeight)
+                        }
+                    )
                     .clip(cardShape)
                     .combinedClickable(
                         interactionSource = interactionSource,

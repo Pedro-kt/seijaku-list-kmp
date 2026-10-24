@@ -153,7 +153,8 @@ fun SectionListScreenContent(
                         items(state.items) { item ->
                             AnimeCard(
                                 item = item,
-                                onClick = { onItemClick(item) }
+                                onClick = { onItemClick(item) },
+                                useAspectRatio = true
                             )
                         }
 
