@@ -15,7 +15,9 @@ import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import com.yumedev.seijakulistkmp.features.main.presentation.MainScreen
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
+import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeVariant
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeModeUseCase
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeVariantUseCase
 import com.yumedev.seijakulistkmp.ui.theme.ProvideResponsiveValues
 import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
 import com.yumedev.seijakulistkmp.ui.theme.rememberWindowSizeClass
@@ -36,8 +38,10 @@ fun App() {
 
     KoinContext {
         val getThemeModeUseCase: GetThemeModeUseCase = koinInject()
+        val getThemeVariantUseCase: GetThemeVariantUseCase = koinInject()
 
         val themeMode by getThemeModeUseCase().collectAsState(initial = ThemeMode.SYSTEM)
+        val themeVariant by getThemeVariantUseCase().collectAsState(initial = ThemeVariant.SUMI)
         val isSystemInDark = isSystemInDarkTheme()
 
         val darkTheme = when (themeMode) {
@@ -46,7 +50,10 @@ fun App() {
             ThemeMode.SYSTEM -> isSystemInDark
         }
 
-        SeijakuTheme(darkTheme = darkTheme) {
+        SeijakuTheme(
+            darkTheme = darkTheme,
+            themeVariant = themeVariant
+        ) {
             BoxWithConstraints {
                 val density = LocalDensity.current
                 val widthDp = with(density) {

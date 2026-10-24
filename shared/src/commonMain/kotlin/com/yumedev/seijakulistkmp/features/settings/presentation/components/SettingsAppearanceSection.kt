@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
+import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeVariant
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.ExpressiveFilterChip
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
@@ -17,8 +18,10 @@ import seijakulistkmp.shared.generated.resources.*
 @Composable
 fun SettingsAppearanceSection(
     selectedTheme: ThemeMode,
+    selectedThemeVariant: ThemeVariant,
     selectedLanguage: LanguageMode,
     onThemeSelected: (ThemeMode) -> Unit,
+    onThemeVariantSelected: (ThemeVariant) -> Unit,
     onLanguageSelected: (LanguageMode) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -60,6 +63,38 @@ fun SettingsAppearanceSection(
                     label = stringResource(Res.string.settings_theme_dark),
                     selected = selectedTheme == ThemeMode.DARK,
                     onClick = { onThemeSelected(ThemeMode.DARK) }
+                )
+            }
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)) {
+            Text(
+                text = stringResource(Res.string.settings_theme_variant),
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
+            ) {
+                ThemeChip(
+                    label = stringResource(Res.string.settings_theme_variant_sumi),
+                    selected = selectedThemeVariant == ThemeVariant.SUMI,
+                    onClick = { onThemeVariantSelected(ThemeVariant.SUMI) }
+                )
+                ThemeChip(
+                    label = stringResource(Res.string.settings_theme_variant_sakura),
+                    selected = selectedThemeVariant == ThemeVariant.SAKURA,
+                    onClick = { onThemeVariantSelected(ThemeVariant.SAKURA) }
+                )
+                ThemeChip(
+                    label = stringResource(Res.string.settings_theme_variant_ocean),
+                    selected = selectedThemeVariant == ThemeVariant.OCEAN,
+                    onClick = { onThemeVariantSelected(ThemeVariant.OCEAN) }
+                )
+                ThemeChip(
+                    label = stringResource(Res.string.settings_theme_variant_yozora),
+                    selected = selectedThemeVariant == ThemeVariant.YOZORA,
+                    onClick = { onThemeVariantSelected(ThemeVariant.YOZORA) }
                 )
             }
         }

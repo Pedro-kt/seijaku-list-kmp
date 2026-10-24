@@ -22,6 +22,7 @@ import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
 import com.yumedev.seijakulistkmp.core.utils.rememberUrlOpener
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
+import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeVariant
 import com.yumedev.seijakulistkmp.features.settings.presentation.components.*
 import com.yumedev.seijakulistkmp.features.settings.presentation.model.SettingsUiState
 import com.yumedev.seijakulistkmp.features.tracking.presentation.components.ConflictResolutionDialog
@@ -61,6 +62,7 @@ class SettingsScreen : Screen {
             appVersion = appVersion,
             buildNumber = buildNumber,
             onThemeSelected = viewModel::onThemeSelected,
+            onThemeVariantSelected = viewModel::onThemeVariantSelected,
             onLanguageSelected = { languageMode ->
                 viewModel.onLanguageSelected(languageMode)
                 activityRecreator.recreate()
@@ -217,6 +219,7 @@ fun SettingsScreenContent(
     appVersion: String,
     buildNumber: String,
     onThemeSelected: (ThemeMode) -> Unit,
+    onThemeVariantSelected: (ThemeVariant) -> Unit,
     onLanguageSelected: (LanguageMode) -> Unit,
     onAiringNotificationsToggle: (Boolean) -> Unit,
     onSfwModeToggle: (Boolean) -> Unit,
@@ -267,8 +270,10 @@ fun SettingsScreenContent(
             item {
                 SettingsAppearanceSection(
                     selectedTheme = state.selectedTheme,
+                    selectedThemeVariant = state.selectedThemeVariant,
                     selectedLanguage = state.selectedLanguage,
                     onThemeSelected = onThemeSelected,
+                    onThemeVariantSelected = onThemeVariantSelected,
                     onLanguageSelected = onLanguageSelected
                 )
             }

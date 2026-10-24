@@ -11,14 +11,17 @@ import com.yumedev.seijakulistkmp.features.profile.domain.usecase.GetCurrentProf
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.SyncProfileWithFirestoreUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.model.LanguageMode
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeMode
+import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeVariant
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetAiringNotificationsUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetLanguageModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetSfwModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeModeUseCase
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetThemeVariantUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetAiringNotificationsUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetLanguageModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetSfwModeUseCase
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetThemeModeUseCase
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.SetThemeVariantUseCase
 import com.yumedev.seijakulistkmp.features.settings.presentation.model.SettingsUiState
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.ConflictResolution
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.ImportConflict
@@ -37,6 +40,8 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     private val getThemeModeUseCase: GetThemeModeUseCase,
     private val setThemeModeUseCase: SetThemeModeUseCase,
+    private val getThemeVariantUseCase: GetThemeVariantUseCase,
+    private val setThemeVariantUseCase: SetThemeVariantUseCase,
     private val getLanguageModeUseCase: GetLanguageModeUseCase,
     private val setLanguageModeUseCase: SetLanguageModeUseCase,
     private val getSfwModeUseCase: GetSfwModeUseCase,
@@ -61,6 +66,7 @@ class SettingsViewModel(
 
     init {
         observeThemeMode()
+        observeThemeVariant()
         observeLanguageMode()
         observeSfwMode()
         observeAiringNotifications()
@@ -72,6 +78,14 @@ class SettingsViewModel(
         viewModelScope.launch {
             getThemeModeUseCase().collect { themeMode ->
                 _state.update { it.copy(selectedTheme = themeMode) }
+            }
+        }
+    }
+
+    private fun observeThemeVariant() {
+        viewModelScope.launch {
+            getThemeVariantUseCase().collect { themeVariant ->
+                _state.update { it.copy(selectedThemeVariant = themeVariant) }
             }
         }
     }
@@ -135,6 +149,12 @@ class SettingsViewModel(
     fun onThemeSelected(themeMode: ThemeMode) {
         viewModelScope.launch {
             setThemeModeUseCase(themeMode)
+        }
+    }
+
+    fun onThemeVariantSelected(themeVariant: ThemeVariant) {
+        viewModelScope.launch {
+            setThemeVariantUseCase(themeVariant)
         }
     }
 

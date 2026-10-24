@@ -157,6 +157,11 @@
     <string name="settings_theme_system">System</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_variant">Color scheme</string>
+    <string name="settings_theme_variant_sumi">Sumi</string>
+    <string name="settings_theme_variant_sakura">Sakura</string>
+    <string name="settings_theme_variant_ocean">Ocean</string>
+    <string name="settings_theme_variant_yozora">Yozora</string>
     <string name="settings_language">Language</string>
     <string name="settings_language_system">System</string>
     <string name="settings_language_english">English</string>
