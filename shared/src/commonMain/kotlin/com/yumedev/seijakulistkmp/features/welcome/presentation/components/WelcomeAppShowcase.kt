@@ -1,117 +1,119 @@
 package com.yumedev.seijakulistkmp.features.welcome.presentation.components
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
+import seijakulistkmp.shared.generated.resources.*
 
 @Composable
 fun WelcomeAppShowcase(
     modifier: Modifier = Modifier
 ) {
-    val animeCovers = remember {
+    val screenshots = remember {
         listOf(
-            "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-C6FPmWm59CyP.jpg",
-            "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx5680-r3AI3Cwfv0Aq.png",
-            "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx113415-bbBWj4pEFseh.jpg",
-            "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx186712-d5I2TjUQcHuI.jpg",
-            "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx20698-YZIYor2zW3Ta.png"
+            Res.drawable.onboarding_screen_1,
+            Res.drawable.onboarding_screen_2,
+            Res.drawable.onboarding_screen_3,
+            Res.drawable.onboarding_screen_4,
+            Res.drawable.onboarding_screen_5
         )
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally)
-        ) {
-            repeat(3) { index ->
-                AnimatedAnimeCard(
-                    coverUrl = animeCovers[index],
-                    delay = index * 100L,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(0.65f),
-            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally)
-        ) {
-            repeat(2) { index ->
-                AnimatedAnimeCard(
-                    coverUrl = animeCovers[3 + index],
-                    delay = (3 + index) * 100L,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun AnimatedAnimeCard(
-    coverUrl: String,
-    delay: Long,
-    modifier: Modifier = Modifier
-) {
+    var currentIndex by remember { mutableStateOf(0) }
     var isVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        delay(delay)
+        delay(200)
         isVisible = true
+        while (true) {
+            delay(3000)
+            currentIndex = (currentIndex + 1) % screenshots.size
+        }
     }
 
     val alpha by animateFloatAsState(
         targetValue = if (isVisible) 1f else 0f,
-        animationSpec = tween(durationMillis = 400),
-        label = "card_alpha"
+        animationSpec = tween(durationMillis = 600),
+        label = "showcase_alpha"
     )
 
     val scale by animateFloatAsState(
-        targetValue = if (isVisible) 1f else 0.8f,
+        targetValue = if (isVisible) 1f else 0.95f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessMedium
         ),
-        label = "card_scale"
+        label = "showcase_scale"
     )
 
-    val offsetY by animateFloatAsState(
-        targetValue = if (isVisible) 0f else 20f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "card_offset"
-    )
-
-    AsyncImage(
-        model = coverUrl,
-        contentDescription = null,
+    Box(
         modifier = modifier
-            .aspectRatio(0.7f)
-            .clip(RoundedCornerShape(10.dp))
-            .alpha(alpha)
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-                translationY = offsetY
-            },
-        contentScale = ContentScale.Crop
-    )
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.85f)
+                .alpha(alpha)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                }
+                .clip(RoundedCornerShape(20.dp))
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = RoundedCornerShape(20.dp)
+                )
+        ) {
+            Crossfade(
+                targetState = screenshots[currentIndex],
+                animationSpec = tween(durationMillis = 800),
+                label = "screenshot_crossfade"
+            ) { screenshot ->
+                androidx.compose.foundation.Image(
+                    painter = painterResource(screenshot),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    alignment = Alignment.TopCenter
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.3f)
+                    .align(Alignment.BottomCenter)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                                MaterialTheme.colorScheme.surface
+                            )
+                        )
+                    )
+            )
+        }
+    }
 }
