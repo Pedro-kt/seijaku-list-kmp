@@ -303,6 +303,7 @@ private fun AnimeTabContent(
         LazyColumn(
             state = scrollState,
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 100.dp),
             verticalArrangement = Arrangement.spacedBy(responsive.largeSpacing)
         ) {
         item {
@@ -445,7 +446,6 @@ private fun AnimeTabContent(
             )
         }
 
-            item { Spacer(modifier = Modifier.height(responsive.xlargePadding * 2)) }
         }
 
         if (state.isBottomSheetVisible && state.selectedMediaDetail != null) {
@@ -503,6 +503,7 @@ private fun MangaTabContent(
         LazyColumn(
             state = scrollState,
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 100.dp),
             verticalArrangement = Arrangement.spacedBy(responsive.largeSpacing)
         ) {
         item {
@@ -684,7 +685,6 @@ private fun MangaTabContent(
             )
         }
 
-            item { Spacer(modifier = Modifier.height(responsive.xlargePadding * 2)) }
         }
 
         if (state.isBottomSheetVisible && state.selectedMediaDetail != null) {

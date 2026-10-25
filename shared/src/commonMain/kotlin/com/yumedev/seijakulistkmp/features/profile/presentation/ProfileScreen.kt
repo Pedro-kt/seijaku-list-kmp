@@ -393,7 +393,8 @@ fun ProfileContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState),
+                .verticalScroll(scrollState)
+                .padding(bottom = 100.dp),
         ) {
             ProfileBannerBackground(
                 banner = profile.banner,
@@ -510,7 +511,6 @@ fun ProfileContent(
             }
         }
 
-            Spacer(modifier = Modifier.height(responsive.xlargePadding * 3))
         }
 
         ProfileTopAppBar(

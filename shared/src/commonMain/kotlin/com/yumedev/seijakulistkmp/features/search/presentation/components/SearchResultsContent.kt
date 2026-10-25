@@ -153,6 +153,7 @@ fun SearchResultsContent(
             characterResults.isNotEmpty() -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 100.dp),
                     verticalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
                     item {
@@ -187,14 +188,12 @@ fun SearchResultsContent(
                         )
                     }
 
-                    item {
-                        Spacer(modifier = Modifier.height(responsive.xlargePadding * 2.5f))
-                    }
                 }
             }
             else -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 100.dp),
                     verticalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
                     item {
@@ -233,9 +232,6 @@ fun SearchResultsContent(
                         )
                     }
 
-                    item {
-                        Spacer(modifier = Modifier.height(responsive.xlargePadding * 2.5f))
-                    }
                 }
             }
         }
