@@ -238,7 +238,8 @@
     <string name="error_timeout">Connection timeout. The request took too long.</string>
     <string name="error_unknown">An unknown error occurred.</string>
     <string name="error_server">Server error. Please try again later.</string>
-    <string name="error_loading_featured">Unable to load featured anime</string>
+    <string name="error_loading_featured_anime">Unable to load featured anime</string>
+    <string name="error_loading_featured_manga">Unable to load featured manga</string>
     <string name="error_loading_featured_hint">Check your connection and try again</string>
     <string name="error_server_unavailable">Service temporarily unavailable</string>
     <string name="error_server_unavailable_hint">The server is experiencing issues. Please try again later</string>

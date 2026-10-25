@@ -238,7 +238,8 @@
     <string name="error_timeout">Tiempo de espera agotado. La solicitud tardó demasiado.</string>
     <string name="error_unknown">Ocurrió un error desconocido.</string>
     <string name="error_server">Error del servidor. Por favor, intenta más tarde.</string>
-    <string name="error_loading_featured">No se pudo cargar el anime destacado</string>
+    <string name="error_loading_featured_anime">No se pudo cargar el anime destacado</string>
+    <string name="error_loading_featured_manga">No se pudo cargar el manga destacado</string>
     <string name="error_loading_featured_hint">Verifica tu conexión e intenta nuevamente</string>
     <string name="error_server_unavailable">Servicio temporalmente no disponible</string>
     <string name="error_server_unavailable_hint">El servidor está experimentando problemas. Intenta más tarde</string>

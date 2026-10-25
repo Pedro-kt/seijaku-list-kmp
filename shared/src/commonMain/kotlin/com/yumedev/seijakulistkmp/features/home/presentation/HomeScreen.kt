@@ -383,16 +383,18 @@ private fun AnimeTabContent(
             }
         }
 
-        item {
-            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
-            QuickFilterChips(
-                onFilterClick = { filter, label ->
-                    navigator?.push(
-                        SearchScreen(quickFilter = filter)
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
+        if (state.featuredAnimeError == null) {
+            item {
+                Spacer(modifier = Modifier.height(responsive.mediumSpacing))
+                QuickFilterChips(
+                    onFilterClick = { filter, label ->
+                        navigator?.push(
+                            SearchScreen(quickFilter = filter)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(responsive.mediumSpacing))
+            }
         }
 
         item {
@@ -583,16 +585,18 @@ private fun MangaTabContent(
             }
         }
 
-        item {
-            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
-            QuickFilterChips(
-                onFilterClick = { filter, _ ->
-                    navigator?.push(
-                        SearchScreen(quickFilter = filter)
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
+        if (state.featuredMangaError == null) {
+            item {
+                Spacer(modifier = Modifier.height(responsive.mediumSpacing))
+                QuickFilterChips(
+                    onFilterClick = { filter, _ ->
+                        navigator?.push(
+                            SearchScreen(quickFilter = filter)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(responsive.mediumSpacing))
+            }
         }
 
         // Publishing Now Section
