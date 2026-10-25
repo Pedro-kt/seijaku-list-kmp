@@ -453,14 +453,15 @@
     <string name="welcome_get_started">Comenzar</string>
     <string name="welcome_page1_title">Bienvenido a Seijaku List</string>
     <string name="welcome_page1_description">Rastrea tus anime y manga favoritos en una hermosa aplicación</string>
-    <string name="welcome_page2_title">Usa Sin Conexión</string>
-    <string name="welcome_page2_description">Rastrea tu colección offline sin crear cuenta. Exporta tus listas cuando las necesites</string>
-    <string name="welcome_page3_title">Formato Estándar</string>
-    <string name="welcome_page3_description">Tus exportaciones usan archivos XML estándar compatibles con rastreadores de MAL y AniList</string>
-    <string name="welcome_page4_title">Mantente Organizado</string>
-    <string name="welcome_page4_description">Mantén un seguimiento de lo que estás viendo, planeando o has completado</string>
-    <string name="welcome_page5_title">Sincroniza con AniList</string>
-    <string name="welcome_page5_description">Si quieres, sincroniza tus listas con AniList y nunca pierdas tu progreso en todos tus dispositivos</string>
+    <string name="welcome_page2_title">Funciona 100% sin conexión</string>
+    <string name="welcome_page2_description">¡No necesitas cuenta! Rastrea toda tu colección sin conexión. Exporta tus listas cuando quieras como archivos XML estándar.</string>
+    <string name="welcome_page3_title">Seijaku significa serenidad</string>
+    <string name="welcome_page3_description">Un espacio tranquilo y sin distracciones para tu colección. Temas hermosos, diseño cuidado y cero desorden.</string>
+    <string name="welcome_page4_title">Sincronización en la nube es opcional</string>
+    <string name="welcome_page4_description">Crea una cuenta solo si quieres respaldo automático y sincronización entre dispositivos. ¡La app funciona perfectamente sin una!</string>
+    <string name="welcome_continue_to_app">Continuar a la app</string>
+    <string name="welcome_or_sync">O habilitar respaldo en la nube</string>
+    <string name="welcome_sign_in">Iniciar sesión / Crear cuenta</string>
     <string name="welcome_offline_feature1_title">Almacenamiento Local</string>
     <string name="welcome_offline_feature1_description">Todos tus datos se guardan en tu dispositivo</string>
     <string name="welcome_offline_feature2_title">Sin Internet</string>
@@ -476,7 +477,8 @@
     <string name="welcome_export_anilist_full">AniList.co</string>
 
     <!-- Auth Screen -->
-    <string name="auth_title">Bienvenido</string>
+    <string name="auth_title">Respaldo en la nube y sincronización</string>
+    <string name="auth_subtitle">Inicia sesión para respaldar automáticamente tu progreso y sincronizar en todos tus dispositivos</string>
     <string name="auth_tab_login">Iniciar sesión</string>
     <string name="auth_tab_register">Registrarse</string>
     <string name="auth_login_title">Inicia sesión</string>
