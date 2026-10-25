@@ -33,7 +33,7 @@ import kotlin.math.absoluteValue
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.yumedev.seijakulistkmp.features.auth.presentation.AuthScreen
+import com.yumedev.seijakulistkmp.features.auth.presentation.LoginScreen
 import com.yumedev.seijakulistkmp.features.welcome.presentation.components.WelcomeAppShowcase
 import com.yumedev.seijakulistkmp.features.welcome.presentation.components.WelcomeExportDemo
 import com.yumedev.seijakulistkmp.features.welcome.presentation.components.WelcomeOfflineDemo
@@ -58,7 +58,7 @@ class WelcomeScreen : Screen {
                 navigator.pop()
             },
             onGoToAuth = {
-                navigator.push(AuthScreen())
+                navigator.push(LoginScreen())
             }
         )
     }
