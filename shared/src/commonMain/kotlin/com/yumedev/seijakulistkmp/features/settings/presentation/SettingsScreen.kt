@@ -161,7 +161,7 @@ class SettingsScreen : Screen {
                     }
                 )
             },
-            onClearCacheClick = viewModel::onClearCacheClick,
+            // onClearCacheClick = viewModel::onClearCacheClick,
             onAboutClick = viewModel::onAboutClick,
             onLogoutClick = viewModel::onLogoutClick
         )
@@ -229,7 +229,7 @@ fun SettingsScreenContent(
     onImportMangaClick: () -> Unit,
     onExportAnimeClick: () -> Unit,
     onExportMangaClick: () -> Unit,
-    onClearCacheClick: () -> Unit,
+    // onClearCacheClick: () -> Unit,
     onAboutClick: () -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -290,13 +290,13 @@ fun SettingsScreenContent(
             item {
                 SettingsDataSection(
                     lastSyncTime = state.lastSyncTime,
-                    cacheSize = state.cacheSize,
+                    // cacheSize = state.cacheSize,
                     onSyncClick = onSyncClick,
                     onImportAnimeClick = onImportAnimeClick,
                     onImportMangaClick = onImportMangaClick,
                     onExportAnimeClick = onExportAnimeClick,
                     onExportMangaClick = onExportMangaClick,
-                    onClearCacheClick = onClearCacheClick,
+                    // onClearCacheClick = onClearCacheClick,
                     onAboutClick = onAboutClick
                 )
             }
