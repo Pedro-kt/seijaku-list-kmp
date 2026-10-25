@@ -149,6 +149,7 @@ fun WelcomeScreenContent(
                 WelcomePageContent(
                     page = pages[page],
                     pageIndex = page,
+                    currentPage = pagerState.currentPage,
                     pageOffset = pageOffset
                 )
             }
@@ -241,6 +242,7 @@ fun WelcomeScreenContent(
 fun WelcomePageContent(
     page: WelcomePage,
     pageIndex: Int,
+    currentPage: Int,
     pageOffset: Float,
     modifier: Modifier = Modifier
 ) {
@@ -365,6 +367,7 @@ fun WelcomePageContent(
         ) {
             WelcomeVisualShowcase(
                 pageIndex = pageIndex,
+                currentPage = currentPage,
                 page = page,
                 pageOffset = pageOffset
             )
@@ -375,26 +378,41 @@ fun WelcomePageContent(
 @Composable
 private fun WelcomeVisualShowcase(
     pageIndex: Int,
+    currentPage: Int,
     page: WelcomePage,
     pageOffset: Float,
     modifier: Modifier = Modifier
 ) {
+    val isVisible = pageIndex == currentPage
+
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         when (pageIndex) {
             0 -> {
-                WelcomeAppShowcase(modifier = Modifier.fillMaxSize())
+                WelcomeAppShowcase(
+                    isVisible = isVisible,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
             1 -> {
-                WelcomeOfflineDemo(modifier = Modifier.fillMaxSize())
+                WelcomeOfflineDemo(
+                    isVisible = isVisible,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
             2 -> {
-                WelcomeExportDemo(modifier = Modifier.fillMaxSize())
+                WelcomeExportDemo(
+                    isVisible = isVisible,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
             3 -> {
-                WelcomeOrganizationDemo(modifier = Modifier.fillMaxSize())
+                WelcomeOrganizationDemo(
+                    isVisible = isVisible,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }

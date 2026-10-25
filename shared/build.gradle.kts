@@ -96,6 +96,10 @@ kotlin {
             // Tabler Icons
             implementation("dev.seyfarth:tabler-icons-kmp:1.0.0")
 
+            // Lottie for Compose Multiplatform
+            implementation(libs.compottie)
+            implementation(libs.compottie.resources)
+
             // Multiplatform Settings
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.coroutines)
