@@ -7,12 +7,26 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.yumedev.seijakulistkmp.core.notification.AiringNotificationScheduler
 import com.yumedev.seijakulistkmp.di.initKoin
+import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetAiringNotificationsUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.Locale
 
-class SeijakuApplication : Application() {
+class SeijakuApplication : Application(), KoinComponent {
+
+    private val airingNotificationScheduler: AiringNotificationScheduler by inject()
+    private val getAiringNotificationsUseCase: GetAiringNotificationsUseCase by inject()
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
     override fun onCreate() {
         super.onCreate()
 
@@ -25,6 +39,7 @@ class SeijakuApplication : Application() {
 
         createNotificationChannel()
         applyLanguage()
+        initializeNotifications()
     }
 
     private fun initializeCrashlytics() {
@@ -86,6 +101,19 @@ class SeijakuApplication : Application() {
         } else {
             @Suppress("DEPRECATION")
             resources.updateConfiguration(configuration, resources.displayMetrics)
+        }
+    }
+
+    private fun initializeNotifications() {
+        applicationScope.launch {
+            try {
+                val notificationsEnabled = getAiringNotificationsUseCase().first()
+                if (notificationsEnabled) {
+                    airingNotificationScheduler.startPeriodicSync()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

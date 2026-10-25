@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">graphql.anilist.co</domain>
+        <pin-set expiration="2027-12-31">
+            <pin digest="SHA-256">uMDUd9ojdxyNhnUWneraEc0PZii9oJBVNnQrmxt6dJY=</pin>
+            <pin digest="SHA-256">GUAL5bejH7czkXcAeJ0vCiRxwMnVBsDlBMBsFtfLF8A=</pin>
+        </pin-set>
+    </domain-config>
+
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">firebaseapp.com</domain>
+        <domain includeSubdomains="true">googleapis.com</domain>
+        <domain includeSubdomains="true">firebaseio.com</domain>
+    </domain-config>
+</network-security-config>
