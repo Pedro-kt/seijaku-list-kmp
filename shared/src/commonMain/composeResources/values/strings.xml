@@ -227,6 +227,12 @@
     <string name="settings_account">ACCOUNT</string>
     <string name="settings_version">%1$s - Seijaku List v%2$s (build %3$s)</string>
 
+    <!-- Image Loading Errors -->
+    <string name="error_image_pick_failed">Failed to select image</string>
+    <string name="error_image_save_failed">Failed to save image</string>
+    <string name="list_added_success">Added to your list</string>
+    <string name="list_add_failed">Failed to add to list</string>
+
     <!-- Error Messages -->
     <string name="error_network">Network error. Please check your connection.</string>
     <string name="error_timeout">Connection timeout. The request took too long.</string>

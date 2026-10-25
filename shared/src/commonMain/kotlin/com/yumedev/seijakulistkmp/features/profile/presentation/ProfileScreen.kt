@@ -68,6 +68,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.core.utils.rememberFilePicker
 import com.yumedev.seijakulistkmp.core.utils.rememberImageManager
+import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
 import com.yumedev.seijakulistkmp.features.profile.domain.model.UserProfile
 import com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode
 import com.yumedev.seijakulistkmp.features.profile.presentation.components.EditFavoriteEpisodeBottomSheet
@@ -128,6 +129,8 @@ import seijakulistkmp.shared.generated.resources.profile_remove_image
 import seijakulistkmp.shared.generated.resources.settings
 import kotlin.math.roundToInt
 import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
+import seijakulistkmp.shared.generated.resources.error_image_pick_failed
+import seijakulistkmp.shared.generated.resources.error_image_save_failed
 
 @Composable
 private fun ProfileError.toStringResource(): String {
@@ -254,6 +257,9 @@ fun ProfileScreenContent(
             uiState.profile != null -> {
                 val filePicker = rememberFilePicker()
                 val imageManager = rememberImageManager()
+                val toastManager = rememberToastManager()
+                val errorImagePickFailed = stringResource(Res.string.error_image_pick_failed)
+                val errorImageSaveFailed = stringResource(Res.string.error_image_save_failed)
 
                 ProfileContent(
                     profile = uiState.profile,
@@ -290,10 +296,14 @@ fun ProfileScreenContent(
                                     onSuccess = { path ->
                                         onUpdateAvatar(path)
                                     },
-                                    onError = { /* TODO: Handle error */ }
+                                    onError = {
+                                        toastManager.showToast(errorImageSaveFailed)
+                                    }
                                 )
                             },
-                            onError = { /* TODO: Handle error */ }
+                            onError = {
+                                toastManager.showToast(errorImagePickFailed)
+                            }
                         )
                     },
                     onRemoveAvatar = onRemoveAvatar,
@@ -314,10 +324,14 @@ fun ProfileScreenContent(
                                         onSuccess = { path ->
                                             onUpdateBanner(path)
                                         },
-                                        onError = { /* TODO: Handle error */ }
+                                        onError = {
+                                            toastManager.showToast(errorImageSaveFailed)
+                                        }
                                     )
                                 },
-                                onError = { /* TODO: Handle error */ }
+                                onError = {
+                                    toastManager.showToast(errorImagePickFailed)
+                                }
                             )
                         },
                         onRemoveBanner = onRemoveBanner,

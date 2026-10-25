@@ -151,6 +151,12 @@
     <string name="profile_no_name">Sin nombre</string>
     <string name="profile_local_user">Usuario local</string>
 
+    <!-- Image Loading Errors -->
+    <string name="error_image_pick_failed">Error al seleccionar imagen</string>
+    <string name="error_image_save_failed">Error al guardar imagen</string>
+    <string name="list_added_success">Añadido a tu lista</string>
+    <string name="list_add_failed">Error al añadir a la lista</string>
+
     <!-- Settings -->
     <string name="settings_appearance">APARIENCIA</string>
     <string name="settings_theme">Tema</string>

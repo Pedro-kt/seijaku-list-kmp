@@ -26,5 +26,7 @@ data class SearchState(
     val filterFormat: MediaFormat = MediaFormat.ALL,
     val filterMinScore: Int? = null,
     val showAddToListBottomSheet: Boolean = false,
-    val selectedItemForList: SearchResultItem? = null
+    val selectedItemForList: SearchResultItem? = null,
+    val addToListSuccessMessage: String? = null,
+    val addToListErrorMessage: String? = null
 )
