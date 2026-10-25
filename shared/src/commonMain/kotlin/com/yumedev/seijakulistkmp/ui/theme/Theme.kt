@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.yumedev.seijakulistkmp.features.settings.domain.model.ThemeVariant
+import com.yumedev.seijakulistkmp.ui.theme.colors.MatchaColors
+import com.yumedev.seijakulistkmp.ui.theme.colors.MomijiColors
 import com.yumedev.seijakulistkmp.ui.theme.colors.OceanColors
 import com.yumedev.seijakulistkmp.ui.theme.colors.SakuraColors
 import com.yumedev.seijakulistkmp.ui.theme.colors.SumiColors
@@ -21,6 +23,8 @@ private fun getThemeColors(variant: ThemeVariant): ThemeColors {
         ThemeVariant.SAKURA -> SakuraColors
         ThemeVariant.OCEAN -> OceanColors
         ThemeVariant.YOZORA -> YozoraColors
+        ThemeVariant.MOMIJI -> MomijiColors
+        ThemeVariant.MATCHA -> MatchaColors
     }
 }
 

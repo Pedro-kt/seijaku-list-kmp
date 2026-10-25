@@ -4,5 +4,7 @@ enum class ThemeVariant {
     SUMI,
     SAKURA,
     OCEAN,
-    YOZORA
+    YOZORA,
+    MOMIJI,
+    MATCHA
 }
