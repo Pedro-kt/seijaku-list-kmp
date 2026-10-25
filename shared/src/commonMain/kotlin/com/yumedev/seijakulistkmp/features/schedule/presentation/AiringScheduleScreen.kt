@@ -353,15 +353,14 @@ fun AiringScheduleScreenContent(
                                             items = timeSlot.items,
                                             key = { "item_${it.id}" }
                                         ) { item ->
+                                            val isLastInSlot = timeSlot.items.last() == item
                                             ScheduleCard(
                                                 item = item,
                                                 timezone = state.selectedTimezone.timeZone,
                                                 onClick = onNavigateToAnimeDetail,
                                                 showTime = false,
-                                                modifier = Modifier.padding(
-                                                    horizontal = responsive.horizontalPadding,
-                                                    vertical = responsive.smallPadding
-                                                )
+                                                showDivider = !isLastInSlot,
+                                                modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
                                             )
                                         }
 

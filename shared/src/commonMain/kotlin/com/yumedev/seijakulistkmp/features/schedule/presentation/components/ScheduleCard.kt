@@ -1,6 +1,7 @@
 package com.yumedev.seijakulistkmp.features.schedule.presentation.components
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -14,8 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -55,7 +55,8 @@ fun ScheduleCard(
     timezone: TimeZone,
     onClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    showTime: Boolean = false
+    showTime: Boolean = false,
+    showDivider: Boolean = true
 ) {
     val responsive = ResponsiveTheme.values
     val interactionSource = remember { MutableInteractionSource() }
@@ -75,171 +76,138 @@ fun ScheduleCard(
         }
     }
 
-    val isAiringNow = currentTimeUntilAiring <= 0
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .scale(scale)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ) {
-                onClick(item.mediaId)
-            },
-        shape = RoundedCornerShape(responsive.cornerRadius),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isAiringNow) {
-                MaterialTheme.colorScheme.surfaceContainerHighest
-            } else {
-                MaterialTheme.colorScheme.surfaceContainer
-            }
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = responsive.smallPadding,
-            pressedElevation = responsive.smallPadding
-        )
+    Column(
+        modifier = modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(responsive.smallPadding)
+            modifier = Modifier
+                .fillMaxWidth()
+                .scale(scale)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null
+                ) {
+                    onClick(item.mediaId)
+                }
+                .padding(vertical = responsive.mediumPadding),
+            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
         ) {
             item.coverImageUrl?.let { imageUrl ->
                 AsyncImage(
                     model = imageUrl,
                     contentDescription = item.mediaTitle,
                     modifier = Modifier
-                        .width(responsive.cardWidth / 2)
-                        .height(responsive.minTouchTarget * 2)
-                        .clip(
-                            RoundedCornerShape(
-                                topStart = responsive.cornerRadius,
-                                bottomStart = responsive.cornerRadius,
-                                topEnd = responsive.smallPadding,
-                                bottomEnd = responsive.smallPadding
-                            )
-                        ),
+                        .width(100.dp)
+                        .height(140.dp)
+                        .clip(RoundedCornerShape(responsive.smallSpacing)),
                     contentScale = ContentScale.Crop
                 )
             }
 
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(responsive.minTouchTarget * 2)
-                    .padding(responsive.mediumSpacing),
-                verticalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
+                Text(
+                    text = item.mediaTitle,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val episodeText = if (item.totalEpisodes != null) {
+                        "${stringResource(Res.string.schedule_episode)} ${item.episode}/${item.totalEpisodes}"
+                    } else {
+                        "${stringResource(Res.string.schedule_episode)} ${item.episode}"
+                    }
+
                     Text(
-                        text = item.mediaTitle,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        color = MaterialTheme.colorScheme.onSurface
+                        text = episodeText,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val episodeText = if (item.totalEpisodes != null) {
-                            "${stringResource(Res.string.schedule_episode)} ${item.episode}/${item.totalEpisodes}"
-                        } else {
-                            "${stringResource(Res.string.schedule_episode)} ${item.episode}"
-                        }
-
+                    item.averageScore?.let { score ->
                         Text(
-                            text = episodeText,
-                            style = MaterialTheme.typography.bodySmall,
+                            text = "•",
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
-                        item.averageScore?.let { score ->
-                            Text(
-                                text = "•",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(responsive.smallPadding),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = TablerIcons.Filled.Star,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.size(16.dp)
                             )
+                            Text(
+                                text = "${score / 10.0}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
 
+                Spacer(modifier = Modifier.weight(1f))
+
+                if (showTime || currentTimeUntilAiring > 0) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
+                    ) {
+                        if (showTime) {
+                            Text(
+                                text = AiringScheduleTimeUtil.formatAiringTime(
+                                    timestamp = item.airingAt,
+                                    timeZone = timezone,
+                                    use24Hour = false
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        if (currentTimeUntilAiring > 0) {
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(responsive.smallPadding),
+                                horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    imageVector = TablerIcons.Filled.Star,
+                                    imageVector = TablerIcons.Outlined.Clock,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(responsive.mediumSpacing)
                                 )
                                 Text(
-                                    text = "${score / 10.0}",
+                                    text = "${stringResource(Res.string.schedule_in)} ${AiringScheduleTimeUtil.formatCountdown(currentTimeUntilAiring)}",
                                     style = MaterialTheme.typography.bodySmall,
-                                    fontWeight = FontWeight.Medium,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
                     }
                 }
-
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(responsive.smallPadding)
-                ) {
-                    if (showTime) {
-                        Text(
-                            text = AiringScheduleTimeUtil.formatAiringTime(
-                                timestamp = item.airingAt,
-                                timeZone = timezone,
-                                use24Hour = false
-                            ),
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-                    if (isAiringNow) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = TablerIcons.Filled.Circle,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(responsive.mediumSpacing)
-                            )
-                            Text(
-                                text = stringResource(Res.string.schedule_airing_now),
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                    } else {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = TablerIcons.Outlined.Clock,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(responsive.mediumSpacing)
-                            )
-                            Text(
-                                text = "${stringResource(Res.string.schedule_in)} ${AiringScheduleTimeUtil.formatCountdown(currentTimeUntilAiring)}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
             }
+        }
+
+        if (showDivider) {
+            HorizontalDivider(
+                modifier = Modifier.padding(start = 116.dp),
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+            )
         }
     }
 }
