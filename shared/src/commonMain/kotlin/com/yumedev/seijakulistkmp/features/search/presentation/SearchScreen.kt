@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.yumedev.seijakulistkmp.features.character.presentation.CharacterScreen
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
 import com.yumedev.seijakulistkmp.features.detail.presentation.DetailScreen
 import com.yumedev.seijakulistkmp.features.search.presentation.components.CollapsedSearchContent
@@ -175,7 +176,7 @@ fun SearchScreenContent(
                     }
                 },
                 onCharacterClick = { character ->
-                    // TODO: Navigate to character detail
+                    navigator?.push(CharacterScreen(character.id))
                 },
                 onBackClick = {
                     if (quickFilter != null) {
