@@ -1,6 +1,8 @@
 package com.yumedev.seijakulistkmp.features.schedule.domain.model
 
 import com.yumedev.seijakulistkmp.core.util.AiringScheduleTimeUtil
+import com.yumedev.seijakulistkmp.features.schedule.presentation.ScheduleFilter
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import kotlinx.datetime.TimeZone
 
 fun List<AiringScheduleItem>.groupByTimeSlots(
@@ -24,4 +26,24 @@ fun List<AiringScheduleItem>.groupByTimeSlots(
             )
         }
         .sortedBy { it.hour * 60 + it.minute }
+}
+
+fun List<ScheduleDay>.filterByScheduleFilter(filter: ScheduleFilter): List<ScheduleDay> {
+    return when (filter) {
+        ScheduleFilter.ALL -> this
+        ScheduleFilter.IN_MY_LIST -> this.map { day ->
+            day.copy(
+                airingItems = day.airingItems.filter { item ->
+                    item.userListStatus != null
+                }
+            )
+        }
+        ScheduleFilter.PLAN_TO_WATCH -> this.map { day ->
+            day.copy(
+                airingItems = day.airingItems.filter { item ->
+                    item.userListStatus == MediaListStatus.PLANNING
+                }
+            )
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.yumedev.seijakulistkmp.features.schedule.domain.model
 
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDateTime
 
@@ -18,5 +19,6 @@ data class AiringScheduleItem(
     val averageScore: Int?,
     val format: String?,
     val status: String?,
-    val totalEpisodes: Int?
+    val totalEpisodes: Int?,
+    val userListStatus: MediaListStatus? = null
 )

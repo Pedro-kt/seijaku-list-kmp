@@ -528,6 +528,9 @@
     <string name="schedule_no_schedule_available">No hay calendario de emisiones disponible</string>
     <string name="schedule_go_to_today">Ir a hoy</string>
     <string name="schedule_now">AHORA</string>
+    <string name="schedule_filter_all">Todos</string>
+    <string name="schedule_filter_in_my_list">En mi lista</string>
+    <string name="schedule_filter_plan_to_watch">Planeado</string>
 
     <!-- Days of week -->
     <string name="day_monday">Lunes</string>

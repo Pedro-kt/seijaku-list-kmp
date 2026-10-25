@@ -538,6 +538,9 @@
     <string name="schedule_no_schedule_available">No airing schedule available</string>
     <string name="schedule_go_to_today">Go to today</string>
     <string name="schedule_now">NOW</string>
+    <string name="schedule_filter_all">All</string>
+    <string name="schedule_filter_in_my_list">In my list</string>
+    <string name="schedule_filter_plan_to_watch">Plan to watch</string>
 
     <!-- Days of week -->
     <string name="day_monday">Monday</string>

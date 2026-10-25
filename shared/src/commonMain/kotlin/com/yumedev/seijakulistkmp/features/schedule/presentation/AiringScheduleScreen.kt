@@ -5,15 +5,19 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -53,12 +57,14 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
 import com.yumedev.seijakulistkmp.features.detail.presentation.DetailScreen
+import com.yumedev.seijakulistkmp.features.schedule.domain.model.filterByScheduleFilter
 import com.yumedev.seijakulistkmp.features.schedule.domain.model.groupByTimeSlots
 import com.yumedev.seijakulistkmp.features.schedule.presentation.components.CurrentTimeIndicator
 import com.yumedev.seijakulistkmp.features.schedule.presentation.components.DayStickyHeader
 import com.yumedev.seijakulistkmp.features.schedule.presentation.components.ScheduleCard
 import com.yumedev.seijakulistkmp.features.schedule.presentation.components.ScheduleCardSkeleton
 import com.yumedev.seijakulistkmp.features.schedule.presentation.components.TimeDivider
+import com.yumedev.seijakulistkmp.features.tracking.presentation.components.ExpressiveFilterChip
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowLeft
 import dev.seyfarth.tablericons.outlined.CalendarEvent
@@ -183,6 +189,30 @@ fun AiringScheduleScreenContent(
                 .padding(paddingValues)
         ) {
             if (state.scheduleDays.isNotEmpty() && !state.isLoading) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = responsive.horizontalPadding, vertical = responsive.smallPadding),
+                    horizontalArrangement = Arrangement.spacedBy(responsive.smallPadding)
+                ) {
+                    ExpressiveFilterChip(
+                        selected = state.selectedFilter == ScheduleFilter.ALL,
+                        onClick = { viewModel.onFilterSelected(ScheduleFilter.ALL) },
+                        label = { Text(stringResource(Res.string.schedule_filter_all)) }
+                    )
+                    ExpressiveFilterChip(
+                        selected = state.selectedFilter == ScheduleFilter.IN_MY_LIST,
+                        onClick = { viewModel.onFilterSelected(ScheduleFilter.IN_MY_LIST) },
+                        label = { Text(stringResource(Res.string.schedule_filter_in_my_list)) }
+                    )
+                    ExpressiveFilterChip(
+                        selected = state.selectedFilter == ScheduleFilter.PLAN_TO_WATCH,
+                        onClick = { viewModel.onFilterSelected(ScheduleFilter.PLAN_TO_WATCH) },
+                        label = { Text(stringResource(Res.string.schedule_filter_plan_to_watch)) }
+                    )
+                }
+
                 ScrollableTabRow(
                     selectedTabIndex = state.scheduleDays.indexOfFirst { it.dayOfWeek == state.selectedDayOfWeek },
                     edgePadding = 0.dp,
@@ -293,12 +323,14 @@ fun AiringScheduleScreenContent(
                     }
 
                     else -> {
+                        val filteredScheduleDays = state.scheduleDays.filterByScheduleFilter(state.selectedFilter)
+
                         LazyColumn(
                             state = listState,
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(vertical = responsive.mediumSpacing)
                         ) {
-                            state.scheduleDays.forEach { scheduleDay ->
+                            filteredScheduleDays.forEach { scheduleDay ->
                                 stickyHeader(key = "header_${scheduleDay.dayOfWeek}") {
                                     DayStickyHeader(
                                         scheduleDay = scheduleDay,
