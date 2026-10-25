@@ -17,5 +17,6 @@ data class AiringScheduleItem(
     val genres: List<String>,
     val averageScore: Int?,
     val format: String?,
-    val status: String?
+    val status: String?,
+    val totalEpisodes: Int?
 )

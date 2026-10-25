@@ -146,8 +146,14 @@ fun ScheduleCard(
                         horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        val episodeText = if (item.totalEpisodes != null) {
+                            "${stringResource(Res.string.schedule_episode)} ${item.episode}/${item.totalEpisodes}"
+                        } else {
+                            "${stringResource(Res.string.schedule_episode)} ${item.episode}"
+                        }
+
                         Text(
-                            text = "${stringResource(Res.string.schedule_episode)} ${item.episode}",
+                            text = episodeText,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

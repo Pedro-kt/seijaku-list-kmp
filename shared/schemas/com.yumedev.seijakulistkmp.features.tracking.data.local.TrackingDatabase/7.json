@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "2a27139f7be7d7bdc81b42940e1a4cef",
+    "identityHash": "d113820bd8bed36c095f0822794e3a14",
     "entities": [
       {
         "tableName": "media_list_entries",
@@ -324,7 +324,7 @@
       },
       {
         "tableName": "airing_schedules",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `media_id` INTEGER NOT NULL, `media_title_romaji` TEXT NOT NULL, `media_title_english` TEXT, `media_title_native` TEXT, `cover_image_url` TEXT, `cover_image_color` TEXT, `episode` INTEGER NOT NULL, `airing_at` INTEGER NOT NULL, `time_until_airing` INTEGER NOT NULL, `genres` TEXT NOT NULL, `average_score` INTEGER, `format` TEXT, `status` TEXT, `cached_at` INTEGER NOT NULL, `week_start` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `media_id` INTEGER NOT NULL, `media_title_romaji` TEXT NOT NULL, `media_title_english` TEXT, `media_title_native` TEXT, `cover_image_url` TEXT, `cover_image_color` TEXT, `episode` INTEGER NOT NULL, `airing_at` INTEGER NOT NULL, `time_until_airing` INTEGER NOT NULL, `genres` TEXT NOT NULL, `average_score` INTEGER, `format` TEXT, `status` TEXT, `total_episodes` INTEGER, `cached_at` INTEGER NOT NULL, `week_start` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -402,6 +402,11 @@
             "fieldPath": "status",
             "columnName": "status",
             "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "totalEpisodes",
+            "columnName": "total_episodes",
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "cachedAt",
@@ -545,7 +550,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2a27139f7be7d7bdc81b42940e1a4cef')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd113820bd8bed36c095f0822794e3a14')"
     ]
   }
 }

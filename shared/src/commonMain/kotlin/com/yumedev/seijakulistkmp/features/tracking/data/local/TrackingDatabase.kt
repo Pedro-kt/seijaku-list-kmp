@@ -18,7 +18,7 @@ import com.yumedev.seijakulistkmp.features.tracking.data.local.entity.MediaListE
         AiringScheduleEntity::class,
         FavoriteEpisodeEntity::class,
     ],
-    version = 7,
+    version = 8,
     exportSchema = true
 )
 abstract class TrackingDatabase : RoomDatabase() {

@@ -526,6 +526,8 @@
     <string name="schedule_in">En</string>
     <string name="schedule_no_anime_today">No hay anime emitiéndose este día</string>
     <string name="schedule_no_schedule_available">No hay calendario de emisiones disponible</string>
+    <string name="schedule_go_to_today">Ir a hoy</string>
+    <string name="schedule_now">AHORA</string>
 
     <!-- Days of week -->
     <string name="day_monday">Lunes</string>
@@ -535,6 +537,15 @@
     <string name="day_friday">Viernes</string>
     <string name="day_saturday">Sábado</string>
     <string name="day_sunday">Domingo</string>
+
+    <!-- Days of week (short) -->
+    <string name="day_monday_short">Lun</string>
+    <string name="day_tuesday_short">Mar</string>
+    <string name="day_wednesday_short">Mié</string>
+    <string name="day_thursday_short">Jue</string>
+    <string name="day_friday_short">Vie</string>
+    <string name="day_saturday_short">Sáb</string>
+    <string name="day_sunday_short">Dom</string>
 
     <!-- Months -->
     <string name="month_january">Enero</string>

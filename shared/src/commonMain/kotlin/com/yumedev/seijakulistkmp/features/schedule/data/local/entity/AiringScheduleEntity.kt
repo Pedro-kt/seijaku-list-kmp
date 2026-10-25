@@ -41,6 +41,8 @@ data class AiringScheduleEntity(
     val format: String?,
     @ColumnInfo(name = "status")
     val status: String?,
+    @ColumnInfo(name = "total_episodes")
+    val totalEpisodes: Int?,
     @ColumnInfo(name = "cached_at")
     val cachedAt: Long,
     @ColumnInfo(name = "week_start")

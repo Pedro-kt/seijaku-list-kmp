@@ -24,7 +24,8 @@ fun GetWeeklyAiringScheduleQuery.AiringSchedule.toDomain(): AiringScheduleItem? 
         genres = mediaData.genres?.filterNotNull() ?: emptyList(),
         averageScore = mediaData.averageScore,
         format = mediaData.format?.rawValue,
-        status = mediaData.status?.rawValue
+        status = mediaData.status?.rawValue,
+        totalEpisodes = mediaData.episodes
     )
 }
 
@@ -49,6 +50,7 @@ fun GetWeeklyAiringScheduleQuery.AiringSchedule.toEntity(weekStart: Long, cached
         averageScore = mediaData.averageScore,
         format = mediaData.format?.rawValue,
         status = mediaData.status?.rawValue,
+        totalEpisodes = mediaData.episodes,
         cachedAt = cachedAt,
         weekStart = weekStart
     )
@@ -69,7 +71,8 @@ fun AiringScheduleEntity.toDomain(): AiringScheduleItem {
         genres = if (genres.isNotEmpty()) genres.split(",") else emptyList(),
         averageScore = averageScore,
         format = format,
-        status = status
+        status = status,
+        totalEpisodes = totalEpisodes
     )
 }
 
