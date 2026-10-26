@@ -14,6 +14,8 @@ data class UserProfile(
     val isLocal: Boolean = true,
     val createdAt: Instant,
     val updatedAt: Instant,
+    val firstAccessMonth: Int? = null,
+    val firstAccessYear: Int? = null,
 )
 
 data class ProfileImage(

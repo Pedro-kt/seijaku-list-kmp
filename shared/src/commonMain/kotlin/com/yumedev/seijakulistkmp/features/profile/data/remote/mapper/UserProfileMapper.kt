@@ -18,6 +18,8 @@ fun UserProfile.toDto(firebaseUid: String): UserProfileDto {
         isLocal = this.isLocal,
         createdAt = this.createdAt.toEpochMilliseconds(),
         updatedAt = this.updatedAt.toEpochMilliseconds(),
+        firstAccessMonth = this.firstAccessMonth,
+        firstAccessYear = this.firstAccessYear,
     )
 }
 
@@ -34,6 +36,8 @@ fun UserProfileDto.toDomain(localId: Int): UserProfile {
         isLocal = this.isLocal,
         createdAt = Instant.fromEpochMilliseconds(this.createdAt),
         updatedAt = Instant.fromEpochMilliseconds(this.updatedAt),
+        firstAccessMonth = this.firstAccessMonth,
+        firstAccessYear = this.firstAccessYear,
     )
 }
 

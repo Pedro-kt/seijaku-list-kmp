@@ -30,8 +30,14 @@ class SyncProfileWithFirestoreUseCase(
 
         return when {
             localProfile != null && firestoreProfile != null -> {
+                val firstAccessMonth = firestoreProfile.firstAccessMonth ?: localProfile.firstAccessMonth
+                val firstAccessYear = firestoreProfile.firstAccessYear ?: localProfile.firstAccessYear
+
                 if (firestoreProfile.updatedAt > localProfile.updatedAt.toEpochMilliseconds()) {
-                    val updatedLocal = firestoreProfile.toDomain(localProfile.id)
+                    val updatedLocal = firestoreProfile.toDomain(localProfile.id).copy(
+                        firstAccessMonth = firstAccessMonth,
+                        firstAccessYear = firstAccessYear,
+                    )
                     val updateResult = profileRepository.updateProfile(updatedLocal)
                     when (updateResult) {
                         is Result.Success -> Result.Success(updatedLocal)
@@ -50,7 +56,12 @@ class SyncProfileWithFirestoreUseCase(
                         localProfile.banner
                     }
 
-                    val profileToSync = if (avatarToUse != localProfile.avatar?.large || bannerToUse != localProfile.banner) {
+                    val needsUpdate = avatarToUse != localProfile.avatar?.large ||
+                                     bannerToUse != localProfile.banner ||
+                                     localProfile.firstAccessMonth != firstAccessMonth ||
+                                     localProfile.firstAccessYear != firstAccessYear
+
+                    val profileToSync = if (needsUpdate) {
                         val updateResult = profileRepository.createOrUpdateLocalProfile(
                             name = localProfile.name,
                             about = localProfile.about,
@@ -58,8 +69,14 @@ class SyncProfileWithFirestoreUseCase(
                             bannerUrl = bannerToUse
                         )
                         when (updateResult) {
-                            is Result.Success -> updateResult.data
-                            is Result.Failure -> localProfile
+                            is Result.Success -> updateResult.data.copy(
+                                firstAccessMonth = firstAccessMonth,
+                                firstAccessYear = firstAccessYear,
+                            )
+                            is Result.Failure -> localProfile.copy(
+                                firstAccessMonth = firstAccessMonth,
+                                firstAccessYear = firstAccessYear,
+                            )
                         }
                     } else {
                         localProfile

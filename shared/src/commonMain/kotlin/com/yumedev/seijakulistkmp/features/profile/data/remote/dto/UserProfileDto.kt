@@ -16,6 +16,8 @@ data class UserProfileDto(
     val isLocal: Boolean = true,
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
+    val firstAccessMonth: Int? = null,
+    val firstAccessYear: Int? = null,
 )
 
 @Serializable

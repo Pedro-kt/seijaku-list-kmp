@@ -10,6 +10,8 @@ import com.yumedev.seijakulistkmp.features.profile.domain.model.UserProfile
 import com.yumedev.seijakulistkmp.features.profile.domain.model.UserStatistics
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @Entity(tableName = "user_profiles")
 data class UserProfileEntity(
@@ -34,6 +36,8 @@ data class UserProfileEntity(
     val isLocal: Boolean = true,
     val createdAt: Long,
     val updatedAt: Long,
+    val firstAccessMonth: Int? = null,
+    val firstAccessYear: Int? = null,
 ) {
     fun toDomain(): UserProfile {
         return UserProfile(
@@ -68,6 +72,8 @@ data class UserProfileEntity(
             isLocal = isLocal,
             createdAt = Instant.fromEpochMilliseconds(createdAt),
             updatedAt = Instant.fromEpochMilliseconds(updatedAt),
+            firstAccessMonth = firstAccessMonth,
+            firstAccessYear = firstAccessYear,
         )
     }
 
@@ -94,18 +100,23 @@ data class UserProfileEntity(
                 isLocal = profile.isLocal,
                 createdAt = profile.createdAt.toEpochMilliseconds(),
                 updatedAt = profile.updatedAt.toEpochMilliseconds(),
+                firstAccessMonth = profile.firstAccessMonth,
+                firstAccessYear = profile.firstAccessYear,
             )
         }
 
         fun createDefault(name: String = "Usuario Local"): UserProfileEntity {
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = Clock.System.now()
+            val localDateTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
             return UserProfileEntity(
                 id = 1,
                 anilistId = null,
                 name = name,
                 isLocal = true,
-                createdAt = now,
-                updatedAt = now,
+                createdAt = now.toEpochMilliseconds(),
+                updatedAt = now.toEpochMilliseconds(),
+                firstAccessMonth = localDateTime.monthNumber,
+                firstAccessYear = localDateTime.year,
             )
         }
     }
