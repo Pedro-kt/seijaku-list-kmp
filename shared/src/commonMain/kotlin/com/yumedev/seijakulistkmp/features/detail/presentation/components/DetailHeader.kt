@@ -15,11 +15,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.yumedev.seijakulistkmp.core.utils.rememberImageColors
 import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.Star
@@ -53,24 +51,16 @@ fun DetailHeader(
     nextAiringText: String?,
     isInList: Boolean,
     onAddToListClick: () -> Unit,
-    onDominantColorExtracted: (Color) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val responsive = ResponsiveTheme.values
 
-    val generatedColor = remember(title) {
-        val hash = title.hashCode()
-        val hue = (hash % 360).toFloat().let { if (it < 0) it + 360 else it }
-        Color.hsl(hue, 0.6f, 0.5f)
-    }
+    val imageColors = rememberImageColors(
+        imageUrl = coverImageUrl,
+        fallbackColor = MaterialTheme.colorScheme.surfaceVariant
+    )
 
-    var dominantColor by remember(coverImageUrl) { mutableStateOf(generatedColor) }
-
-    LaunchedEffect(dominantColor) {
-        onDominantColorExtracted(dominantColor)
-    }
-
-    val backgroundColor = dominantColor
+    val backgroundColor = imageColors.value.dominant
 
     val backgroundGradient = Brush.verticalGradient(
         colors = listOf(
@@ -102,10 +92,7 @@ fun DetailHeader(
                 model = coverImageUrl,
                 contentDescription = title,
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-                onSuccess = {
-
-                }
+                contentScale = ContentScale.Crop
             )
         }
 

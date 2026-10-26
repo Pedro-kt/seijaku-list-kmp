@@ -20,6 +20,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.core.error.ErrorType
 import com.yumedev.seijakulistkmp.core.error.ErrorUiMapper
+import com.yumedev.seijakulistkmp.core.utils.rememberImageColors
 import com.yumedev.seijakulistkmp.core.utils.rememberShareHelper
 import com.yumedev.seijakulistkmp.core.utils.rememberUrlOpener
 import com.yumedev.seijakulistkmp.features.character.presentation.CharacterScreen
@@ -389,13 +390,12 @@ fun DetailScreenContent(
     val scrollState = rememberScrollState()
     val responsive = ResponsiveTheme.values
 
-    val initialColor = remember(mediaDetail.title) {
-        val hash = mediaDetail.title.hashCode()
-        val hue = (hash % 360).toFloat().let { if (it < 0) it + 360 else it }
-        Color.hsl(hue, 0.6f, 0.5f)
-    }
+    val imageColors = rememberImageColors(
+        imageUrl = mediaDetail.coverImageUrl,
+        fallbackColor = MaterialTheme.colorScheme.surfaceVariant
+    )
 
-    var dominantColor by remember(mediaDetail.coverImageUrl) { mutableStateOf(initialColor) }
+    val dominantColor = imageColors.value.dominant
 
     val showTitleInTopBar = scrollState.value > 300
 
@@ -435,8 +435,7 @@ fun DetailScreenContent(
                 popularityText = mediaDetail.popularityText,
                 nextAiringText = mediaDetail.nextAiringText,
                 isInList = mediaDetail.isInList,
-                onAddToListClick = { showAddToListBottomSheet = true },
-                onDominantColorExtracted = { color -> dominantColor = color }
+                onAddToListClick = { showAddToListBottomSheet = true }
             )
 
             listEntry?.let { entry ->
