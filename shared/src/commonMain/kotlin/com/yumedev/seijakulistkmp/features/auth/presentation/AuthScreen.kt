@@ -140,13 +140,19 @@ fun AuthScreenContent(
                         start = responsiveValues.horizontalPadding,
                         end = responsiveValues.horizontalPadding,
                         bottom = responsiveValues.verticalPadding
-                    )
+                    ),
+                verticalArrangement = Arrangement.spacedBy(responsiveValues.smallPadding)
             ) {
                 Text(
                     text = stringResource(Res.string.auth_title),
                     style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = stringResource(Res.string.auth_subtitle),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 

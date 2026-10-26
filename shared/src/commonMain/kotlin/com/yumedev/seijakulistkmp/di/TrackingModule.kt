@@ -1,6 +1,9 @@
 package com.yumedev.seijakulistkmp.di
 
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.yumedev.seijakulistkmp.core.utils.ImageReader
+import com.yumedev.seijakulistkmp.features.profile.data.remote.FirebaseStorageDataSource
+import com.yumedev.seijakulistkmp.features.profile.data.remote.FirestoreProfileDataSource
 import com.yumedev.seijakulistkmp.features.profile.data.repository.ProfileRepositoryImpl
 import com.yumedev.seijakulistkmp.features.tracking.data.local.migrations.MIGRATION_2_3
 import com.yumedev.seijakulistkmp.features.profile.domain.repository.ProfileRepository
@@ -12,6 +15,7 @@ import com.yumedev.seijakulistkmp.features.profile.presentation.ProfileViewModel
 import com.yumedev.seijakulistkmp.features.tracking.data.export.MALXmlMapper
 import com.yumedev.seijakulistkmp.features.tracking.data.local.MIGRATION_5_6
 import com.yumedev.seijakulistkmp.features.tracking.data.local.MIGRATION_6_7
+import com.yumedev.seijakulistkmp.features.tracking.data.local.MIGRATION_7_8
 import com.yumedev.seijakulistkmp.features.tracking.data.local.TrackingDatabase
 import com.yumedev.seijakulistkmp.features.tracking.data.local.TrackingDatabaseBuilder
 import com.yumedev.seijakulistkmp.features.tracking.data.repository.MediaListRepositoryImpl
@@ -43,7 +47,7 @@ val trackingModule = module {
     single<TrackingDatabase> {
         TrackingDatabaseBuilder.create()
             .setDriver(BundledSQLiteDriver())
-            .addMigrations(MIGRATION_2_3, MIGRATION_5_6, MIGRATION_6_7)
+            .addMigrations(MIGRATION_2_3, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
             .build()
     }
 
@@ -61,7 +65,17 @@ val trackingModule = module {
             deleteFromFirestoreUseCase = get()
         )
     }
-    singleOf(::ProfileRepositoryImpl) bind ProfileRepository::class
+    singleOf(::FirebaseStorageDataSource)
+    singleOf(::FirestoreProfileDataSource)
+    single<ProfileRepository> {
+        ProfileRepositoryImpl(
+            userProfileDao = get(),
+            mediaListDao = get(),
+            firebaseStorageDataSource = get(),
+            firestoreProfileDataSource = get(),
+            imageReader = get()
+        )
+    }
 
     factoryOf(::GetCurrentProfileUseCase)
     factoryOf(::UpdateProfileUseCase)

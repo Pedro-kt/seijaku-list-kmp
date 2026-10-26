@@ -1,7 +1,9 @@
 package com.yumedev.seijakulistkmp.core.notification
 
 import android.content.Context
+import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
@@ -13,10 +15,16 @@ class AndroidAiringNotificationScheduler(
     private val workManager = WorkManager.getInstance(context)
 
     override fun startPeriodicSync() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
         val syncWorkRequest = PeriodicWorkRequestBuilder<ScheduleSyncWorker>(
             repeatInterval = 6,
             repeatIntervalTimeUnit = TimeUnit.HOURS
-        ).build()
+        )
+            .setConstraints(constraints)
+            .build()
 
         workManager.enqueueUniquePeriodicWork(
             ScheduleSyncWorker.WORK_NAME,
@@ -27,7 +35,6 @@ class AndroidAiringNotificationScheduler(
 
     override fun cancelAll() {
         workManager.cancelUniqueWork(ScheduleSyncWorker.WORK_NAME)
-
         workManager.cancelAllWorkByTag(ScheduleSyncWorker.TAG_EPISODE_NOTIFICATION)
     }
 }

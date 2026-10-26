@@ -76,4 +76,8 @@ class AiringScheduleViewModel(
     fun onErrorDismissed() {
         _state.update { it.copy(error = null) }
     }
+
+    fun onFilterSelected(filter: ScheduleFilter) {
+        _state.update { it.copy(selectedFilter = filter) }
+    }
 }

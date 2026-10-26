@@ -2,6 +2,8 @@ package com.yumedev.seijakulistkmp.features.auth.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yumedev.seijakulistkmp.core.analytics.AnalyticsEvents
+import com.yumedev.seijakulistkmp.core.analytics.AnalyticsManager
 import com.yumedev.seijakulistkmp.core.domain.model.Result
 import com.yumedev.seijakulistkmp.features.auth.domain.model.AuthError
 import com.yumedev.seijakulistkmp.features.auth.domain.usecase.*
@@ -23,6 +25,7 @@ class AuthViewModel(
     private val syncProfileWithFirestore: SyncProfileWithFirestoreUseCase,
     private val syncMediaListWithFirestore: SyncMediaListWithFirestoreUseCase,
     private val syncFavoriteEpisodesWithFirestore: SyncFavoriteEpisodesWithFirestoreUseCase,
+    private val analyticsManager: AnalyticsManager,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthState())
@@ -130,12 +133,20 @@ class AuthViewModel(
                     } catch (e: Exception) {
                     }
 
+                    analyticsManager.logEvent(AnalyticsEvents.LOGIN, mapOf("method" to "email"))
+                    result.data?.let { analyticsManager.setUserId(it.uid) }
+
                     _uiState.update { it.copy(isLoading = false, loginSuccess = true) }
                     _events.send(AuthEvent.LoginSuccess)
                     _events.send(AuthEvent.NavigateToMain)
                 }
 
                 is Result.Failure -> {
+                    analyticsManager.logError(result.exception, mapOf(
+                        "flow" to "login",
+                        "method" to "email"
+                    ))
+
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -183,12 +194,20 @@ class AuthViewModel(
                     } catch (e: Exception) {
                     }
 
+                    analyticsManager.logEvent(AnalyticsEvents.SIGN_UP, mapOf("method" to "email"))
+                    result.data?.let { analyticsManager.setUserId(it.uid) }
+
                     _uiState.update { it.copy(isLoading = false, registerSuccess = true) }
                     _events.send(AuthEvent.RegisterSuccess)
                     _events.send(AuthEvent.NavigateToMain)
                 }
 
                 is Result.Failure -> {
+                    analyticsManager.logError(result.exception, mapOf(
+                        "flow" to "register",
+                        "method" to "email"
+                    ))
+
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -207,6 +226,9 @@ class AuthViewModel(
 
             when (val result = loginWithGoogle(activityContext)) {
                 is Result.Success -> {
+                    analyticsManager.logEvent(AnalyticsEvents.LOGIN, mapOf("method" to "google"))
+                    result.data?.let { analyticsManager.setUserId(it.uid) }
+
                     try {
                         syncProfileWithFirestore()
                     } catch (e: Exception) {

@@ -18,13 +18,13 @@ import seijakulistkmp.shared.generated.resources.*
 @Composable
 fun SettingsDataSection(
     lastSyncTime: String?,
-    cacheSize: String,
+    // cacheSize: String,
     onSyncClick: () -> Unit,
     onImportAnimeClick: () -> Unit,
     onImportMangaClick: () -> Unit,
     onExportAnimeClick: () -> Unit,
     onExportMangaClick: () -> Unit,
-    onClearCacheClick: () -> Unit,
+    // onClearCacheClick: () -> Unit,
     onAboutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -88,14 +88,14 @@ fun SettingsDataSection(
             onClick = onExportMangaClick
         )
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+        // HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
 
-        SettingsNavigationItem(
-            icon = TablerIcons.Outlined.Trash,
-            title = stringResource(Res.string.settings_clear_cache),
-            description = stringResource(Res.string.settings_clear_cache_desc, cacheSize),
-            onClick = onClearCacheClick
-        )
+        // SettingsNavigationItem(
+        //     icon = TablerIcons.Outlined.Trash,
+        //     title = stringResource(Res.string.settings_clear_cache),
+        //     description = stringResource(Res.string.settings_clear_cache_desc, cacheSize),
+        //     onClick = onClearCacheClick
+        // )
 
         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
 

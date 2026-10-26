@@ -303,6 +303,7 @@ private fun AnimeTabContent(
         LazyColumn(
             state = scrollState,
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 100.dp),
             verticalArrangement = Arrangement.spacedBy(responsive.largeSpacing)
         ) {
         item {
@@ -382,16 +383,18 @@ private fun AnimeTabContent(
             }
         }
 
-        item {
-            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
-            QuickFilterChips(
-                onFilterClick = { filter, label ->
-                    navigator?.push(
-                        SearchScreen(quickFilter = filter)
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
+        if (state.featuredAnimeError == null) {
+            item {
+                Spacer(modifier = Modifier.height(responsive.mediumSpacing))
+                QuickFilterChips(
+                    onFilterClick = { filter, label ->
+                        navigator?.push(
+                            SearchScreen(quickFilter = filter)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(responsive.mediumSpacing))
+            }
         }
 
         item {
@@ -445,7 +448,6 @@ private fun AnimeTabContent(
             )
         }
 
-            item { Spacer(modifier = Modifier.height(responsive.xlargePadding * 2)) }
         }
 
         if (state.isBottomSheetVisible && state.selectedMediaDetail != null) {
@@ -503,6 +505,7 @@ private fun MangaTabContent(
         LazyColumn(
             state = scrollState,
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 100.dp),
             verticalArrangement = Arrangement.spacedBy(responsive.largeSpacing)
         ) {
         item {
@@ -582,16 +585,18 @@ private fun MangaTabContent(
             }
         }
 
-        item {
-            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
-            QuickFilterChips(
-                onFilterClick = { filter, _ ->
-                    navigator?.push(
-                        SearchScreen(quickFilter = filter)
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.height(responsive.mediumSpacing))
+        if (state.featuredMangaError == null) {
+            item {
+                Spacer(modifier = Modifier.height(responsive.mediumSpacing))
+                QuickFilterChips(
+                    onFilterClick = { filter, _ ->
+                        navigator?.push(
+                            SearchScreen(quickFilter = filter)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(responsive.mediumSpacing))
+            }
         }
 
         // Publishing Now Section
@@ -684,7 +689,6 @@ private fun MangaTabContent(
             )
         }
 
-            item { Spacer(modifier = Modifier.height(responsive.xlargePadding * 2)) }
         }
 
         if (state.isBottomSheetVisible && state.selectedMediaDetail != null) {
@@ -727,29 +731,15 @@ private fun HomeTopAppBar(
 
     TopAppBar(
         title = {
-            Surface(
-                shape = RoundedCornerShape(50),
-                color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                modifier = Modifier
-                    .height(40.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(horizontal = responsive.mediumPadding)
-                ) {
-                    Image(
-                        painter = painterResource(
-                            if (isDarkTheme) Res.drawable.seijaku_lockup_blanco
-                            else Res.drawable.seijaku_lockup_negro
-                        ),
-                        contentDescription = stringResource(Res.string.app_name),
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.height(28.dp)
-                    )
-                }
-            }
+            Image(
+                painter = painterResource(
+                    if (isDarkTheme) Res.drawable.seijaku_lockup_blanco
+                    else Res.drawable.seijaku_lockup_negro
+                ),
+                contentDescription = stringResource(Res.string.app_name),
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.height(28.dp)
+            )
         },
         actions = {
             Row(

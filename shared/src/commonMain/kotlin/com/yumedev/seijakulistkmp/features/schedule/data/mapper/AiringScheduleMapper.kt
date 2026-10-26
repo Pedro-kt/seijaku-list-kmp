@@ -2,7 +2,9 @@ package com.yumedev.seijakulistkmp.features.schedule.data.mapper
 
 import com.yumedev.seijakulistkmp.data.remote.graphql.GetWeeklyAiringScheduleQuery
 import com.yumedev.seijakulistkmp.features.schedule.data.local.entity.AiringScheduleEntity
+import com.yumedev.seijakulistkmp.features.schedule.data.local.entity.AiringScheduleWithStatus
 import com.yumedev.seijakulistkmp.features.schedule.domain.model.AiringScheduleItem
+import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 
 fun GetWeeklyAiringScheduleQuery.AiringSchedule.toDomain(): AiringScheduleItem? {
     val mediaData = media ?: return null
@@ -24,7 +26,8 @@ fun GetWeeklyAiringScheduleQuery.AiringSchedule.toDomain(): AiringScheduleItem? 
         genres = mediaData.genres?.filterNotNull() ?: emptyList(),
         averageScore = mediaData.averageScore,
         format = mediaData.format?.rawValue,
-        status = mediaData.status?.rawValue
+        status = mediaData.status?.rawValue,
+        totalEpisodes = mediaData.episodes
     )
 }
 
@@ -49,6 +52,7 @@ fun GetWeeklyAiringScheduleQuery.AiringSchedule.toEntity(weekStart: Long, cached
         averageScore = mediaData.averageScore,
         format = mediaData.format?.rawValue,
         status = mediaData.status?.rawValue,
+        totalEpisodes = mediaData.episodes,
         cachedAt = cachedAt,
         weekStart = weekStart
     )
@@ -69,7 +73,37 @@ fun AiringScheduleEntity.toDomain(): AiringScheduleItem {
         genres = if (genres.isNotEmpty()) genres.split(",") else emptyList(),
         averageScore = averageScore,
         format = format,
-        status = status
+        status = status,
+        totalEpisodes = totalEpisodes
+    )
+}
+
+fun AiringScheduleWithStatus.toDomain(): AiringScheduleItem {
+    val userStatus = userListStatus?.let {
+        try {
+            MediaListStatus.valueOf(it)
+        } catch (e: IllegalArgumentException) {
+            null
+        }
+    }
+
+    return AiringScheduleItem(
+        id = schedule.id,
+        mediaId = schedule.mediaId,
+        mediaTitle = schedule.mediaTitleRomaji,
+        mediaTitleEnglish = schedule.mediaTitleEnglish,
+        mediaTitleNative = schedule.mediaTitleNative,
+        coverImageUrl = schedule.coverImageUrl,
+        coverImageColor = schedule.coverImageColor,
+        episode = schedule.episode,
+        airingAt = schedule.airingAt,
+        timeUntilAiring = schedule.timeUntilAiring,
+        genres = if (schedule.genres.isNotEmpty()) schedule.genres.split(",") else emptyList(),
+        averageScore = schedule.averageScore,
+        format = schedule.format,
+        status = schedule.status,
+        totalEpisodes = schedule.totalEpisodes,
+        userListStatus = userStatus
     )
 }
 
@@ -86,5 +120,10 @@ fun List<GetWeeklyAiringScheduleQuery.AiringSchedule?>.toAiringScheduleEntities(
 
 @JvmName("airingScheduleEntityToItems")
 fun List<AiringScheduleEntity>.toAiringScheduleItems(): List<AiringScheduleItem> {
+    return this.map { it.toDomain() }
+}
+
+@JvmName("airingScheduleWithStatusToItems")
+fun List<AiringScheduleWithStatus>.toAiringScheduleItems(): List<AiringScheduleItem> {
     return this.map { it.toDomain() }
 }

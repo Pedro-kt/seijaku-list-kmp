@@ -193,7 +193,7 @@ class HomeViewModel(
             }
             .onFailure { error ->
                 val errorType = ErrorMapper.mapToErrorType(error)
-                val errorUi = errorUiMapper.mapFeaturedError(errorType)
+                val errorUi = errorUiMapper.mapFeaturedError(errorType, isAnime = false)
                 _state.update {
                     it.copy(
                         isLoadingFeaturedManga = false,

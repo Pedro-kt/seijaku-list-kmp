@@ -33,7 +33,7 @@ import kotlin.math.absoluteValue
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.yumedev.seijakulistkmp.features.auth.presentation.AuthScreen
+import com.yumedev.seijakulistkmp.features.auth.presentation.LoginScreen
 import com.yumedev.seijakulistkmp.features.welcome.presentation.components.WelcomeAppShowcase
 import com.yumedev.seijakulistkmp.features.welcome.presentation.components.WelcomeExportDemo
 import com.yumedev.seijakulistkmp.features.welcome.presentation.components.WelcomeOfflineDemo
@@ -54,8 +54,11 @@ class WelcomeScreen : Screen {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         WelcomeScreenContent(
-            onFinish = {
-                navigator.push(AuthScreen())
+            onContinueToApp = {
+                navigator.pop()
+            },
+            onGoToAuth = {
+                navigator.push(LoginScreen())
             }
         )
     }
@@ -64,7 +67,8 @@ class WelcomeScreen : Screen {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WelcomeScreenContent(
-    onFinish: () -> Unit,
+    onContinueToApp: () -> Unit,
+    onGoToAuth: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val responsive = ResponsiveTheme.values
@@ -117,7 +121,7 @@ fun WelcomeScreenContent(
                 )
 
                 TextButton(
-                    onClick = onFinish,
+                    onClick = onContinueToApp,
                     enabled = pagerState.currentPage < pages.size - 1,
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = MaterialTheme.colorScheme.primary
@@ -145,6 +149,7 @@ fun WelcomeScreenContent(
                 WelcomePageContent(
                     page = pages[page],
                     pageIndex = page,
+                    currentPage = pagerState.currentPage,
                     pageOffset = pageOffset
                 )
             }
@@ -168,31 +173,65 @@ fun WelcomeScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .padding(horizontal = responsive.xlargePadding, vertical = responsive.largePadding)
+                    .padding(horizontal = responsive.xlargePadding, vertical = responsive.largePadding),
+                verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
             ) {
-                FilledTonalButton(
-                    onClick = {
-                        if (pagerState.currentPage < pages.size - 1) {
+                if (pagerState.currentPage < pages.size - 1) {
+                    FilledTonalButton(
+                        onClick = {
                             scope.launch {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
                             }
-                        } else {
-                            onFinish()
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(responsive.buttonHeight),
-                    shape = RoundedCornerShape(responsive.buttonHeight / 2)
-                ) {
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(responsive.buttonHeight),
+                        shape = RoundedCornerShape(responsive.buttonHeight / 2)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.welcome_next),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                } else {
+                    FilledTonalButton(
+                        onClick = onContinueToApp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(responsive.buttonHeight),
+                        shape = RoundedCornerShape(responsive.buttonHeight / 2)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.welcome_continue_to_app),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+
                     Text(
-                        text = if (pagerState.currentPage < pages.size - 1)
-                            stringResource(Res.string.welcome_next)
-                        else
-                            stringResource(Res.string.welcome_get_started),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
+                        text = stringResource(Res.string.welcome_or_sync),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
+
+                    OutlinedButton(
+                        onClick = onGoToAuth,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(responsive.buttonHeight),
+                        shape = RoundedCornerShape(responsive.buttonHeight / 2),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.welcome_sign_in),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
         }
@@ -203,6 +242,7 @@ fun WelcomeScreenContent(
 fun WelcomePageContent(
     page: WelcomePage,
     pageIndex: Int,
+    currentPage: Int,
     pageOffset: Float,
     modifier: Modifier = Modifier
 ) {
@@ -238,12 +278,6 @@ fun WelcomePageContent(
         else -> 2.sp
     }
 
-    val visualWeight = when {
-        isCompact -> 0.45f
-        isSmall -> 0.50f
-        else -> 0.55f
-    }
-
     var contentVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -274,33 +308,20 @@ fun WelcomePageContent(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(visualWeight)
-                .graphicsLayer {
-                    translationY = visualOffset
-                    alpha = visualAlpha
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            WelcomeVisualShowcase(
-                pageIndex = pageIndex,
-                page = page,
-                pageOffset = pageOffset
-            )
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f - visualWeight)
                 .graphicsLayer {
                     translationY = contentOffset
                     alpha = contentAlpha
                 }
-                .padding(horizontal = responsive.horizontalPadding, vertical = responsive.largePadding),
-            verticalArrangement = Arrangement.spacedBy(responsive.largePadding)
+                .padding(
+                    start = responsive.horizontalPadding,
+                    end = responsive.horizontalPadding,
+                    top = responsive.largePadding,
+                    bottom = responsive.mediumPadding
+                ),
+            verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
         ) {
             Text(
                 text = page.title.uppercase(),
@@ -333,32 +354,65 @@ fun WelcomePageContent(
                     }
             )
         }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .graphicsLayer {
+                    translationY = visualOffset
+                    alpha = visualAlpha
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            WelcomeVisualShowcase(
+                pageIndex = pageIndex,
+                currentPage = currentPage,
+                page = page,
+                pageOffset = pageOffset
+            )
+        }
     }
 }
 
 @Composable
 private fun WelcomeVisualShowcase(
     pageIndex: Int,
+    currentPage: Int,
     page: WelcomePage,
     pageOffset: Float,
     modifier: Modifier = Modifier
 ) {
+    val isVisible = pageIndex == currentPage
+
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         when (pageIndex) {
             0 -> {
-                WelcomeAppShowcase(modifier = Modifier.fillMaxSize())
+                WelcomeAppShowcase(
+                    isVisible = isVisible,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
             1 -> {
-                WelcomeOfflineDemo(modifier = Modifier.fillMaxSize())
+                WelcomeOfflineDemo(
+                    isVisible = isVisible,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
             2 -> {
-                WelcomeExportDemo(modifier = Modifier.fillMaxSize())
+                WelcomeExportDemo(
+                    isVisible = isVisible,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
             3 -> {
-                WelcomeOrganizationDemo(modifier = Modifier.fillMaxSize())
+                WelcomeOrganizationDemo(
+                    isVisible = isVisible,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }

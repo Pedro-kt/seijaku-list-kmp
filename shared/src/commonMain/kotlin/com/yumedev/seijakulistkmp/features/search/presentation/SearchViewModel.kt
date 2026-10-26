@@ -785,12 +785,20 @@ class SearchViewModel(
             when (result) {
                 is Result.Success -> {
                     hideAddToListBottomSheet()
-                    // TODO: Show success message if needed
+                    _state.update { it.copy(addToListSuccessMessage = "list_added_success") }
                 }
                 is Result.Failure -> {
-                    // TODO: Show error message
+                    _state.update { it.copy(addToListErrorMessage = "list_add_failed") }
                 }
             }
         }
+    }
+
+    fun clearAddToListSuccessMessage() {
+        _state.update { it.copy(addToListSuccessMessage = null) }
+    }
+
+    fun clearAddToListErrorMessage() {
+        _state.update { it.copy(addToListErrorMessage = null) }
     }
 }

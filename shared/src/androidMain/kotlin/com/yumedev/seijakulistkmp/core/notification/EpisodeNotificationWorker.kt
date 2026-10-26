@@ -8,7 +8,10 @@ import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.yumedev.seijakulistkmp.core.util.AiringScheduleTimeUtil
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
+import kotlin.time.Duration.Companion.seconds
 
 class EpisodeNotificationWorker(
     private val context: Context,
@@ -44,11 +47,22 @@ class EpisodeNotificationWorker(
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val timeZone = TimeZone.currentSystemDefault()
 
-        val airingTime = AiringScheduleTimeUtil.formatAiringTime(
-            timestamp = airingAt,
-            timeZone = timeZone,
-            use24Hour = false
-        )
+        val now = Clock.System.now()
+        val airingTime = Instant.fromEpochSeconds(airingAt)
+        val timeUntilAiring = (airingTime - now).inWholeMinutes
+
+        val timeText = when {
+            timeUntilAiring <= 0 -> "airing now!"
+            timeUntilAiring < 60 -> "airing in $timeUntilAiring minutes"
+            else -> {
+                val formattedTime = AiringScheduleTimeUtil.formatAiringTime(
+                    timestamp = airingAt,
+                    timeZone = timeZone,
+                    use24Hour = false
+                )
+                "airing at $formattedTime"
+            }
+        }
 
         val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -70,7 +84,7 @@ class EpisodeNotificationWorker(
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(notificationIcon)
             .setContentTitle("$title - Episode $episode")
-            .setContentText("Airing in 1 hour at $airingTime")
+            .setContentText(timeText)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)

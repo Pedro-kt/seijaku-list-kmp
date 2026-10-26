@@ -162,6 +162,8 @@
     <string name="settings_theme_variant_sakura">Sakura</string>
     <string name="settings_theme_variant_ocean">Ocean</string>
     <string name="settings_theme_variant_yozora">Yozora</string>
+    <string name="settings_theme_variant_momiji">Momiji</string>
+    <string name="settings_theme_variant_matcha">Matcha</string>
     <string name="settings_language">Language</string>
     <string name="settings_language_system">System</string>
     <string name="settings_language_english">English</string>
@@ -224,13 +226,23 @@
     <string name="settings_external_link_confirm">Open</string>
     <string name="settings_account">ACCOUNT</string>
     <string name="settings_version">%1$s - Seijaku List v%2$s (build %3$s)</string>
+    <string name="settings_footer_developer_name">Pedro Bustamante</string>
+    <string name="settings_footer_developer_handle">\u0040DaffDev</string>
+    <string name="settings_footer_powered_by">Powered by AniList API</string>
+
+    <!-- Image Loading Errors -->
+    <string name="error_image_pick_failed">Failed to select image</string>
+    <string name="error_image_save_failed">Failed to save image</string>
+    <string name="list_added_success">Added to your list</string>
+    <string name="list_add_failed">Failed to add to list</string>
 
     <!-- Error Messages -->
     <string name="error_network">Network error. Please check your connection.</string>
     <string name="error_timeout">Connection timeout. The request took too long.</string>
     <string name="error_unknown">An unknown error occurred.</string>
     <string name="error_server">Server error. Please try again later.</string>
-    <string name="error_loading_featured">Unable to load featured anime</string>
+    <string name="error_loading_featured_anime">Unable to load featured anime</string>
+    <string name="error_loading_featured_manga">Unable to load featured manga</string>
     <string name="error_loading_featured_hint">Check your connection and try again</string>
     <string name="error_server_unavailable">Service temporarily unavailable</string>
     <string name="error_server_unavailable_hint">The server is experiencing issues. Please try again later</string>
@@ -454,14 +466,15 @@
     <string name="welcome_get_started">Get Started</string>
     <string name="welcome_page1_title">Welcome to Seijaku List</string>
     <string name="welcome_page1_description">Track your favorite anime and manga in one beautiful app</string>
-    <string name="welcome_page2_title">Use totally Offline</string>
-    <string name="welcome_page2_description">Track your collection offline without creating an account. Export your lists anytime you need them</string>
-    <string name="welcome_page3_title">Standard Format</string>
-    <string name="welcome_page3_description">Your exports use standard XML files compatible with MAL and AniList trackers</string>
-    <string name="welcome_page4_title">Stay Organized</string>
-    <string name="welcome_page4_description">Keep track of what you\'re watching, planning, or have completed</string>
-    <string name="welcome_page5_title">Sync with AniList</string>
-    <string name="welcome_page5_description">If you want, sync your lists with AniList and never lose your progress across devices</string>
+    <string name="welcome_page2_title">Works 100% Offline</string>
+    <string name="welcome_page2_description">No account needed! Track your entire collection offline. Export your lists anytime as standard XML files.</string>
+    <string name="welcome_page3_title">Seijaku Means Serenity</string>
+    <string name="welcome_page3_description">A peaceful, distraction-free space to track your collection. Beautiful themes, thoughtful design, and zero clutter.</string>
+    <string name="welcome_page4_title">Cloud Sync is Optional</string>
+    <string name="welcome_page4_description">Create an account only if you want automatic backup and sync across devices. The app works perfectly without one!</string>
+    <string name="welcome_continue_to_app">Continue to app</string>
+    <string name="welcome_or_sync">Or enable cloud backup</string>
+    <string name="welcome_sign_in">Sign in / Create account</string>
     <string name="welcome_offline_feature1_title">Local Storage</string>
     <string name="welcome_offline_feature1_description">All data stored on device</string>
     <string name="welcome_offline_feature2_title">No Internet</string>
@@ -477,7 +490,8 @@
     <string name="welcome_export_anilist_full">AniList.co</string>
 
     <!-- Auth Screen -->
-    <string name="auth_title">Welcome</string>
+    <string name="auth_title">Cloud Backup &amp; Sync</string>
+    <string name="auth_subtitle">Sign in to automatically backup your progress and sync across all your devices</string>
     <string name="auth_tab_login">Login</string>
     <string name="auth_tab_register">Register</string>
     <string name="auth_login_title">Log in</string>
@@ -525,6 +539,11 @@
     <string name="schedule_in">In</string>
     <string name="schedule_no_anime_today">No anime airing on this day</string>
     <string name="schedule_no_schedule_available">No airing schedule available</string>
+    <string name="schedule_go_to_today">Go to today</string>
+    <string name="schedule_now">NOW</string>
+    <string name="schedule_filter_all">All</string>
+    <string name="schedule_filter_in_my_list">In my list</string>
+    <string name="schedule_filter_plan_to_watch">Plan to watch</string>
 
     <!-- Days of week -->
     <string name="day_monday">Monday</string>
@@ -534,6 +553,15 @@
     <string name="day_friday">Friday</string>
     <string name="day_saturday">Saturday</string>
     <string name="day_sunday">Sunday</string>
+
+    <!-- Days of week (short) -->
+    <string name="day_monday_short">Mon</string>
+    <string name="day_tuesday_short">Tue</string>
+    <string name="day_wednesday_short">Wed</string>
+    <string name="day_thursday_short">Thu</string>
+    <string name="day_friday_short">Fri</string>
+    <string name="day_saturday_short">Sat</string>
+    <string name="day_sunday_short">Sun</string>
 
     <!-- Months -->
     <string name="month_january">January</string>

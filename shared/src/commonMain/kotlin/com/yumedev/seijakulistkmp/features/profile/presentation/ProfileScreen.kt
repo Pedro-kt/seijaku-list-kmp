@@ -67,7 +67,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.core.utils.rememberFilePicker
-import com.yumedev.seijakulistkmp.core.utils.rememberImageManager
+import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
 import com.yumedev.seijakulistkmp.features.profile.domain.model.UserProfile
 import com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode
 import com.yumedev.seijakulistkmp.features.profile.presentation.components.EditFavoriteEpisodeBottomSheet
@@ -128,6 +128,7 @@ import seijakulistkmp.shared.generated.resources.profile_remove_image
 import seijakulistkmp.shared.generated.resources.settings
 import kotlin.math.roundToInt
 import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
+import seijakulistkmp.shared.generated.resources.error_image_pick_failed
 
 @Composable
 private fun ProfileError.toStringResource(): String {
@@ -253,7 +254,8 @@ fun ProfileScreenContent(
 
             uiState.profile != null -> {
                 val filePicker = rememberFilePicker()
-                val imageManager = rememberImageManager()
+                val toastManager = rememberToastManager()
+                val errorImagePickFailed = stringResource(Res.string.error_image_pick_failed)
 
                 ProfileContent(
                     profile = uiState.profile,
@@ -284,16 +286,11 @@ fun ProfileScreenContent(
                     onAvatarClick = {
                         filePicker.pickImage(
                             onImageSelected = { uri ->
-                                imageManager.saveImage(
-                                    imageUri = uri,
-                                    destinationFileName = "avatar_${System.currentTimeMillis()}.jpg",
-                                    onSuccess = { path ->
-                                        onUpdateAvatar(path)
-                                    },
-                                    onError = { /* TODO: Handle error */ }
-                                )
+                                onUpdateAvatar(uri)
                             },
-                            onError = { /* TODO: Handle error */ }
+                            onError = {
+                                toastManager.showToast(errorImagePickFailed)
+                            }
                         )
                     },
                     onRemoveAvatar = onRemoveAvatar,
@@ -308,16 +305,11 @@ fun ProfileScreenContent(
                         onBannerClick = {
                             filePicker.pickImage(
                                 onImageSelected = { uri ->
-                                    imageManager.saveImage(
-                                        imageUri = uri,
-                                        destinationFileName = "banner_${System.currentTimeMillis()}.jpg",
-                                        onSuccess = { path ->
-                                            onUpdateBanner(path)
-                                        },
-                                        onError = { /* TODO: Handle error */ }
-                                    )
+                                    onUpdateBanner(uri)
                                 },
-                                onError = { /* TODO: Handle error */ }
+                                onError = {
+                                    toastManager.showToast(errorImagePickFailed)
+                                }
                             )
                         },
                         onRemoveBanner = onRemoveBanner,
@@ -393,7 +385,8 @@ fun ProfileContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState),
+                .verticalScroll(scrollState)
+                .padding(bottom = 100.dp),
         ) {
             ProfileBannerBackground(
                 banner = profile.banner,
@@ -510,7 +503,6 @@ fun ProfileContent(
             }
         }
 
-            Spacer(modifier = Modifier.height(responsive.xlargePadding * 3))
         }
 
         ProfileTopAppBar(

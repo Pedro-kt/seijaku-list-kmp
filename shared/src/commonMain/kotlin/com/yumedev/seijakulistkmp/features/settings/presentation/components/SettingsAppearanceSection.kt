@@ -1,6 +1,7 @@
 package com.yumedev.seijakulistkmp.features.settings.presentation.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -73,29 +74,51 @@ fun SettingsAppearanceSection(
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            Row(
+            LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
             ) {
-                ThemeChip(
-                    label = stringResource(Res.string.settings_theme_variant_sumi),
-                    selected = selectedThemeVariant == ThemeVariant.SUMI,
-                    onClick = { onThemeVariantSelected(ThemeVariant.SUMI) }
-                )
-                ThemeChip(
-                    label = stringResource(Res.string.settings_theme_variant_sakura),
-                    selected = selectedThemeVariant == ThemeVariant.SAKURA,
-                    onClick = { onThemeVariantSelected(ThemeVariant.SAKURA) }
-                )
-                ThemeChip(
-                    label = stringResource(Res.string.settings_theme_variant_ocean),
-                    selected = selectedThemeVariant == ThemeVariant.OCEAN,
-                    onClick = { onThemeVariantSelected(ThemeVariant.OCEAN) }
-                )
-                ThemeChip(
-                    label = stringResource(Res.string.settings_theme_variant_yozora),
-                    selected = selectedThemeVariant == ThemeVariant.YOZORA,
-                    onClick = { onThemeVariantSelected(ThemeVariant.YOZORA) }
-                )
+                item {
+                    ThemeChip(
+                        label = stringResource(Res.string.settings_theme_variant_sumi),
+                        selected = selectedThemeVariant == ThemeVariant.SUMI,
+                        onClick = { onThemeVariantSelected(ThemeVariant.SUMI) }
+                    )
+                }
+                item {
+                    ThemeChip(
+                        label = stringResource(Res.string.settings_theme_variant_sakura),
+                        selected = selectedThemeVariant == ThemeVariant.SAKURA,
+                        onClick = { onThemeVariantSelected(ThemeVariant.SAKURA) }
+                    )
+                }
+                item {
+                    ThemeChip(
+                        label = stringResource(Res.string.settings_theme_variant_ocean),
+                        selected = selectedThemeVariant == ThemeVariant.OCEAN,
+                        onClick = { onThemeVariantSelected(ThemeVariant.OCEAN) }
+                    )
+                }
+                item {
+                    ThemeChip(
+                        label = stringResource(Res.string.settings_theme_variant_yozora),
+                        selected = selectedThemeVariant == ThemeVariant.YOZORA,
+                        onClick = { onThemeVariantSelected(ThemeVariant.YOZORA) }
+                    )
+                }
+                item {
+                    ThemeChip(
+                        label = stringResource(Res.string.settings_theme_variant_momiji),
+                        selected = selectedThemeVariant == ThemeVariant.MOMIJI,
+                        onClick = { onThemeVariantSelected(ThemeVariant.MOMIJI) }
+                    )
+                }
+                item {
+                    ThemeChip(
+                        label = stringResource(Res.string.settings_theme_variant_matcha),
+                        selected = selectedThemeVariant == ThemeVariant.MATCHA,
+                        onClick = { onThemeVariantSelected(ThemeVariant.MATCHA) }
+                    )
+                }
             }
         }
 

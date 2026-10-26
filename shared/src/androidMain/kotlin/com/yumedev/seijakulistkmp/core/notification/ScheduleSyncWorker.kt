@@ -28,7 +28,6 @@ class ScheduleSyncWorker(
     override suspend fun doWork(): Result {
         return try {
             val now = Clock.System.now()
-
             val airingAnime = getUserUpcomingEpisodesUseCase().first()
 
             cancelOldNotifications()

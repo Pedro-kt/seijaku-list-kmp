@@ -58,6 +58,9 @@ xmlutil = "0.90.1"
 # Utilities
 uuid = "0.9.0"
 
+# Lottie
+compottie = "2.0.0-rc01"
+
 # Android-only Libraries
 lottie = "6.4.0"
 androidx-palette = "1.0.0"
@@ -162,6 +165,10 @@ oidc-appsupport = { module = "io.github.kalinjul.kotlin.multiplatform:oidc-appsu
 
 # Utilities
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
+
+# Lottie for Compose Multiplatform
+compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
+compottie-resources = { module = "io.github.alexzhirkevich:compottie-resources", version.ref = "compottie" }
 
 # Android-only Libraries
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }

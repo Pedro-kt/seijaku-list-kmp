@@ -15,8 +15,6 @@ import seijakulistkmp.shared.generated.resources.*
 fun SettingsAccountSection(
     username: String,
     userHandle: String,
-    appVersion: String,
-    buildNumber: String,
     isLoggedIn: Boolean,
     onLoginClick: () -> Unit,
     onLogoutClick: () -> Unit,
@@ -43,12 +41,7 @@ fun SettingsAccountSection(
             )
 
             Text(
-                text = stringResource(
-                    Res.string.settings_version,
-                    if (userHandle == "Local") stringResource(Res.string.profile_local_user) else userHandle,
-                    appVersion,
-                    buildNumber
-                ),
+                text = if (userHandle == "Local") stringResource(Res.string.profile_local_user) else userHandle,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )

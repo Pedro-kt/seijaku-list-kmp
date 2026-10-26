@@ -151,6 +151,12 @@
     <string name="profile_no_name">Sin nombre</string>
     <string name="profile_local_user">Usuario local</string>
 
+    <!-- Image Loading Errors -->
+    <string name="error_image_pick_failed">Error al seleccionar imagen</string>
+    <string name="error_image_save_failed">Error al guardar imagen</string>
+    <string name="list_added_success">Añadido a tu lista</string>
+    <string name="list_add_failed">Error al añadir a la lista</string>
+
     <!-- Settings -->
     <string name="settings_appearance">APARIENCIA</string>
     <string name="settings_theme">Tema</string>
@@ -162,6 +168,8 @@
     <string name="settings_theme_variant_sakura">Sakura</string>
     <string name="settings_theme_variant_ocean">Océano</string>
     <string name="settings_theme_variant_yozora">Yozora</string>
+    <string name="settings_theme_variant_momiji">Momiji</string>
+    <string name="settings_theme_variant_matcha">Matcha</string>
     <string name="settings_language">Idioma</string>
     <string name="settings_language_system">Sistema</string>
     <string name="settings_language_english">English</string>
@@ -224,13 +232,17 @@
     <string name="settings_external_link_confirm">Abrir</string>
     <string name="settings_account">CUENTA</string>
     <string name="settings_version">%1$s - Seijaku List v%2$s (build %3$s)</string>
+    <string name="settings_footer_developer_name">Pedro Bustamante</string>
+    <string name="settings_footer_developer_handle">\u0040DaffDev</string>
+    <string name="settings_footer_powered_by">Gracias a la API de AniList</string>
 
     <!-- Error Messages -->
     <string name="error_network">Error de red. Por favor, verifica tu conexión.</string>
     <string name="error_timeout">Tiempo de espera agotado. La solicitud tardó demasiado.</string>
     <string name="error_unknown">Ocurrió un error desconocido.</string>
     <string name="error_server">Error del servidor. Por favor, intenta más tarde.</string>
-    <string name="error_loading_featured">No se pudo cargar el anime destacado</string>
+    <string name="error_loading_featured_anime">No se pudo cargar el anime destacado</string>
+    <string name="error_loading_featured_manga">No se pudo cargar el manga destacado</string>
     <string name="error_loading_featured_hint">Verifica tu conexión e intenta nuevamente</string>
     <string name="error_server_unavailable">Servicio temporalmente no disponible</string>
     <string name="error_server_unavailable_hint">El servidor está experimentando problemas. Intenta más tarde</string>
@@ -444,14 +456,15 @@
     <string name="welcome_get_started">Comenzar</string>
     <string name="welcome_page1_title">Bienvenido a Seijaku List</string>
     <string name="welcome_page1_description">Rastrea tus anime y manga favoritos en una hermosa aplicación</string>
-    <string name="welcome_page2_title">Usa Sin Conexión</string>
-    <string name="welcome_page2_description">Rastrea tu colección offline sin crear cuenta. Exporta tus listas cuando las necesites</string>
-    <string name="welcome_page3_title">Formato Estándar</string>
-    <string name="welcome_page3_description">Tus exportaciones usan archivos XML estándar compatibles con rastreadores de MAL y AniList</string>
-    <string name="welcome_page4_title">Mantente Organizado</string>
-    <string name="welcome_page4_description">Mantén un seguimiento de lo que estás viendo, planeando o has completado</string>
-    <string name="welcome_page5_title">Sincroniza con AniList</string>
-    <string name="welcome_page5_description">Si quieres, sincroniza tus listas con AniList y nunca pierdas tu progreso en todos tus dispositivos</string>
+    <string name="welcome_page2_title">Funciona 100% sin conexión</string>
+    <string name="welcome_page2_description">¡No necesitas cuenta! Rastrea toda tu colección sin conexión. Exporta tus listas cuando quieras como archivos XML estándar.</string>
+    <string name="welcome_page3_title">Seijaku significa serenidad</string>
+    <string name="welcome_page3_description">Un espacio tranquilo y sin distracciones para tu colección. Temas hermosos, diseño cuidado y cero desorden.</string>
+    <string name="welcome_page4_title">Sincronización en la nube es opcional</string>
+    <string name="welcome_page4_description">Crea una cuenta solo si quieres respaldo automático y sincronización entre dispositivos. ¡La app funciona perfectamente sin una!</string>
+    <string name="welcome_continue_to_app">Continuar a la app</string>
+    <string name="welcome_or_sync">O habilitar respaldo en la nube</string>
+    <string name="welcome_sign_in">Iniciar sesión / Crear cuenta</string>
     <string name="welcome_offline_feature1_title">Almacenamiento Local</string>
     <string name="welcome_offline_feature1_description">Todos tus datos se guardan en tu dispositivo</string>
     <string name="welcome_offline_feature2_title">Sin Internet</string>
@@ -467,7 +480,8 @@
     <string name="welcome_export_anilist_full">AniList.co</string>
 
     <!-- Auth Screen -->
-    <string name="auth_title">Bienvenido</string>
+    <string name="auth_title">Respaldo en la nube y sincronización</string>
+    <string name="auth_subtitle">Inicia sesión para respaldar automáticamente tu progreso y sincronizar en todos tus dispositivos</string>
     <string name="auth_tab_login">Iniciar sesión</string>
     <string name="auth_tab_register">Registrarse</string>
     <string name="auth_login_title">Inicia sesión</string>
@@ -515,6 +529,11 @@
     <string name="schedule_in">En</string>
     <string name="schedule_no_anime_today">No hay anime emitiéndose este día</string>
     <string name="schedule_no_schedule_available">No hay calendario de emisiones disponible</string>
+    <string name="schedule_go_to_today">Ir a hoy</string>
+    <string name="schedule_now">AHORA</string>
+    <string name="schedule_filter_all">Todos</string>
+    <string name="schedule_filter_in_my_list">En mi lista</string>
+    <string name="schedule_filter_plan_to_watch">Planeado</string>
 
     <!-- Days of week -->
     <string name="day_monday">Lunes</string>
@@ -524,6 +543,15 @@
     <string name="day_friday">Viernes</string>
     <string name="day_saturday">Sábado</string>
     <string name="day_sunday">Domingo</string>
+
+    <!-- Days of week (short) -->
+    <string name="day_monday_short">Lun</string>
+    <string name="day_tuesday_short">Mar</string>
+    <string name="day_wednesday_short">Mié</string>
+    <string name="day_thursday_short">Jue</string>
+    <string name="day_friday_short">Vie</string>
+    <string name="day_saturday_short">Sáb</string>
+    <string name="day_sunday_short">Dom</string>
 
     <!-- Months -->
     <string name="month_january">Enero</string>

@@ -161,8 +161,9 @@ class SettingsScreen : Screen {
                     }
                 )
             },
-            onClearCacheClick = viewModel::onClearCacheClick,
+            // onClearCacheClick = viewModel::onClearCacheClick,
             onAboutClick = viewModel::onAboutClick,
+            onAniListClick = viewModel::onAniListClick,
             onLogoutClick = viewModel::onLogoutClick
         )
 
@@ -229,8 +230,9 @@ fun SettingsScreenContent(
     onImportMangaClick: () -> Unit,
     onExportAnimeClick: () -> Unit,
     onExportMangaClick: () -> Unit,
-    onClearCacheClick: () -> Unit,
+    // onClearCacheClick: () -> Unit,
     onAboutClick: () -> Unit,
+    onAniListClick: () -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -290,13 +292,13 @@ fun SettingsScreenContent(
             item {
                 SettingsDataSection(
                     lastSyncTime = state.lastSyncTime,
-                    cacheSize = state.cacheSize,
+                    // cacheSize = state.cacheSize,
                     onSyncClick = onSyncClick,
                     onImportAnimeClick = onImportAnimeClick,
                     onImportMangaClick = onImportMangaClick,
                     onExportAnimeClick = onExportAnimeClick,
                     onExportMangaClick = onExportMangaClick,
-                    onClearCacheClick = onClearCacheClick,
+                    // onClearCacheClick = onClearCacheClick,
                     onAboutClick = onAboutClick
                 )
             }
@@ -305,11 +307,17 @@ fun SettingsScreenContent(
                 SettingsAccountSection(
                     username = state.username,
                     userHandle = state.userHandle,
-                    appVersion = appVersion,
-                    buildNumber = buildNumber,
                     isLoggedIn = state.isLoggedIn,
                     onLoginClick = onLoginClick,
                     onLogoutClick = onLogoutClick
+                )
+            }
+
+            item {
+                SettingsFooter(
+                    appVersion = appVersion,
+                    buildNumber = buildNumber,
+                    onAniListClick = onAniListClick
                 )
             }
         }

@@ -74,3 +74,9 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
         connection.execSQL("ALTER TABLE favorite_episodes ADD COLUMN comment TEXT DEFAULT NULL")
     }
 }
+
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE airing_schedules ADD COLUMN total_episodes INTEGER DEFAULT NULL")
+    }
+}

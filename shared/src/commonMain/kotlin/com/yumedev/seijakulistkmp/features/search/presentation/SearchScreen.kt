@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.yumedev.seijakulistkmp.core.utils.rememberToastManager
+import com.yumedev.seijakulistkmp.features.character.presentation.CharacterScreen
 import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
 import com.yumedev.seijakulistkmp.features.detail.presentation.DetailScreen
 import com.yumedev.seijakulistkmp.features.search.presentation.components.CollapsedSearchContent
@@ -22,7 +24,11 @@ import com.yumedev.seijakulistkmp.features.search.presentation.components.Search
 import com.yumedev.seijakulistkmp.features.search.presentation.model.QuickFilter
 import com.yumedev.seijakulistkmp.features.search.presentation.model.toApiValue
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import seijakulistkmp.shared.generated.resources.Res
+import seijakulistkmp.shared.generated.resources.list_add_failed
+import seijakulistkmp.shared.generated.resources.list_added_success
 import com.yumedev.seijakulistkmp.features.search.presentation.model.MediaType as SearchMediaType
 
 private enum class SearchViewState {
@@ -110,6 +116,24 @@ fun SearchScreenContent(
         onExpandedChange(state.isExpanded || state.hasSearched)
     }
 
+    val toastManager = rememberToastManager()
+    val listAddedSuccessMsg = stringResource(Res.string.list_added_success)
+    val listAddFailedMsg = stringResource(Res.string.list_add_failed)
+
+    LaunchedEffect(state.addToListSuccessMessage) {
+        state.addToListSuccessMessage?.let {
+            toastManager.showToast(listAddedSuccessMsg)
+            viewModel.clearAddToListSuccessMessage()
+        }
+    }
+
+    LaunchedEffect(state.addToListErrorMessage) {
+        state.addToListErrorMessage?.let {
+            toastManager.showToast(listAddFailedMsg)
+            viewModel.clearAddToListErrorMessage()
+        }
+    }
+
     val currentSearchState = when {
         state.hasSearched -> SearchViewState.RESULTS
         isExpanded -> SearchViewState.EXPANDED
@@ -175,7 +199,7 @@ fun SearchScreenContent(
                     }
                 },
                 onCharacterClick = { character ->
-                    // TODO: Navigate to character detail
+                    navigator?.push(CharacterScreen(character.id))
                 },
                 onBackClick = {
                     if (quickFilter != null) {

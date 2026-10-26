@@ -2,6 +2,10 @@ package com.yumedev.seijakulistkmp.features.settings.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yumedev.seijakulistkmp.core.analytics.AnalyticsEvents
+import com.yumedev.seijakulistkmp.core.analytics.AnalyticsManager
+import com.yumedev.seijakulistkmp.core.analytics.AnalyticsParams
+import com.yumedev.seijakulistkmp.core.analytics.AnalyticsUserProperties
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.core.notification.AiringNotificationScheduler
 import com.yumedev.seijakulistkmp.features.auth.domain.usecase.GetCurrentUserUseCase
@@ -58,7 +62,8 @@ class SettingsViewModel(
     private val resolveAllImportConflictsUseCase: ResolveAllImportConflictsUseCase,
     private val syncProfileWithFirestoreUseCase: SyncProfileWithFirestoreUseCase,
     private val syncMediaListWithFirestoreUseCase: SyncMediaListWithFirestoreUseCase,
-    private val syncFavoriteEpisodesWithFirestoreUseCase: SyncFavoriteEpisodesWithFirestoreUseCase
+    private val syncFavoriteEpisodesWithFirestoreUseCase: SyncFavoriteEpisodesWithFirestoreUseCase,
+    private val analyticsManager: AnalyticsManager,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsUiState())
@@ -149,6 +154,10 @@ class SettingsViewModel(
     fun onThemeSelected(themeMode: ThemeMode) {
         viewModelScope.launch {
             setThemeModeUseCase(themeMode)
+            analyticsManager.logEvent(AnalyticsEvents.THEME_CHANGED, mapOf(
+                AnalyticsParams.THEME to themeMode.name
+            ))
+            analyticsManager.setUserProperty(AnalyticsUserProperties.THEME_MODE, themeMode.name)
         }
     }
 
@@ -161,6 +170,10 @@ class SettingsViewModel(
     fun onLanguageSelected(languageMode: LanguageMode) {
         viewModelScope.launch {
             setLanguageModeUseCase(languageMode)
+            analyticsManager.logEvent(AnalyticsEvents.LANGUAGE_CHANGED, mapOf(
+                AnalyticsParams.LANGUAGE to languageMode.name
+            ))
+            analyticsManager.setUserProperty(AnalyticsUserProperties.LANGUAGE, languageMode.name)
         }
     }
 
@@ -170,9 +183,16 @@ class SettingsViewModel(
 
             if (enabled) {
                 airingNotificationScheduler.startPeriodicSync()
+                analyticsManager.logEvent(AnalyticsEvents.ENABLE_NOTIFICATIONS)
             } else {
                 airingNotificationScheduler.cancelAll()
+                analyticsManager.logEvent(AnalyticsEvents.DISABLE_NOTIFICATIONS)
             }
+
+            analyticsManager.setUserProperty(
+                AnalyticsUserProperties.NOTIFICATIONS_ENABLED,
+                enabled.toString()
+            )
         }
     }
 
@@ -225,12 +245,18 @@ class SettingsViewModel(
         _state.update { it.copy(pendingExternalUrl = "https://daffdev.vercel.app/privacy") }
     }
 
+    fun onAniListClick() {
+        _state.update { it.copy(pendingExternalUrl = "https://anilist.co/") }
+    }
+
     fun dismissExternalLinkDialog() {
         _state.update { it.copy(pendingExternalUrl = null) }
     }
 
     fun onLogoutClick() {
         viewModelScope.launch {
+            analyticsManager.logEvent(AnalyticsEvents.LOGOUT)
+            analyticsManager.setUserId(null)
             logoutUseCase()
         }
     }

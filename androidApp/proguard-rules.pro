@@ -190,8 +190,8 @@
     <init>(...);
 }
 
-# Keep screen classes in features
--keep class com.yumedev.seijakulistkmp.**.presentation.** { *; }
+# Keep screen classes in features (but allow field/method obfuscation)
+-keep,allowobfuscation class com.yumedev.seijakulistkmp.**.presentation.**
 
 # =============================================================================
 # Jetpack Compose (Generally handled by defaults, but extra safety)
@@ -246,6 +246,9 @@
 }
 -keep class androidx.work.** { *; }
 
+# Keep notification workers
+-keep class com.yumedev.seijakulistkmp.core.notification.** { *; }
+
 # =============================================================================
 # Google Credentials & Sign-In
 # =============================================================================
@@ -289,12 +292,33 @@
 # Optimization settings for R8
 -optimizationpasses 5
 -allowaccessmodification
+-repackageclasses ''
+-flattenpackagehierarchy
 
 # Remove debug/verbose/info logging in production (keeps warnings and errors)
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
     public static *** v(...);
     public static *** i(...);
+}
+
+# Remove println statements
+-assumenosideeffects class kotlin.io.ConsoleKt {
+    public static *** println(...);
+}
+
+# Remove printStackTrace calls
+-assumenosideeffects class java.lang.Throwable {
+    public void printStackTrace();
+}
+
+# =============================================================================
+# BuildConfig Protection
+# =============================================================================
+
+# Obfuscate BuildConfig but keep it functional
+-keepclassmembers class com.yumedev.seijakulistkmp.BuildConfig {
+    public static final java.lang.String GOOGLE_WEB_CLIENT_ID;
 }
 
 # =============================================================================

@@ -8,6 +8,7 @@ data class AiringScheduleState(
     val scheduleDays: List<ScheduleDay> = emptyList(),
     val selectedDayOfWeek: DayOfWeek = DayOfWeek.MONDAY,
     val selectedTimezone: TimezonePreference = TimezonePreference.SYSTEM,
+    val selectedFilter: ScheduleFilter = ScheduleFilter.ALL,
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val error: String? = null
