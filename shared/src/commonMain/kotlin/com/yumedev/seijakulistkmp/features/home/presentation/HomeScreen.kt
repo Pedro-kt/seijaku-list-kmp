@@ -731,29 +731,15 @@ private fun HomeTopAppBar(
 
     TopAppBar(
         title = {
-            Surface(
-                shape = RoundedCornerShape(50),
-                color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                modifier = Modifier
-                    .height(40.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(horizontal = responsive.mediumPadding)
-                ) {
-                    Image(
-                        painter = painterResource(
-                            if (isDarkTheme) Res.drawable.seijaku_lockup_blanco
-                            else Res.drawable.seijaku_lockup_negro
-                        ),
-                        contentDescription = stringResource(Res.string.app_name),
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.height(28.dp)
-                    )
-                }
-            }
+            Image(
+                painter = painterResource(
+                    if (isDarkTheme) Res.drawable.seijaku_lockup_blanco
+                    else Res.drawable.seijaku_lockup_negro
+                ),
+                contentDescription = stringResource(Res.string.app_name),
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.height(28.dp)
+            )
         },
         actions = {
             Row(
