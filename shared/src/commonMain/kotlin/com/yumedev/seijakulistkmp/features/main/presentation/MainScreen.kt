@@ -50,7 +50,7 @@ fun MainScreenContent() {
     val navigationStack = remember { mutableStateListOf<BottomNavItem>(BottomNavItem.Home) }
 
     BackHandler(enabled = navigationStack.size > 1) {
-        navigationStack.removeLast()
+        navigationStack.removeAt(navigationStack.lastIndex)
         selectedItem = navigationStack.last()
     }
 

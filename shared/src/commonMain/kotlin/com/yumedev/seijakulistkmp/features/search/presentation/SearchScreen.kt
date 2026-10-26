@@ -148,7 +148,7 @@ fun SearchScreenContent(
 
     fun handleSearchBack() {
         if (searchStateStack.size > 1) {
-            searchStateStack.removeLast()
+            searchStateStack.removeAt(searchStateStack.lastIndex)
             val previousState = searchStateStack.last()
 
             when (previousState) {
