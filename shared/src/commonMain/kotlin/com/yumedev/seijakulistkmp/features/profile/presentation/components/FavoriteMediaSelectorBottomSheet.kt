@@ -177,11 +177,11 @@ private fun MediaSelectorItem(
                 model = coverUrl,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(width = responsive.cardWidth * 0.3125f, height = responsive.minTouchTarget * 1.45f)
+                    .size(width = responsive.cardWidth * 0.5f, height = responsive.cardImageHeight * 0.6f)
                     .clip(RoundedCornerShape(responsive.smallSpacing)),
                 contentScale = ContentScale.Crop
             )
-        } ?: Spacer(modifier = Modifier.size(width = responsive.cardWidth * 0.3125f, height = responsive.minTouchTarget * 1.45f))
+        } ?: Spacer(modifier = Modifier.size(width = responsive.cardWidth * 0.5f, height = responsive.cardImageHeight * 0.6f))
 
         Column(
             modifier = Modifier.weight(1f),

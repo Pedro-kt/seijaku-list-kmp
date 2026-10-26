@@ -57,12 +57,14 @@ fun AnimatedSearchBar(
             tonalElevation = 2.dp,
             modifier = Modifier
                 .fillMaxWidth()
+                .height(56.dp)
                 .padding(horizontal = responsive.horizontalPadding, vertical = responsive.smallSpacing)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = responsive.horizontalPadding, vertical = responsive.mediumPadding),
+                    .fillMaxHeight()
+                    .padding(horizontal = responsive.horizontalPadding),
                 horizontalArrangement = Arrangement.spacedBy(responsive.mediumPadding),
                 verticalAlignment = Alignment.CenterVertically
             ) {
