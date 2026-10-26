@@ -168,7 +168,13 @@ class MediaListRepositoryImpl(
                 pausedCount = entries.count { it.status == MediaListStatus.PAUSED },
                 repeatingCount = entries.count { it.status == MediaListStatus.REPEATING },
                 totalProgress = entries.sumOf { it.progress },
-                averageScore = entries.mapNotNull { it.score }.average().takeIf { !it.isNaN() }?.toFloat()
+                averageScore = entries.mapNotNull { it.score }.average().takeIf { !it.isNaN() }?.toFloat(),
+                totalMinutesWatched = if (mediaType == MediaType.ANIME) {
+                    entries.sumOf { it.progress * 24 }
+                } else 0,
+                totalVolumesRead = if (mediaType == MediaType.MANGA) {
+                    entries.sumOf { it.progressVolumes ?: 0 }
+                } else 0
             )
         }
     }

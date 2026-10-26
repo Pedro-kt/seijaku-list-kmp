@@ -9,5 +9,7 @@ data class MediaListStats(
     val pausedCount: Int,
     val repeatingCount: Int,
     val totalProgress: Int,
-    val averageScore: Float?
+    val averageScore: Float?,
+    val totalMinutesWatched: Int = 0,
+    val totalVolumesRead: Int = 0
 )

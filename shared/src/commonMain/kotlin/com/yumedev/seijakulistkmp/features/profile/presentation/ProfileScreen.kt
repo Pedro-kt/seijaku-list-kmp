@@ -844,7 +844,7 @@ fun ProfileStatsSection(
                 modifier = Modifier.weight(1f),
             )
             StatCard(
-                value = "—",
+                value = formatWatchTime(stats.totalMinutesWatched),
                 label = stringResource(Res.string.profile_stats_time),
                 modifier = Modifier.weight(1f),
             )
@@ -855,7 +855,7 @@ fun ProfileStatsSection(
                 modifier = Modifier.weight(1f),
             )
             StatCard(
-                value = "—",
+                value = stats.totalVolumesRead.toString(),
                 label = stringResource(Res.string.profile_stats_volumes),
                 modifier = Modifier.weight(1f),
             )
@@ -1173,5 +1173,19 @@ fun EditProfileBottomSheet(
                 }
             }
         }
+    }
+}
+
+private fun formatWatchTime(totalMinutes: Int): String {
+    if (totalMinutes == 0) return "0h"
+
+    val totalHours = totalMinutes / 60
+    val days = totalHours / 24
+    val hours = totalHours % 24
+
+    return when {
+        days > 0 && hours > 0 -> "${days}d ${hours}h"
+        days > 0 -> "${days}d"
+        else -> "${hours}h"
     }
 }
