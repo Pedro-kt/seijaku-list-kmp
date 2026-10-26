@@ -78,8 +78,8 @@ fun MediaProgressCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -91,21 +91,28 @@ fun MediaProgressCard(
                     mediaType = mediaType
                 )
 
-                entry.score?.let { score ->
-                    if (score > 0) {
-                        ScoreIndicator(score = score)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    entry.score?.let { score ->
+                        if (score > 0) {
+                            CompactScoreIndicator(score = score)
+                        }
                     }
+
+                    val progressText = when (mediaType) {
+                        MediaType.ANIME -> totalEpisodes?.let { "${entry.progress}/$it" } ?: "${entry.progress}"
+                        MediaType.MANGA -> totalChapters?.let { "${entry.progress}/$it" } ?: "${entry.progress}"
+                    }
+                    Text(
+                        text = progressText,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
-
-            ProgressSection(
-                progress = entry.progress,
-                total = when (mediaType) {
-                    MediaType.ANIME -> totalEpisodes
-                    MediaType.MANGA -> totalChapters
-                },
-                mediaType = mediaType
-            )
 
             ActionButtons(
                 mediaType = mediaType,
@@ -119,13 +126,6 @@ fun MediaProgressCard(
                 onEditClick = onEditClick,
                 onIncrementProgress = onIncrementProgress
             )
-
-            entry.startDate?.let { startDate ->
-                DateInfo(
-                    startDate = startDate,
-                    updatedAt = entry.updatedAt
-                )
-            }
         }
     }
 }
@@ -203,7 +203,7 @@ private fun StatusChip(
 }
 
 @Composable
-private fun ScoreIndicator(
+private fun CompactScoreIndicator(
     score: Float,
     modifier: Modifier = Modifier
 ) {
@@ -212,92 +212,18 @@ private fun ScoreIndicator(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = "${stringResource(Res.string.list_your_score)}:",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface
+        Icon(
+            imageVector = TablerIcons.Filled.Star,
+            contentDescription = null,
+            modifier = Modifier.size(18.dp),
+            tint = Color(0xFFFFA726)
         )
         Text(
             text = String.format("%.1f", score),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.onSurface
         )
-    }
-}
-
-@Composable
-private fun ProgressSection(
-    progress: Int,
-    total: Int?,
-    mediaType: MediaType,
-    modifier: Modifier = Modifier
-) {
-    val targetProgress = if (total != null && total > 0) {
-        (progress.toFloat() / total.toFloat()).coerceIn(0f, 1f)
-    } else {
-        0f
-    }
-
-    val animatedProgress by animateFloatAsState(
-        targetValue = targetProgress,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        )
-    )
-
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = if (total != null) "$progress / $total ${
-                    if (mediaType == MediaType.ANIME) {
-                        stringResource(Res.string.episodes_suffix)
-                    } else {
-                        stringResource(Res.string.chapters_short)
-                    }
-                }" else "$progress ${
-                    if (mediaType == MediaType.ANIME) {
-                        stringResource(Res.string.episodes_suffix)
-                    } else {
-                        stringResource(Res.string.chapters_short)
-                    }
-                }",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            if (total != null && total > 0) {
-                val percentage = ((progress.toFloat() / total.toFloat()) * 100).toInt()
-                Text(
-                    text = "$percentage%",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        if (total != null && total > 0) {
-            LinearProgressIndicator(
-                progress = { animatedProgress },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp)),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant
-            )
-        }
     }
 }
 
@@ -361,31 +287,15 @@ private fun ActionButtons(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        OutlinedButton(
+        IconButton(
             onClick = onEditClick,
-            modifier = Modifier
-                .height(48.dp)
-                .scale(editScale),
-            shape = RoundedCornerShape(50),
-            border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.outline),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                contentColor = MaterialTheme.colorScheme.onSurface
-            ),
-            interactionSource = editInteractionSource
+            modifier = Modifier.scale(editScale)
         ) {
             Icon(
                 imageVector = TablerIcons.Outlined.Edit,
                 contentDescription = stringResource(Res.string.list_edit_title),
-                modifier = Modifier
-                    .size(20.dp)
-                    .scale(editIconScale)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(Res.string.list_edit_title),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold
+                modifier = Modifier.size(22.dp),
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -394,9 +304,9 @@ private fun ActionButtons(
             enabled = canIncrement,
             modifier = Modifier
                 .weight(1f)
-                .height(48.dp)
+                .height(44.dp)
                 .scale(incrementScale),
-            shape = RoundedCornerShape(50),
+            shape = RoundedCornerShape(12.dp),
             elevation = ButtonDefaults.buttonElevation(
                 defaultElevation = incrementElevation.dp,
                 pressedElevation = 0.dp
@@ -414,42 +324,6 @@ private fun ActionButtons(
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold
             )
-        }
-    }
-}
-
-@Composable
-private fun DateInfo(
-    startDate: String,
-    updatedAt: Long,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = TablerIcons.Outlined.CalendarEvent,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Column {
-                Text(
-                    text = stringResource(Res.string.detail_started),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = startDate,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
         }
     }
 }
