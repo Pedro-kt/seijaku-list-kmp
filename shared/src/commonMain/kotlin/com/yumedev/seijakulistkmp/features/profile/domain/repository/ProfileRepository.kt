@@ -18,6 +18,14 @@ interface ProfileRepository {
         bannerUrl: String? = null,
     ): Result<UserProfile>
 
+    suspend fun uploadAndUpdateAvatar(imageUri: String): Result<UserProfile>
+
+    suspend fun uploadAndUpdateBanner(imageUri: String): Result<UserProfile>
+
+    suspend fun removeAvatar(): Result<UserProfile>
+
+    suspend fun removeBanner(): Result<UserProfile>
+
     suspend fun syncWithAnilist(): Result<UserProfile>
 
     suspend fun updateStatistics(): Result<Unit>

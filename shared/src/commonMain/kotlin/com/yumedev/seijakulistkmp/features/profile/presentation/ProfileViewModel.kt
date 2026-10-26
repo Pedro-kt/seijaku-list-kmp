@@ -9,6 +9,7 @@ import com.yumedev.seijakulistkmp.features.detail.domain.usecase.DeleteFavoriteE
 import com.yumedev.seijakulistkmp.features.detail.domain.usecase.GetAllFavoriteEpisodesUseCase
 import com.yumedev.seijakulistkmp.features.detail.domain.usecase.ObserveAllFavoriteEpisodesUseCase
 import com.yumedev.seijakulistkmp.features.detail.domain.usecase.UpdateFavoriteEpisodeUseCase
+import com.yumedev.seijakulistkmp.features.profile.domain.repository.ProfileRepository
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.EnsureLocalProfileExistsUseCase
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.GetCurrentProfileUseCase
 import com.yumedev.seijakulistkmp.features.profile.domain.usecase.UpdateProfileStatisticsUseCase
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
+    private val profileRepository: ProfileRepository,
     private val getCurrentProfile: GetCurrentProfileUseCase,
     private val updateProfile: UpdateProfileUseCase,
     private val updateStatistics: UpdateProfileStatisticsUseCase,
@@ -209,20 +211,11 @@ class ProfileViewModel(
         }
     }
 
-    fun onUpdateAvatar(avatarUrl: String) {
-        val currentProfile = _uiState.value.profile ?: return
-
+    fun onUpdateAvatar(imageUri: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            when (
-                updateProfile(
-                    name = currentProfile.name,
-                    about = currentProfile.about,
-                    avatarUrl = avatarUrl,
-                    bannerUrl = currentProfile.banner,
-                )
-            ) {
+            when (profileRepository.uploadAndUpdateAvatar(imageUri)) {
                 is Result.Success -> {
                     _uiState.update {
                         it.copy(
@@ -244,20 +237,11 @@ class ProfileViewModel(
         }
     }
 
-    fun onUpdateBanner(bannerUrl: String) {
-        val currentProfile = _uiState.value.profile ?: return
-
+    fun onUpdateBanner(imageUri: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            when (
-                updateProfile(
-                    name = currentProfile.name,
-                    about = currentProfile.about,
-                    avatarUrl = currentProfile.avatar?.large,
-                    bannerUrl = bannerUrl,
-                )
-            ) {
+            when (profileRepository.uploadAndUpdateBanner(imageUri)) {
                 is Result.Success -> {
                     _uiState.update {
                         it.copy(
@@ -280,19 +264,10 @@ class ProfileViewModel(
     }
 
     fun onRemoveAvatar() {
-        val currentProfile = _uiState.value.profile ?: return
-
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            when (
-                updateProfile(
-                    name = currentProfile.name,
-                    about = currentProfile.about,
-                    avatarUrl = null,
-                    bannerUrl = currentProfile.banner,
-                )
-            ) {
+            when (profileRepository.removeAvatar()) {
                 is Result.Success -> {
                     _uiState.update {
                         it.copy(
@@ -315,19 +290,10 @@ class ProfileViewModel(
     }
 
     fun onRemoveBanner() {
-        val currentProfile = _uiState.value.profile ?: return
-
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            when (
-                updateProfile(
-                    name = currentProfile.name,
-                    about = currentProfile.about,
-                    avatarUrl = currentProfile.avatar?.large,
-                    bannerUrl = null,
-                )
-            ) {
+            when (profileRepository.removeBanner()) {
                 is Result.Success -> {
                     _uiState.update {
                         it.copy(

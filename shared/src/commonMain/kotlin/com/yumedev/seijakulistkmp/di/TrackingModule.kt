@@ -1,6 +1,9 @@
 package com.yumedev.seijakulistkmp.di
 
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.yumedev.seijakulistkmp.core.utils.ImageReader
+import com.yumedev.seijakulistkmp.features.profile.data.remote.FirebaseStorageDataSource
+import com.yumedev.seijakulistkmp.features.profile.data.remote.FirestoreProfileDataSource
 import com.yumedev.seijakulistkmp.features.profile.data.repository.ProfileRepositoryImpl
 import com.yumedev.seijakulistkmp.features.tracking.data.local.migrations.MIGRATION_2_3
 import com.yumedev.seijakulistkmp.features.profile.domain.repository.ProfileRepository
@@ -62,7 +65,17 @@ val trackingModule = module {
             deleteFromFirestoreUseCase = get()
         )
     }
-    singleOf(::ProfileRepositoryImpl) bind ProfileRepository::class
+    singleOf(::FirebaseStorageDataSource)
+    singleOf(::FirestoreProfileDataSource)
+    single<ProfileRepository> {
+        ProfileRepositoryImpl(
+            userProfileDao = get(),
+            mediaListDao = get(),
+            firebaseStorageDataSource = get(),
+            firestoreProfileDataSource = get(),
+            imageReader = get()
+        )
+    }
 
     factoryOf(::GetCurrentProfileUseCase)
     factoryOf(::UpdateProfileUseCase)

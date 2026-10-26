@@ -108,6 +108,7 @@ kotlin {
             implementation(libs.firebase.auth)
             implementation(libs.firebase.firestore)
             implementation(libs.firebase.common)
+            implementation(libs.firebase.storage)
 
             // TODO: OAuth 2.0 - Descomentar cuando implementemos login AniList/MAL
             // Requiere: manifestPlaceholders["oidcRedirectScheme"] en androidMain
@@ -144,6 +145,7 @@ kotlin {
             implementation("com.google.firebase:firebase-common:21.0.0")
             implementation("com.google.firebase:firebase-analytics:22.1.2")
             implementation("com.google.firebase:firebase-crashlytics:19.2.1")
+            implementation("com.google.firebase:firebase-storage:21.0.1")
 
             // Google Credential Manager for Google Sign-In
             implementation("androidx.credentials:credentials:1.3.0")
