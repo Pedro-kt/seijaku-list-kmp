@@ -6,7 +6,9 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.yumedev.seijakulistkmp.core.analytics.AnalyticsManager
 import com.yumedev.seijakulistkmp.core.notification.AiringNotificationScheduler
 import com.yumedev.seijakulistkmp.di.initKoin
 import com.yumedev.seijakulistkmp.features.settings.domain.usecase.GetAiringNotificationsUseCase
@@ -25,6 +27,7 @@ class SeijakuApplication : Application(), KoinComponent {
 
     private val airingNotificationScheduler: AiringNotificationScheduler by inject()
     private val getAiringNotificationsUseCase: GetAiringNotificationsUseCase by inject()
+    private val analyticsManager: AnalyticsManager by inject()
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     override fun onCreate() {
@@ -37,19 +40,32 @@ class SeijakuApplication : Application(), KoinComponent {
             androidContext(this@SeijakuApplication)
         }
 
+        initializeAnalytics()
         createNotificationChannel()
         applyLanguage()
         initializeNotifications()
     }
 
     private fun initializeCrashlytics() {
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
+        val crashlytics = FirebaseCrashlytics.getInstance()
+        crashlytics.setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
+
+        crashlytics.setCustomKey("app_version", BuildConfig.VERSION_NAME)
+        crashlytics.setCustomKey("version_code", BuildConfig.VERSION_CODE)
 
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            FirebaseCrashlytics.getInstance().recordException(throwable)
+            crashlytics.recordException(throwable)
             defaultHandler?.uncaughtException(thread, throwable)
         }
+    }
+
+    private fun initializeAnalytics() {
+        FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(!BuildConfig.DEBUG)
+
+        analyticsManager.setCustomKey("app_version", BuildConfig.VERSION_NAME)
+        analyticsManager.setCustomKey("version_code", BuildConfig.VERSION_CODE)
+        analyticsManager.setCustomKey("platform", "Android")
     }
 
     private fun createNotificationChannel() {

@@ -142,6 +142,8 @@ kotlin {
             implementation("com.google.firebase:firebase-auth:23.1.0")
             implementation("com.google.firebase:firebase-firestore:25.1.1")
             implementation("com.google.firebase:firebase-common:21.0.0")
+            implementation("com.google.firebase:firebase-analytics:22.1.2")
+            implementation("com.google.firebase:firebase-crashlytics:19.2.1")
 
             // Google Credential Manager for Google Sign-In
             implementation("androidx.credentials:credentials:1.3.0")
