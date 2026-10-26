@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.yumedev.seijakulistkmp.features.character.presentation.model.MediaAppearanceUiModel
+import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
 import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
@@ -26,7 +27,7 @@ import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
 @Composable
 fun CharacterAppearsIn(
     media: List<MediaAppearanceUiModel>,
-    onMediaClick: (Int) -> Unit,
+    onMediaClick: (Int, MediaType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val responsive = ResponsiveTheme.values
@@ -50,7 +51,7 @@ fun CharacterAppearsIn(
             items(media) { mediaItem ->
                 MediaAppearanceCard(
                     media = mediaItem,
-                    onClick = { onMediaClick(mediaItem.id) }
+                    onClick = { onMediaClick(mediaItem.id, mediaItem.type) }
                 )
             }
         }

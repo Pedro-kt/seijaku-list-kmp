@@ -59,8 +59,8 @@ data class CharacterScreen(
                     characterDetail = characterDetailUi,
                     onBackClick = { navigator.pop() },
                     onFavoriteClick = { viewModel.toggleFavorite() },
-                    onMediaClick = { mediaId ->
-                        navigator.push(DetailScreen(mediaId, com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType.ANIME))
+                    onMediaClick = { mediaId, mediaType ->
+                        navigator.push(DetailScreen(mediaId, mediaType))
                     }
                 )
             }
@@ -92,7 +92,7 @@ private fun CharacterScreenContent(
     characterDetail: CharacterDetailUiModel,
     onBackClick: () -> Unit,
     onFavoriteClick: () -> Unit,
-    onMediaClick: (Int) -> Unit,
+    onMediaClick: (Int, com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val responsive = ResponsiveTheme.values

@@ -58,7 +58,8 @@ fun CharacterDetail.toUiModel(strings: CharacterDetailStrings): CharacterDetailU
             title = mediaItem.title,
             coverImageUrl = mediaItem.coverImageUrl,
             typeLabel = "$typeLabel · $role",
-            roleLabel = role
+            roleLabel = role,
+            type = mediaItem.type
         )
     }
 

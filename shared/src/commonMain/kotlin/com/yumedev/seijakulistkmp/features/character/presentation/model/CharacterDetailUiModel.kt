@@ -1,5 +1,7 @@
 package com.yumedev.seijakulistkmp.features.character.presentation.model
 
+import com.yumedev.seijakulistkmp.features.detail.domain.model.MediaType
+
 data class CharacterDetailUiModel(
     val id: Int,
     val name: String,
@@ -24,7 +26,8 @@ data class MediaAppearanceUiModel(
     val title: String,
     val coverImageUrl: String?,
     val typeLabel: String,
-    val roleLabel: String
+    val roleLabel: String,
+    val type: MediaType
 )
 
 data class VoiceActorUiModel(
