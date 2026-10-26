@@ -487,12 +487,23 @@ class ProfileViewModel(
             val currentState = _uiState.value
             val episodes = currentState.favoriteEpisodes
 
+            // Get all anime titles first for filtering
+            val allMediaIds = episodes.map { it.mediaId }.distinct()
+            val allAnimeTitles = if (allMediaIds.isNotEmpty()) {
+                mediaListDao.getMediaEntriesByIds(allMediaIds, MediaType.ANIME.name)
+                    .associate { it.mediaId to it.mediaTitle }
+            } else {
+                emptyMap()
+            }
+
             val filtered = if (currentState.episodesSearchQuery.isBlank()) {
                 episodes
             } else {
                 val query = currentState.episodesSearchQuery.lowercase()
                 episodes.filter { episode ->
-                    episode.episodeTitle.lowercase().contains(query)
+                    val episodeTitle = episode.episodeTitle.lowercase()
+                    val animeTitle = allAnimeTitles[episode.mediaId]?.lowercase() ?: ""
+                    episodeTitle.contains(query) || animeTitle.contains(query)
                 }
             }
 

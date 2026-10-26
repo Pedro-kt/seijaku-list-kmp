@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.features.detail.domain.model.FavoriteEpisode
 import com.yumedev.seijakulistkmp.features.profile.presentation.model.AnimeGroup
 import com.yumedev.seijakulistkmp.features.profile.presentation.model.EpisodeSortOption
-import com.yumedev.seijakulistkmp.features.tracking.presentation.components.AnimatedSearchBar
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Search
 import dev.seyfarth.tablericons.outlined.Star
@@ -85,7 +84,7 @@ fun FavoriteEpisodesSection(
             }
         }
 
-        AnimatedSearchBar(
+        ProfileSearchBar(
             visible = isSearchVisible,
             query = searchQuery,
             onQueryChange = onSearchQueryChange,
