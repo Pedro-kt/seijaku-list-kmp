@@ -245,6 +245,10 @@ class SettingsViewModel(
         _state.update { it.copy(pendingExternalUrl = "https://daffdev.vercel.app/privacy") }
     }
 
+    fun onAniListClick() {
+        _state.update { it.copy(pendingExternalUrl = "https://anilist.co/") }
+    }
+
     fun dismissExternalLinkDialog() {
         _state.update { it.copy(pendingExternalUrl = null) }
     }

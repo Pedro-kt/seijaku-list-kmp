@@ -226,6 +226,9 @@
     <string name="settings_external_link_confirm">Open</string>
     <string name="settings_account">ACCOUNT</string>
     <string name="settings_version">%1$s - Seijaku List v%2$s (build %3$s)</string>
+    <string name="settings_footer_developer_name">Pedro Bustamante</string>
+    <string name="settings_footer_developer_handle">\u0040DaffDev</string>
+    <string name="settings_footer_powered_by">Powered by AniList API</string>
 
     <!-- Image Loading Errors -->
     <string name="error_image_pick_failed">Failed to select image</string>

@@ -163,6 +163,7 @@ class SettingsScreen : Screen {
             },
             // onClearCacheClick = viewModel::onClearCacheClick,
             onAboutClick = viewModel::onAboutClick,
+            onAniListClick = viewModel::onAniListClick,
             onLogoutClick = viewModel::onLogoutClick
         )
 
@@ -231,6 +232,7 @@ fun SettingsScreenContent(
     onExportMangaClick: () -> Unit,
     // onClearCacheClick: () -> Unit,
     onAboutClick: () -> Unit,
+    onAniListClick: () -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -305,11 +307,17 @@ fun SettingsScreenContent(
                 SettingsAccountSection(
                     username = state.username,
                     userHandle = state.userHandle,
-                    appVersion = appVersion,
-                    buildNumber = buildNumber,
                     isLoggedIn = state.isLoggedIn,
                     onLoginClick = onLoginClick,
                     onLogoutClick = onLogoutClick
+                )
+            }
+
+            item {
+                SettingsFooter(
+                    appVersion = appVersion,
+                    buildNumber = buildNumber,
+                    onAniListClick = onAniListClick
                 )
             }
         }

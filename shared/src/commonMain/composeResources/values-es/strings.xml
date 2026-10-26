@@ -232,6 +232,9 @@
     <string name="settings_external_link_confirm">Abrir</string>
     <string name="settings_account">CUENTA</string>
     <string name="settings_version">%1$s - Seijaku List v%2$s (build %3$s)</string>
+    <string name="settings_footer_developer_name">Pedro Bustamante</string>
+    <string name="settings_footer_developer_handle">\u0040DaffDev</string>
+    <string name="settings_footer_powered_by">Gracias a la API de AniList</string>
 
     <!-- Error Messages -->
     <string name="error_network">Error de red. Por favor, verifica tu conexión.</string>
