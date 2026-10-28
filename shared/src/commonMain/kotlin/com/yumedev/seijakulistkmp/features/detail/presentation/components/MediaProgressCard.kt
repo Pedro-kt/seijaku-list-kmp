@@ -184,9 +184,9 @@ private fun StatusChip(
     }
 
     val statusColor = when (status) {
-        MediaListStatus.CURRENT -> MaterialTheme.colorScheme.primary
+        MediaListStatus.CURRENT -> Color(0xFF2196F3)
         MediaListStatus.COMPLETED -> Color(0xFF4CAF50)
-        MediaListStatus.PLANNING -> MaterialTheme.colorScheme.secondary
+        MediaListStatus.PLANNING -> Color(0xFF9E9E9E)
         MediaListStatus.PAUSED -> Color(0xFFFFA726)
         MediaListStatus.DROPPED -> Color(0xFFEF5350)
         MediaListStatus.REPEATING -> MaterialTheme.colorScheme.tertiary
