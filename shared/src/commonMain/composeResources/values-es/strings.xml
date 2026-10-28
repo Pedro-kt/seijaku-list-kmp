@@ -148,6 +148,10 @@
     <string name="settings">Configuración</string>
     <string name="login">Iniciar sesión</string>
     <string name="logout">Cerrar sesión</string>
+    <string name="logout_confirmation_title">Cerrar sesión</string>
+    <string name="logout_confirmation_message">¿Estás seguro de que quieres cerrar sesión?</string>
+    <string name="logout_confirm">Cerrar sesión</string>
+    <string name="logout_cancel">Cancelar</string>
     <string name="profile_no_name">Sin nombre</string>
     <string name="profile_local_user">Usuario local</string>
 

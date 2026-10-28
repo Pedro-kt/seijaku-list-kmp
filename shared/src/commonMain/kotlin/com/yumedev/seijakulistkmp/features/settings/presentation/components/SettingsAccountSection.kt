@@ -3,7 +3,7 @@ package com.yumedev.seijakulistkmp.features.settings.presentation.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -20,6 +20,37 @@ fun SettingsAccountSection(
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = {
+                Text(text = stringResource(Res.string.logout_confirmation_title))
+            },
+            text = {
+                Text(text = stringResource(Res.string.logout_confirmation_message))
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLogoutDialog = false
+                        onLogoutClick()
+                    }
+                ) {
+                    Text(text = stringResource(Res.string.logout_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showLogoutDialog = false }
+                ) {
+                    Text(text = stringResource(Res.string.logout_cancel))
+                }
+            }
+        )
+    }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -49,7 +80,7 @@ fun SettingsAccountSection(
 
         if (isLoggedIn) {
             OutlinedButton(
-                onClick = onLogoutClick,
+                onClick = { showLogoutDialog = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),

@@ -1,17 +1,20 @@
 package com.yumedev.seijakulistkmp.core.notification
 
+import android.Manifest
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.yumedev.seijakulistkmp.core.util.AiringScheduleTimeUtil
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
-import kotlin.time.Duration.Companion.seconds
 
 class EpisodeNotificationWorker(
     private val context: Context,
@@ -20,12 +23,16 @@ class EpisodeNotificationWorker(
 
     override suspend fun doWork(): Result {
         return try {
-            val mediaId = inputData.getInt(ScheduleSyncWorker.KEY_MEDIA_ID, -1)
-            val title = inputData.getString(ScheduleSyncWorker.KEY_TITLE) ?: return Result.failure()
-            val episode = inputData.getInt(ScheduleSyncWorker.KEY_EPISODE, 0)
-            val airingAt = inputData.getLong(ScheduleSyncWorker.KEY_AIRING_AT, 0)
+            val mediaId = inputData.getInt("media_id", -1)
+            val title = inputData.getString("title")
+            val episode = inputData.getInt("episode", 0)
+            val airingAt = inputData.getLong("airing_at", 0)
 
-            if (mediaId == -1 || airingAt == 0L) {
+            if (mediaId == -1 || title == null || airingAt == 0L) {
+                return Result.failure()
+            }
+
+            if (!hasNotificationPermission()) {
                 return Result.failure()
             }
 
@@ -35,6 +42,17 @@ class EpisodeNotificationWorker(
         } catch (e: Exception) {
             e.printStackTrace()
             Result.failure()
+        }
+    }
+
+    private fun hasNotificationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
         }
     }
 
@@ -79,15 +97,20 @@ class EpisodeNotificationWorker(
         }
 
         val iconResId = context.resources.getIdentifier("ic_notification", "drawable", context.packageName)
-        val notificationIcon = if (iconResId != 0) iconResId else android.R.drawable.ic_dialog_info
+        val notificationIcon = if (iconResId != 0) {
+            iconResId
+        } else {
+            context.applicationInfo.icon
+        }
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(notificationIcon)
             .setContentTitle("$title - Episode $episode")
             .setContentText(timeText)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
             .build()
 
         notificationManager.notify(mediaId, notification)

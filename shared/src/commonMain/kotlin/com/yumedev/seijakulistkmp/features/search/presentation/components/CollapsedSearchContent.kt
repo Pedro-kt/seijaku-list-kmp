@@ -43,7 +43,7 @@ fun CollapsedSearchContent(
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 100.dp),
+            contentPadding = PaddingValues(bottom = 120.dp),
             verticalArrangement = Arrangement.spacedBy(responsive.largePadding)
         ) {
             item {
