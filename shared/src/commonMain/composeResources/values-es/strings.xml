@@ -359,6 +359,10 @@
     <string name="list_change_status_title">Cambiar estado</string>
     <string name="list_status_updated">Estado actualizado</string>
     <string name="list_updated_success">Entrada actualizada exitosamente</string>
+    <string name="detail_delete_tooltip">Eliminar de la lista</string>
+    <string name="detail_undo_progress">Deshacer</string>
+    <string name="detail_progress_ep_minus_one">-1 ep</string>
+    <string name="detail_progress_cap_minus_one">-1 cap</string>
 
     <!-- List Sorting -->
     <string name="list_sort_title">Ordenar por</string>

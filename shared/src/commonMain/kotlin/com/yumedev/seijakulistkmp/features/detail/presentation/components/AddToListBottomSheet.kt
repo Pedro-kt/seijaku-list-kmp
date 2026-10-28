@@ -136,20 +136,30 @@ fun AddToListBottomSheet(
     ) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isAnime = mediaType == MediaType.ANIME
+    val totalProgress = if (isAnime) totalEpisodes else totalChapters
+    val maxProgress = MediaListValidator.getMaxAllowedProgress(totalProgress, mediaStatus)
+
     var selectedStatus by remember(currentStatus, mediaType, mediaStatus) {
         mutableStateOf(currentStatus ?: getDefaultStatus(mediaType, mediaStatus))
     }
-    var progress by remember(currentProgress) { mutableStateOf(currentProgress) }
+
+    var progress by remember(currentProgress, selectedStatus, totalProgress) {
+        val initialProgress = when {
+            currentProgress > 0 -> currentProgress
+            selectedStatus == MediaListStatus.COMPLETED && totalProgress != null -> totalProgress
+            selectedStatus == MediaListStatus.PLANNING -> 0
+            else -> currentProgress
+        }
+        mutableStateOf(initialProgress)
+    }
+
     var score by remember(currentScore) { mutableStateOf(currentScore) }
     var rewatches by remember(currentRewatches) { mutableStateOf(currentRewatches) }
     var priority by remember(currentPriority) { mutableStateOf(currentPriority) }
 
     var isInitialLoad by remember { mutableStateOf(true) }
     var previousStatus by remember { mutableStateOf(selectedStatus) }
-
-    val isAnime = mediaType == MediaType.ANIME
-    val totalProgress = if (isAnime) totalEpisodes else totalChapters
-    val maxProgress = MediaListValidator.getMaxAllowedProgress(totalProgress, mediaStatus)
 
     val isPlanToWatch = selectedStatus == MediaListStatus.PLANNING
 

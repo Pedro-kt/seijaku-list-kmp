@@ -8,5 +8,8 @@ data class DetailState(
     val mediaDetail: MediaDetail? = null,
     val listEntry: MediaListEntry? = null,
     val isLoading: Boolean = false,
-    val error: ErrorType? = null
+    val error: ErrorType? = null,
+    val showDeleteDialog: Boolean = false,
+    val temporaryProgress: Int? = null,
+    val originalProgress: Int? = null
 )

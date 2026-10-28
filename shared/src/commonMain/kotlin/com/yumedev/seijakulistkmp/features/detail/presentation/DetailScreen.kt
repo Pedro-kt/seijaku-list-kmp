@@ -71,7 +71,16 @@ data class DetailScreen(
                             duration = SnackbarDuration.Short
                         )
                     }
+                    is DetailEvent.NavigateBack -> {
+                        navigator.pop()
+                    }
                 }
+            }
+        }
+
+        DisposableEffect(Unit) {
+            onDispose {
+                viewModel.confirmProgress()
             }
         }
 
@@ -89,6 +98,9 @@ data class DetailScreen(
                 DetailScreenContent(
                     mediaDetail = mediaDetailUi,
                     listEntry = state.listEntry,
+                    temporaryProgress = state.temporaryProgress,
+                    originalProgress = state.originalProgress,
+                    showDeleteDialog = state.showDeleteDialog,
                     snackbarHostState = snackbarHostState,
                     onBackClick = { navigator.pop() },
                     onFavoriteClick = { viewModel.toggleFavorite() },
@@ -106,6 +118,11 @@ data class DetailScreen(
                         viewModel.saveToList(status, progress, score, note, startDate, rewatches, priority)
                     },
                     onIncrementProgress = { viewModel.incrementProgress() },
+                    onDecrementProgress = { viewModel.decrementProgress() },
+                    onConfirmProgress = { viewModel.confirmProgress() },
+                    onDeleteClick = { viewModel.showDeleteDialog() },
+                    onDismissDeleteDialog = { viewModel.dismissDeleteDialog() },
+                    onConfirmDelete = { viewModel.deleteFromList() },
                     onCharacterClick = { characterId ->
                         navigator.push(CharacterScreen(characterId))
                     },
@@ -370,6 +387,9 @@ private fun rememberMediaDetailUiModel(mediaDetail: MediaDetail): MediaDetailUiM
 fun DetailScreenContent(
     mediaDetail: MediaDetailUiModel,
     listEntry: com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry?,
+    temporaryProgress: Int?,
+    originalProgress: Int?,
+    showDeleteDialog: Boolean,
     snackbarHostState: SnackbarHostState,
     onBackClick: () -> Unit,
     onFavoriteClick: () -> Unit,
@@ -377,6 +397,11 @@ fun DetailScreenContent(
     onAddToListClick: () -> Unit,
     onSaveToList: (MediaListStatus, Int, Float?, String, String?, Int, MediaListPriority) -> Unit,
     onIncrementProgress: () -> Unit,
+    onDecrementProgress: () -> Unit,
+    onConfirmProgress: () -> Unit,
+    onDeleteClick: () -> Unit,
+    onDismissDeleteDialog: () -> Unit,
+    onConfirmDelete: () -> Unit,
     onCharacterClick: (Int) -> Unit,
     onSeeAllChaptersClick: () -> Unit,
     onChapterClick: (Int) -> Unit,
@@ -388,6 +413,36 @@ fun DetailScreenContent(
 ) {
     var showAddToListBottomSheet by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(temporaryProgress) {
+        if (temporaryProgress != null) {
+            kotlinx.coroutines.delay(4000)
+            onConfirmProgress()
+        }
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = onDismissDeleteDialog,
+            title = { Text(stringResource(Res.string.list_delete_confirm_title)) },
+            text = { Text(stringResource(Res.string.list_delete_confirm_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = onConfirmDelete,
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text(stringResource(Res.string.list_delete_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismissDeleteDialog) {
+                    Text(stringResource(Res.string.list_cancel))
+                }
+            }
+        )
+    }
     val responsive = ResponsiveTheme.values
 
     val imageColors = rememberImageColors(
@@ -448,8 +503,12 @@ fun DetailScreenContent(
                     mediaStatus = entry.mediaStatus ?: mediaDetail.status,
                     totalEpisodes = mediaDetail.totalEpisodes,
                     totalChapters = mediaDetail.totalChapters,
+                    temporaryProgress = temporaryProgress,
+                    originalProgress = originalProgress,
                     onIncrementProgress = onIncrementProgress,
+                    onDecrementProgress = onDecrementProgress,
                     onEditClick = { showAddToListBottomSheet = true },
+                    onDeleteClick = onDeleteClick,
                     modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
                 )
             }

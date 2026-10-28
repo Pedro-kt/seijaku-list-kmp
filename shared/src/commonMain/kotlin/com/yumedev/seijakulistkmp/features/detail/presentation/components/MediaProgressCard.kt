@@ -1,8 +1,13 @@
 package com.yumedev.seijakulistkmp.features.detail.presentation.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -27,6 +32,7 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.validator.MediaListVa
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.CalendarEvent
 import dev.seyfarth.tablericons.outlined.Edit
+import dev.seyfarth.tablericons.outlined.Trash
 import dev.seyfarth.tablericons.filled.Star
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
@@ -38,8 +44,12 @@ fun MediaProgressCard(
     mediaStatus: String?,
     totalEpisodes: Int?,
     totalChapters: Int?,
+    temporaryProgress: Int?,
+    originalProgress: Int?,
     onIncrementProgress: () -> Unit,
+    onDecrementProgress: () -> Unit,
     onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -101,16 +111,29 @@ fun MediaProgressCard(
                         }
                     }
 
+                    val displayProgress = temporaryProgress ?: entry.progress
                     val progressText = when (mediaType) {
-                        MediaType.ANIME -> totalEpisodes?.let { "${entry.progress}/$it" } ?: "${entry.progress}"
-                        MediaType.MANGA -> totalChapters?.let { "${entry.progress}/$it" } ?: "${entry.progress}"
+                        MediaType.ANIME -> totalEpisodes?.let { "$displayProgress/$it" } ?: "$displayProgress"
+                        MediaType.MANGA -> totalChapters?.let { "$displayProgress/$it" } ?: "$displayProgress"
                     }
                     Text(
                         text = progressText,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = if (temporaryProgress != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                     )
+
+                    IconButton(
+                        onClick = onDeleteClick,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = TablerIcons.Outlined.Trash,
+                            contentDescription = stringResource(Res.string.detail_delete_tooltip),
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
 
@@ -118,13 +141,16 @@ fun MediaProgressCard(
                 mediaType = mediaType,
                 mediaStatus = mediaStatus,
                 status = entry.status,
-                progress = entry.progress,
+                progress = temporaryProgress ?: entry.progress,
                 total = when (mediaType) {
                     MediaType.ANIME -> totalEpisodes
                     MediaType.MANGA -> totalChapters
                 },
+                temporaryProgress = temporaryProgress,
+                originalProgress = originalProgress ?: entry.progress,
                 onEditClick = onEditClick,
-                onIncrementProgress = onIncrementProgress
+                onIncrementProgress = onIncrementProgress,
+                onDecrementProgress = onDecrementProgress
             )
         }
     }
@@ -234,8 +260,11 @@ private fun ActionButtons(
     status: MediaListStatus,
     progress: Int,
     total: Int?,
+    temporaryProgress: Int?,
+    originalProgress: Int,
     onEditClick: () -> Unit,
     onIncrementProgress: () -> Unit,
+    onDecrementProgress: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val canIncrement = MediaListValidator.canIncrementProgress(
@@ -297,6 +326,28 @@ private fun ActionButtons(
                 modifier = Modifier.size(22.dp),
                 tint = MaterialTheme.colorScheme.onSurface
             )
+        }
+
+        AnimatedVisibility(
+            visible = temporaryProgress != null && temporaryProgress > originalProgress,
+            enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+            exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
+        ) {
+            FilledTonalButton(
+                onClick = onDecrementProgress,
+                modifier = Modifier.height(44.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = if (mediaType == MediaType.ANIME) {
+                        stringResource(Res.string.detail_progress_ep_minus_one)
+                    } else {
+                        stringResource(Res.string.detail_progress_cap_minus_one)
+                    },
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
 
         Button(

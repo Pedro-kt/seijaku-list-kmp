@@ -21,6 +21,7 @@ import com.yumedev.seijakulistkmp.features.tracking.domain.validator.MediaListVa
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.AddToListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.CheckInListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.GetListEntryUseCase
+import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.RemoveFromListUseCase
 import com.yumedev.seijakulistkmp.features.tracking.domain.usecase.UpdateListEntryUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
@@ -40,6 +41,7 @@ class DetailViewModel(
     private val getMangaDetailUseCase: GetMangaDetailUseCase,
     private val addToListUseCase: AddToListUseCase,
     private val updateListEntryUseCase: UpdateListEntryUseCase,
+    private val removeFromListUseCase: RemoveFromListUseCase,
     private val checkInListUseCase: CheckInListUseCase,
     private val getListEntryUseCase: GetListEntryUseCase,
     private val toggleFavoriteEpisodeUseCase: ToggleFavoriteEpisodeUseCase,
@@ -133,7 +135,9 @@ class DetailViewModel(
                 _state.update { currentState ->
                     currentState.copy(
                         listEntry = entry,
-                        mediaDetail = currentState.mediaDetail?.copy(isInList = entry != null)
+                        mediaDetail = currentState.mediaDetail?.copy(isInList = entry != null),
+                        originalProgress = if (currentState.temporaryProgress == null) entry?.progress else currentState.originalProgress,
+                        temporaryProgress = if (currentState.temporaryProgress == null) null else currentState.temporaryProgress
                     )
                 }
             }
@@ -308,7 +312,47 @@ class DetailViewModel(
     }
 
     fun incrementProgress() {
+        val currentEntry = _state.value.listEntry ?: return
+        val currentDetail = _state.value.mediaDetail ?: return
+        val mediaType = currentDetail.type.toCore()
+
+        val total = when (mediaType) {
+            com.yumedev.seijakulistkmp.core.domain.model.MediaType.ANIME -> currentDetail.episodes
+            com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA -> currentDetail.chapters
+        }
+
+        val currentProgress = _state.value.temporaryProgress ?: currentEntry.progress
+
+        if (!MediaListValidator.canIncrementProgress(
+            currentStatus = currentEntry.status,
+            currentProgress = currentProgress,
+            total = total,
+            mediaStatus = currentDetail.status
+        )) {
+            return
+        }
+
+        _state.update { currentState ->
+            currentState.copy(
+                temporaryProgress = currentProgress + 1,
+                originalProgress = currentState.originalProgress ?: currentEntry.progress
+            )
+        }
+    }
+
+    fun decrementProgress() {
+        val currentEntry = _state.value.listEntry ?: return
+        val originalProgress = _state.value.originalProgress ?: currentEntry.progress
+        val currentProgress = _state.value.temporaryProgress ?: currentEntry.progress
+
+        if (currentProgress > originalProgress) {
+            _state.update { it.copy(temporaryProgress = currentProgress - 1) }
+        }
+    }
+
+    fun confirmProgress() {
         viewModelScope.launch {
+            val temporaryProgress = _state.value.temporaryProgress ?: return@launch
             val currentDetail = _state.value.mediaDetail ?: return@launch
             val currentEntry = _state.value.listEntry ?: return@launch
             val mediaType = currentDetail.type.toCore()
@@ -318,19 +362,7 @@ class DetailViewModel(
                 com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA -> currentDetail.chapters
             }
 
-            if (!MediaListValidator.canIncrementProgress(
-                currentStatus = currentEntry.status,
-                currentProgress = currentEntry.progress,
-                total = total,
-                mediaStatus = currentDetail.status
-            )) {
-                _events.send(DetailEvent.ShowError("Cannot increment progress with current status"))
-                return@launch
-            }
-
-            val newProgress = currentEntry.progress + 1
-
-            val newStatus = if (total != null && newProgress == total && currentDetail.status?.uppercase() == "FINISHED") {
+            val newStatus = if (total != null && temporaryProgress == total && currentDetail.status?.uppercase() == "FINISHED") {
                 MediaListValidator.getAutoStatusOnCompletion(currentEntry.status, currentDetail.status)
             } else {
                 currentEntry.status
@@ -339,9 +371,46 @@ class DetailViewModel(
             updateListEntryUseCase(
                 mediaId = currentDetail.id,
                 mediaType = mediaType,
-                progress = newProgress,
+                progress = temporaryProgress,
                 status = newStatus
             )
+
+            _state.update { it.copy(temporaryProgress = null, originalProgress = null) }
+        }
+    }
+
+    fun resetProgress() {
+        _state.update { it.copy(temporaryProgress = null, originalProgress = null) }
+    }
+
+    fun showDeleteDialog() {
+        _state.update { it.copy(showDeleteDialog = true) }
+    }
+
+    fun dismissDeleteDialog() {
+        _state.update { it.copy(showDeleteDialog = false) }
+    }
+
+    fun deleteFromList() {
+        viewModelScope.launch {
+            val currentDetail = _state.value.mediaDetail ?: return@launch
+            val mediaType = currentDetail.type.toCore()
+
+            dismissDeleteDialog()
+
+            val result = removeFromListUseCase(
+                mediaId = currentDetail.id,
+                mediaType = mediaType
+            )
+
+            when (result) {
+                is Result.Success -> {
+                    _events.send(DetailEvent.NavigateBack)
+                }
+                is Result.Failure -> {
+                    _events.send(DetailEvent.ShowError("Failed to delete from list: ${result.exception.message}"))
+                }
+            }
         }
     }
 }
