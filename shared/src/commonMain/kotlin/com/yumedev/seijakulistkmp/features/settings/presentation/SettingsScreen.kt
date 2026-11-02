@@ -164,7 +164,11 @@ class SettingsScreen : Screen {
             // onClearCacheClick = viewModel::onClearCacheClick,
             onAboutClick = viewModel::onAboutClick,
             onAniListClick = viewModel::onAniListClick,
-            onLogoutClick = viewModel::onLogoutClick
+            onLogoutClick = {
+                viewModel.onLogoutClick {
+                    navigator.popUntilRoot()
+                }
+            }
         )
 
         if (state.showImportResultDialog && state.importResult != null) {

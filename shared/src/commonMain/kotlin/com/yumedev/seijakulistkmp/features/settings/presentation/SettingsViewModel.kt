@@ -253,11 +253,12 @@ class SettingsViewModel(
         _state.update { it.copy(pendingExternalUrl = null) }
     }
 
-    fun onLogoutClick() {
+    fun onLogoutClick(onSuccess: () -> Unit = {}) {
         viewModelScope.launch {
             analyticsManager.logEvent(AnalyticsEvents.LOGOUT)
             analyticsManager.setUserId(null)
             logoutUseCase()
+            onSuccess()
         }
     }
 
