@@ -17,9 +17,9 @@ import seijakulistkmp.shared.generated.resources.*
 
 @Composable
 fun SettingsDataSection(
-    lastSyncTime: String?,
+    // lastSyncTime: String?, // TODO: Re-habilitar cuando se implemente AniList OAuth
     // cacheSize: String,
-    onSyncClick: () -> Unit,
+    // onSyncClick: () -> Unit, // TODO: Re-habilitar cuando se implemente AniList OAuth
     onImportAnimeClick: () -> Unit,
     onImportMangaClick: () -> Unit,
     onExportAnimeClick: () -> Unit,
@@ -43,16 +43,17 @@ fun SettingsDataSection(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
 
-        SettingsNavigationItem(
-            icon = TablerIcons.Outlined.Refresh,
-            title = stringResource(Res.string.settings_sync_anilist),
-            description = lastSyncTime?.let {
-                stringResource(Res.string.settings_sync_anilist_desc, it)
-            },
-            onClick = onSyncClick
-        )
-
-        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+        // TODO: Implementar sincronización con AniList OAuth
+        // SettingsNavigationItem(
+        //     icon = TablerIcons.Outlined.Refresh,
+        //     title = stringResource(Res.string.settings_sync_anilist),
+        //     description = lastSyncTime?.let {
+        //         stringResource(Res.string.settings_sync_anilist_desc, it)
+        //     },
+        //     onClick = onSyncClick
+        // )
+        //
+        // HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
 
         SettingsNavigationItem(
             icon = TablerIcons.Outlined.FileUpload,

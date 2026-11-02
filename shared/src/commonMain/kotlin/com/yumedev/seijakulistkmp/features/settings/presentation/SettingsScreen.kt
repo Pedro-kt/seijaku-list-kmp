@@ -87,7 +87,7 @@ class SettingsScreen : Screen {
                 }
             },
             onSfwModeToggle = viewModel::onSfwModeToggle,
-            onSyncClick = viewModel::onSyncClick,
+            // onSyncClick = viewModel::onSyncClick,
             onLoginClick = {
                 navigator.push(WelcomeScreen())
             },
@@ -224,7 +224,7 @@ fun SettingsScreenContent(
     onLanguageSelected: (LanguageMode) -> Unit,
     onAiringNotificationsToggle: (Boolean) -> Unit,
     onSfwModeToggle: (Boolean) -> Unit,
-    onSyncClick: () -> Unit,
+    // onSyncClick: () -> Unit, // TODO: Re-habilitar cuando se implemente AniList OAuth
     onLoginClick: () -> Unit,
     onImportAnimeClick: () -> Unit,
     onImportMangaClick: () -> Unit,
@@ -291,9 +291,9 @@ fun SettingsScreenContent(
 
             item {
                 SettingsDataSection(
-                    lastSyncTime = state.lastSyncTime,
+                    // lastSyncTime = state.lastSyncTime,
                     // cacheSize = state.cacheSize,
-                    onSyncClick = onSyncClick,
+                    // onSyncClick = onSyncClick,
                     onImportAnimeClick = onImportAnimeClick,
                     onImportMangaClick = onImportMangaClick,
                     onExportAnimeClick = onExportAnimeClick,
