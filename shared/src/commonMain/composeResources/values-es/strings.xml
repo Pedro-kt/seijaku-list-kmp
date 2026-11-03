@@ -468,7 +468,7 @@
     <string name="welcome_page2_description">¡No necesitas cuenta! Rastrea toda tu colección sin conexión. Exporta tus listas cuando quieras como archivos XML estándar.</string>
     <string name="welcome_page3_title">Seijaku significa serenidad</string>
     <string name="welcome_page3_description">Un espacio tranquilo y sin distracciones para tu colección. Temas hermosos, diseño cuidado y cero desorden.</string>
-    <string name="welcome_page4_title">Sincronización en la nube es opcional</string>
+    <string name="welcome_page4_title">Sincronización Opcional</string>
     <string name="welcome_page4_description">Crea una cuenta solo si quieres respaldo automático y sincronización entre dispositivos. ¡La app funciona perfectamente sin una!</string>
     <string name="welcome_continue_to_app">Continuar a la app</string>
     <string name="welcome_or_sync">O habilitar respaldo en la nube</string>

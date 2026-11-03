@@ -308,6 +308,24 @@ fun WelcomePageContent(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .graphicsLayer {
+                    translationY = visualOffset
+                    alpha = visualAlpha
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            WelcomeVisualShowcase(
+                pageIndex = pageIndex,
+                currentPage = currentPage,
+                page = page,
+                pageOffset = pageOffset
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -318,8 +336,8 @@ fun WelcomePageContent(
                 .padding(
                     start = responsive.horizontalPadding,
                     end = responsive.horizontalPadding,
-                    top = responsive.largePadding,
-                    bottom = responsive.mediumPadding
+                    top = responsive.mediumPadding,
+                    bottom = responsive.largePadding
                 ),
             verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
         ) {
@@ -352,24 +370,6 @@ fun WelcomePageContent(
                     .graphicsLayer {
                         translationY = descTranslateY
                     }
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .graphicsLayer {
-                    translationY = visualOffset
-                    alpha = visualAlpha
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            WelcomeVisualShowcase(
-                pageIndex = pageIndex,
-                currentPage = currentPage,
-                page = page,
-                pageOffset = pageOffset
             )
         }
     }

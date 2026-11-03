@@ -19,7 +19,7 @@ fun WelcomeAppShowcase(
 ) {
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(
-            Res.readBytes("files/onboarding-1-despierta.json").decodeToString()
+            Res.readBytes("files/1-anime-manga.json").decodeToString()
         )
     }
 

@@ -478,7 +478,7 @@
     <string name="welcome_page2_description">No account needed! Track your entire collection offline. Export your lists anytime as standard XML files.</string>
     <string name="welcome_page3_title">Seijaku Means Serenity</string>
     <string name="welcome_page3_description">A peaceful, distraction-free space to track your collection. Beautiful themes, thoughtful design, and zero clutter.</string>
-    <string name="welcome_page4_title">Cloud Sync is Optional</string>
+    <string name="welcome_page4_title">Optional Sync</string>
     <string name="welcome_page4_description">Create an account only if you want automatic backup and sync across devices. The app works perfectly without one!</string>
     <string name="welcome_continue_to_app">Continue to app</string>
     <string name="welcome_or_sync">Or enable cloud backup</string>

@@ -19,7 +19,7 @@ fun WelcomeOrganizationDemo(
 ) {
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(
-            Res.readBytes("files/onboarding-4-sincronizacion.json").decodeToString()
+            Res.readBytes("files/4-nube-opcional.json").decodeToString()
         )
     }
 

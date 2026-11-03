@@ -20,7 +20,7 @@ fun WelcomeOfflineDemo(
 ) {
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(
-            Res.readBytes("files/onboarding-2-sin-conexion.json").decodeToString()
+            Res.readBytes("files/2-sin-conexion.json").decodeToString()
         )
     }
 
