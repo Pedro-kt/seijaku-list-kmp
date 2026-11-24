@@ -306,6 +306,20 @@
     <string name="detail_favorite_episode">Marcar como favorito</string>
     <string name="detail_unfavorite_episode">Quitar de favoritos</string>
 
+    <!-- Detail Errors -->
+    <string name="detail_error_status_change">No se puede cambiar a este estado mientras el medio está %1$s</string>
+    <string name="detail_error_invalid_score">La puntuación debe estar entre 0 y 100</string>
+    <string name="detail_error_note_too_long">La nota es demasiado larga (máximo 2000 caracteres)</string>
+    <string name="detail_error_save_failed">Error al guardar en la lista: %1$s</string>
+    <string name="detail_error_delete_failed">Error al eliminar de la lista: %1$s</string>
+
+    <!-- Detail Validation Errors -->
+    <string name="detail_validation_progress_zero_planning">El progreso debe ser 0 cuando el estado es Planeado</string>
+    <string name="detail_validation_progress_complete">El progreso debe estar completo cuando el estado es Completado</string>
+    <string name="detail_validation_progress_negative">El progreso no puede ser negativo</string>
+    <string name="detail_validation_progress_exceeds_max">El progreso excede el máximo permitido: %1$d</string>
+    <string name="detail_validation_progress_exceeds_total">El progreso excede el total de episodios/capítulos</string>
+
     <!-- Character Roles -->
     <string name="character_role_main">Principal</string>
     <string name="character_role_supporting">Secundario</string>

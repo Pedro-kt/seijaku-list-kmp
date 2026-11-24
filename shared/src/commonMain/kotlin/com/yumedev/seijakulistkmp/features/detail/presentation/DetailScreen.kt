@@ -52,6 +52,17 @@ data class DetailScreen(
         val shareHelper = rememberShareHelper()
         val snackbarHostState = remember { SnackbarHostState() }
 
+        val errorStatusChange = stringResource(Res.string.detail_error_status_change)
+        val errorInvalidScore = stringResource(Res.string.detail_error_invalid_score)
+        val errorNoteTooLong = stringResource(Res.string.detail_error_note_too_long)
+        val errorSaveFailed = stringResource(Res.string.detail_error_save_failed)
+        val errorDeleteFailed = stringResource(Res.string.detail_error_delete_failed)
+        val validationProgressZeroPlanning = stringResource(Res.string.detail_validation_progress_zero_planning)
+        val validationProgressComplete = stringResource(Res.string.detail_validation_progress_complete)
+        val validationProgressNegative = stringResource(Res.string.detail_validation_progress_negative)
+        val validationProgressExceedsMax = stringResource(Res.string.detail_validation_progress_exceeds_max)
+        val validationProgressExceedsTotal = stringResource(Res.string.detail_validation_progress_exceeds_total)
+
         LaunchedEffect(mediaId, mediaType) {
             viewModel.loadMediaDetail(mediaId, mediaType)
         }
@@ -60,8 +71,33 @@ data class DetailScreen(
             viewModel.events.collect { event ->
                 when (event) {
                     is DetailEvent.ShowError -> {
+                        val message = when {
+                            event.message.startsWith("detail_error_status_change|") -> {
+                                val param = event.message.substringAfter("|")
+                                errorStatusChange.replace("%1\$s", param)
+                            }
+                            event.message == "detail_error_invalid_score" -> errorInvalidScore
+                            event.message == "detail_error_note_too_long" -> errorNoteTooLong
+                            event.message.startsWith("detail_error_save_failed|") -> {
+                                val param = event.message.substringAfter("|")
+                                errorSaveFailed.replace("%1\$s", param)
+                            }
+                            event.message.startsWith("detail_error_delete_failed|") -> {
+                                val param = event.message.substringAfter("|")
+                                errorDeleteFailed.replace("%1\$s", param)
+                            }
+                            event.message == "detail_validation_progress_zero_planning" -> validationProgressZeroPlanning
+                            event.message == "detail_validation_progress_complete" -> validationProgressComplete
+                            event.message == "detail_validation_progress_negative" -> validationProgressNegative
+                            event.message.startsWith("detail_validation_progress_exceeds_max|") -> {
+                                val param = event.message.substringAfter("|")
+                                validationProgressExceedsMax.replace("%1\$d", param)
+                            }
+                            event.message == "detail_validation_progress_exceeds_total" -> validationProgressExceedsTotal
+                            else -> event.message
+                        }
                         snackbarHostState.showSnackbar(
-                            message = event.message,
+                            message = message,
                             duration = SnackbarDuration.Short
                         )
                     }

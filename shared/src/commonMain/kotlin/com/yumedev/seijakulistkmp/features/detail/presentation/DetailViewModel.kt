@@ -214,7 +214,7 @@ class DetailViewModel(
             val isChangingStatus = currentListEntry != null && currentListEntry.status != status
 
             if (isChangingStatus && !MediaListValidator.isStatusAllowed(status, currentDetail.status)) {
-                _events.send(DetailEvent.ShowError("Cannot change to this status while media is ${currentDetail.status}"))
+                _events.send(DetailEvent.ShowError("detail_error_status_change|${currentDetail.status}"))
                 return@launch
             }
 
@@ -231,23 +231,23 @@ class DetailViewModel(
             )
             if (validation is MediaListValidator.ValidationResult.Invalid) {
                 val errorMessage = when (val error = validation.error) {
-                    is ValidationError.ProgressNotZeroForPlanning -> "Progress must be 0 when status is Planning"
-                    is ValidationError.ProgressNotCompleteForCompleted -> "Progress must be complete when status is Completed"
-                    is ValidationError.ProgressNegative -> "Progress cannot be negative"
-                    is ValidationError.ProgressExceedsMaxAllowed -> "Progress exceeds max allowed: ${error.maxAllowed}"
-                    is ValidationError.ProgressExceedsTotal -> "Progress exceeds total episodes/chapters"
+                    is ValidationError.ProgressNotZeroForPlanning -> "detail_validation_progress_zero_planning"
+                    is ValidationError.ProgressNotCompleteForCompleted -> "detail_validation_progress_complete"
+                    is ValidationError.ProgressNegative -> "detail_validation_progress_negative"
+                    is ValidationError.ProgressExceedsMaxAllowed -> "detail_validation_progress_exceeds_max|${error.maxAllowed}"
+                    is ValidationError.ProgressExceedsTotal -> "detail_validation_progress_exceeds_total"
                 }
                 _events.send(DetailEvent.ShowError(errorMessage))
                 return@launch
             }
 
             if (!MediaListValidator.isScoreValid(score)) {
-                _events.send(DetailEvent.ShowError("Score must be between 0 and 100"))
+                _events.send(DetailEvent.ShowError("detail_error_invalid_score"))
                 return@launch
             }
 
             if (!MediaListValidator.isNoteLengthValid(note)) {
-                _events.send(DetailEvent.ShowError("Note is too long (max 2000 characters)"))
+                _events.send(DetailEvent.ShowError("detail_error_note_too_long"))
                 return@launch
             }
 
@@ -305,7 +305,7 @@ class DetailViewModel(
                     }
                 }
                 is Result.Failure -> {
-                    _events.send(DetailEvent.ShowError("Failed to save to list: ${result.exception.message}"))
+                    _events.send(DetailEvent.ShowError("detail_error_save_failed|${result.exception.message}"))
                 }
             }
         }
@@ -408,7 +408,7 @@ class DetailViewModel(
                     _events.send(DetailEvent.NavigateBack)
                 }
                 is Result.Failure -> {
-                    _events.send(DetailEvent.ShowError("Failed to delete from list: ${result.exception.message}"))
+                    _events.send(DetailEvent.ShowError("detail_error_delete_failed|${result.exception.message}"))
                 }
             }
         }

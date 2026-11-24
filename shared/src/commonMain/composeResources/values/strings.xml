@@ -306,6 +306,20 @@
     <string name="detail_favorite_episode">Mark as favorite</string>
     <string name="detail_unfavorite_episode">Remove from favorites</string>
 
+    <!-- Detail Errors -->
+    <string name="detail_error_status_change">Cannot change to this status while media is %1$s</string>
+    <string name="detail_error_invalid_score">Score must be between 0 and 100</string>
+    <string name="detail_error_note_too_long">Note is too long (max 2000 characters)</string>
+    <string name="detail_error_save_failed">Failed to save to list: %1$s</string>
+    <string name="detail_error_delete_failed">Failed to delete from list: %1$s</string>
+
+    <!-- Detail Validation Errors -->
+    <string name="detail_validation_progress_zero_planning">Progress must be 0 when status is Planning</string>
+    <string name="detail_validation_progress_complete">Progress must be complete when status is Completed</string>
+    <string name="detail_validation_progress_negative">Progress cannot be negative</string>
+    <string name="detail_validation_progress_exceeds_max">Progress exceeds max allowed: %1$d</string>
+    <string name="detail_validation_progress_exceeds_total">Progress exceeds total episodes/chapters</string>
+
     <!-- Character Roles -->
     <string name="character_role_main">Main</string>
     <string name="character_role_supporting">Supporting</string>
