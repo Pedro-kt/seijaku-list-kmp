@@ -5,5 +5,6 @@ sealed class ErrorType {
     data object TimeoutError : ErrorType()
     data object ServerUnavailable : ErrorType()
     data object ServerError : ErrorType()
+    data object RateLimitError : ErrorType()
     data object UnknownError : ErrorType()
 }

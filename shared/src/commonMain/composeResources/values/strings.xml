@@ -250,6 +250,8 @@
     <string name="error_loading_featured_hint">Check your connection and try again</string>
     <string name="error_server_unavailable">Service temporarily unavailable</string>
     <string name="error_server_unavailable_hint">The server is experiencing issues. Please try again later</string>
+    <string name="error_rate_limit">Too many requests</string>
+    <string name="error_rate_limit_hint">Please wait a moment before trying again</string>
 
     <!-- Detail Screen -->
     <string name="detail">View detail</string>

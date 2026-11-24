@@ -10,6 +10,7 @@ object ErrorUiMapper {
             ErrorType.TimeoutError -> Res.string.error_timeout
             ErrorType.ServerError -> Res.string.error_server
             ErrorType.ServerUnavailable -> Res.string.error_server_unavailable
+            ErrorType.RateLimitError -> Res.string.error_rate_limit
             ErrorType.UnknownError -> Res.string.error_unknown
         }
     }

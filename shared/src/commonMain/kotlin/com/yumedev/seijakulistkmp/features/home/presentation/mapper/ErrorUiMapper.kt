@@ -12,6 +12,10 @@ class ErrorUiMapper {
                 title = getString(Res.string.error_server_unavailable),
                 hint = getString(Res.string.error_server_unavailable_hint)
             )
+            ErrorType.RateLimitError -> ErrorUiModel(
+                title = getString(Res.string.error_rate_limit),
+                hint = getString(Res.string.error_rate_limit_hint)
+            )
             else -> ErrorUiModel(
                 title = if (isAnime) {
                     getString(Res.string.error_loading_featured_anime)

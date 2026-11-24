@@ -25,6 +25,7 @@ object ErrorMapper {
             is ApolloHttpException -> {
                 when (exception.statusCode) {
                     403 -> ErrorType.ServerUnavailable
+                    429 -> ErrorType.RateLimitError
                     in 500..599 -> ErrorType.ServerError
                     else -> null
                 }
@@ -32,6 +33,7 @@ object ErrorMapper {
             is GraphQLErrorException -> {
                 when {
                     exception.statusCode == 403 -> ErrorType.ServerUnavailable
+                    exception.statusCode == 429 -> ErrorType.RateLimitError
                     exception.statusCode in 500..599 -> ErrorType.ServerError
                     else -> checkMessage(exception.message)
                 }
@@ -74,6 +76,7 @@ object ErrorMapper {
         val msg = message?.lowercase() ?: ""
         return when {
             msg.contains("timeout") || msg.contains("timed out") -> ErrorType.TimeoutError
+            msg.contains("rate limit") || msg.contains("too many requests") -> ErrorType.RateLimitError
             msg.contains("temporarily disabled") ||
             msg.contains("temporarily unavailable") -> ErrorType.ServerUnavailable
             msg.contains("network") || msg.contains("connection") -> ErrorType.NetworkError

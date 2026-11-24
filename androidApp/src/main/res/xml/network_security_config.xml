@@ -6,6 +6,10 @@
         </trust-anchors>
     </base-config>
 
+    <!-- TEMPORARY: Certificate pinning disabled for AniList
+         AniList's SSL certificates changed after their API update
+         TODO: Get new certificate hashes and re-enable pinning -->
+    <!--
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">graphql.anilist.co</domain>
         <pin-set expiration="2027-12-31">
@@ -13,6 +17,7 @@
             <pin digest="SHA-256">GUAL5bejH7czkXcAeJ0vCiRxwMnVBsDlBMBsFtfLF8A=</pin>
         </pin-set>
     </domain-config>
+    -->
 
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">firebaseapp.com</domain>
