@@ -44,6 +44,9 @@ class RegisterScreen : Screen {
         val state by viewModel.uiState.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
 
+        val authSyncWarning = stringResource(Res.string.auth_sync_warning)
+        val authPasswordResetSent = stringResource(Res.string.auth_password_reset_sent)
+
         LaunchedEffect(Unit) {
             viewModel.events.collectLatest { event ->
                 when (event) {
@@ -58,9 +61,23 @@ class RegisterScreen : Screen {
                         )
                     }
                     is AuthEvent.ShowSuccess -> {
+                        val message = when (event.message) {
+                            "auth_password_reset_sent" -> authPasswordResetSent
+                            else -> event.message
+                        }
                         snackbarHostState.showSnackbar(
-                            message = event.message,
+                            message = message,
                             duration = SnackbarDuration.Short
+                        )
+                    }
+                    is AuthEvent.ShowWarning -> {
+                        val message = when (event.message) {
+                            "auth_sync_warning" -> authSyncWarning
+                            else -> event.message
+                        }
+                        snackbarHostState.showSnackbar(
+                            message = message,
+                            duration = SnackbarDuration.Long
                         )
                     }
                     else -> {}

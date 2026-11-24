@@ -118,19 +118,36 @@ class AuthViewModel(
 
             when (val result = loginWithEmail(state.email, state.password)) {
                 is Result.Success -> {
+                    var syncErrors = 0
+
                     try {
                         syncProfileWithFirestore()
                     } catch (e: Exception) {
+                        syncErrors++
+                        analyticsManager.logError(e, mapOf(
+                            "flow" to "login_sync",
+                            "sync_type" to "profile"
+                        ))
                     }
 
                     try {
                         syncMediaListWithFirestore()
                     } catch (e: Exception) {
+                        syncErrors++
+                        analyticsManager.logError(e, mapOf(
+                            "flow" to "login_sync",
+                            "sync_type" to "media_list"
+                        ))
                     }
 
                     try {
                         syncFavoriteEpisodesWithFirestore()
                     } catch (e: Exception) {
+                        syncErrors++
+                        analyticsManager.logError(e, mapOf(
+                            "flow" to "login_sync",
+                            "sync_type" to "favorite_episodes"
+                        ))
                     }
 
                     analyticsManager.logEvent(AnalyticsEvents.LOGIN, mapOf("method" to "email"))
@@ -138,6 +155,11 @@ class AuthViewModel(
 
                     _uiState.update { it.copy(isLoading = false, loginSuccess = true) }
                     _events.send(AuthEvent.LoginSuccess)
+
+                    if (syncErrors > 0) {
+                        _events.send(AuthEvent.ShowWarning("auth_sync_warning"))
+                    }
+
                     _events.send(AuthEvent.NavigateToMain)
                 }
 
@@ -179,19 +201,36 @@ class AuthViewModel(
 
             when (val result = registerWithEmail(state.email, state.password, state.confirmPassword)) {
                 is Result.Success -> {
+                    var syncErrors = 0
+
                     try {
                         syncProfileWithFirestore()
                     } catch (e: Exception) {
+                        syncErrors++
+                        analyticsManager.logError(e, mapOf(
+                            "flow" to "register_sync",
+                            "sync_type" to "profile"
+                        ))
                     }
 
                     try {
                         syncMediaListWithFirestore()
                     } catch (e: Exception) {
+                        syncErrors++
+                        analyticsManager.logError(e, mapOf(
+                            "flow" to "register_sync",
+                            "sync_type" to "media_list"
+                        ))
                     }
 
                     try {
                         syncFavoriteEpisodesWithFirestore()
                     } catch (e: Exception) {
+                        syncErrors++
+                        analyticsManager.logError(e, mapOf(
+                            "flow" to "register_sync",
+                            "sync_type" to "favorite_episodes"
+                        ))
                     }
 
                     analyticsManager.logEvent(AnalyticsEvents.SIGN_UP, mapOf("method" to "email"))
@@ -199,6 +238,11 @@ class AuthViewModel(
 
                     _uiState.update { it.copy(isLoading = false, registerSuccess = true) }
                     _events.send(AuthEvent.RegisterSuccess)
+
+                    if (syncErrors > 0) {
+                        _events.send(AuthEvent.ShowWarning("auth_sync_warning"))
+                    }
+
                     _events.send(AuthEvent.NavigateToMain)
                 }
 
@@ -229,23 +273,45 @@ class AuthViewModel(
                     analyticsManager.logEvent(AnalyticsEvents.LOGIN, mapOf("method" to "google"))
                     result.data?.let { analyticsManager.setUserId(it.uid) }
 
+                    var syncErrors = 0
+
                     try {
                         syncProfileWithFirestore()
                     } catch (e: Exception) {
+                        syncErrors++
+                        analyticsManager.logError(e, mapOf(
+                            "flow" to "google_signin_sync",
+                            "sync_type" to "profile"
+                        ))
                     }
 
                     try {
                         syncMediaListWithFirestore()
                     } catch (e: Exception) {
+                        syncErrors++
+                        analyticsManager.logError(e, mapOf(
+                            "flow" to "google_signin_sync",
+                            "sync_type" to "media_list"
+                        ))
                     }
 
                     try {
                         syncFavoriteEpisodesWithFirestore()
                     } catch (e: Exception) {
+                        syncErrors++
+                        analyticsManager.logError(e, mapOf(
+                            "flow" to "google_signin_sync",
+                            "sync_type" to "favorite_episodes"
+                        ))
                     }
 
                     _uiState.update { it.copy(isGoogleSignInLoading = false) }
                     _events.send(AuthEvent.GoogleSignInSuccess)
+
+                    if (syncErrors > 0) {
+                        _events.send(AuthEvent.ShowWarning("auth_sync_warning"))
+                    }
+
                     _events.send(AuthEvent.NavigateToMain)
                 }
 
@@ -280,7 +346,7 @@ class AuthViewModel(
                             passwordResetEmailSent = true
                         )
                     }
-                    _events.send(AuthEvent.ShowSuccess("Password reset email sent"))
+                    _events.send(AuthEvent.ShowSuccess("auth_password_reset_sent"))
                 }
 
                 is Result.Failure -> {

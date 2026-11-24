@@ -7,4 +7,5 @@ sealed class AuthEvent {
     data object GoogleSignInSuccess : AuthEvent()
     data class ShowError(val message: String) : AuthEvent()
     data class ShowSuccess(val message: String) : AuthEvent()
+    data class ShowWarning(val message: String) : AuthEvent()
 }
