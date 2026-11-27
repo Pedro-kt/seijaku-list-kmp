@@ -44,6 +44,7 @@ import com.yumedev.seijakulistkmp.features.home.presentation.components.Featured
 import com.yumedev.seijakulistkmp.features.home.presentation.components.FeaturedCarouselSkeleton
 import com.yumedev.seijakulistkmp.features.home.presentation.components.HomeLoadingSkeleton
 import com.yumedev.seijakulistkmp.features.home.presentation.components.MangaSection
+import com.yumedev.seijakulistkmp.features.home.presentation.components.QuickFilterChipsSkeleton
 import com.yumedev.seijakulistkmp.features.search.presentation.components.QuickFilterChips
 import com.yumedev.seijakulistkmp.features.search.presentation.model.QuickFilter
 import com.yumedev.seijakulistkmp.features.home.presentation.model.AnimeCardItem
@@ -386,13 +387,20 @@ private fun AnimeTabContent(
         if (state.featuredAnimeError == null) {
             item {
                 Spacer(modifier = Modifier.height(responsive.mediumSpacing))
-                QuickFilterChips(
-                    onFilterClick = { filter, label ->
-                        navigator?.push(
-                            SearchScreen(quickFilter = filter)
+                when {
+                    state.isLoadingFeaturedAnime -> {
+                        QuickFilterChipsSkeleton()
+                    }
+                    else -> {
+                        QuickFilterChips(
+                            onFilterClick = { filter, label ->
+                                navigator?.push(
+                                    SearchScreen(quickFilter = filter)
+                                )
+                            }
                         )
                     }
-                )
+                }
                 Spacer(modifier = Modifier.height(responsive.mediumSpacing))
             }
         }
@@ -588,13 +596,20 @@ private fun MangaTabContent(
         if (state.featuredMangaError == null) {
             item {
                 Spacer(modifier = Modifier.height(responsive.mediumSpacing))
-                QuickFilterChips(
-                    onFilterClick = { filter, _ ->
-                        navigator?.push(
-                            SearchScreen(quickFilter = filter)
+                when {
+                    state.isLoadingFeaturedManga -> {
+                        QuickFilterChipsSkeleton()
+                    }
+                    else -> {
+                        QuickFilterChips(
+                            onFilterClick = { filter, _ ->
+                                navigator?.push(
+                                    SearchScreen(quickFilter = filter)
+                                )
+                            }
                         )
                     }
-                )
+                }
                 Spacer(modifier = Modifier.height(responsive.mediumSpacing))
             }
         }

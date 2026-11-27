@@ -17,7 +17,7 @@ fun FirebaseUser.toAuthUser(): AuthUser {
         uid = this.uid,
         email = this.email,
         displayName = this.displayName,
-        photoUrl = null,
+        photoUrl = this.photoURL,
         isEmailVerified = this.isEmailVerified,
         isAnonymous = this.isAnonymous,
         providers = providers.ifEmpty { listOf(AuthProvider.ANONYMOUS) }

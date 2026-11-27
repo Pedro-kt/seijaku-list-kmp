@@ -240,6 +240,71 @@ fun MediaSectionSkeleton(modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun QuickFilterChipsSkeleton(modifier: Modifier = Modifier) {
+    val shimmerColors = getShimmerColors()
+    val transition = rememberInfiniteTransition(label = "shimmer")
+    val translateAnim by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1000f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "shimmer"
+    )
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            repeat(2) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(44.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = shimmerColors,
+                                start = androidx.compose.ui.geometry.Offset(translateAnim - 1000f, 0f),
+                                end = androidx.compose.ui.geometry.Offset(translateAnim, 0f)
+                            )
+                        )
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            repeat(2) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(44.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = shimmerColors,
+                                start = androidx.compose.ui.geometry.Offset(translateAnim - 1000f, 0f),
+                                end = androidx.compose.ui.geometry.Offset(translateAnim, 0f)
+                            )
+                        )
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun HomeLoadingSkeleton(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
@@ -248,6 +313,8 @@ fun HomeLoadingSkeleton(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
         FeaturedCarouselSkeleton(modifier = Modifier.padding(top = 16.dp))
+
+        QuickFilterChipsSkeleton()
 
         repeat(3) {
             MediaSectionSkeleton()

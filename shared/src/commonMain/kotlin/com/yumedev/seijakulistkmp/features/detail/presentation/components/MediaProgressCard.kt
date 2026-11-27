@@ -75,6 +75,12 @@ fun MediaProgressCard(
     var showDecrementButton by remember { mutableStateOf(false) }
     var lastActionTime by remember { mutableStateOf(0L) }
     var cachedProgress by remember { mutableStateOf<Int?>(null) }
+    var isVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(100)
+        isVisible = true
+    }
 
     val canIncrement = MediaListValidator.canIncrementProgress(
         currentStatus = entry.status,
@@ -141,16 +147,16 @@ fun MediaProgressCard(
     }
 
     AnimatedVisibility(
-        visible = true,
+        visible = isVisible,
         enter = slideInVertically(
-            initialOffsetY = { it },
+            initialOffsetY = { it / 2 },
             animationSpec = spring(
                 dampingRatio = Spring.DampingRatioMediumBouncy,
                 stiffness = Spring.StiffnessMedium
             )
         ) + fadeIn(animationSpec = tween(durationMillis = 400)),
         exit = slideOutVertically(
-            targetOffsetY = { it },
+            targetOffsetY = { it / 2 },
             animationSpec = spring(
                 dampingRatio = Spring.DampingRatioMediumBouncy,
                 stiffness = Spring.StiffnessMedium

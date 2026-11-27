@@ -56,15 +56,30 @@ class SyncProfileWithFirestoreUseCase(
                         localProfile.banner
                     }
 
+                    val isDefaultLocalName = localProfile.name == "Usuario Local" || localProfile.name == "Local User"
+                    val nameToUse = if (isDefaultLocalName && firestoreProfile.name.isNotBlank()) {
+                        firestoreProfile.name
+                    } else {
+                        localProfile.name
+                    }
+
+                    val aboutToUse = if (localProfile.about.isNullOrBlank() && !firestoreProfile.about.isNullOrBlank()) {
+                        firestoreProfile.about
+                    } else {
+                        localProfile.about
+                    }
+
                     val needsUpdate = avatarToUse != localProfile.avatar?.large ||
                                      bannerToUse != localProfile.banner ||
+                                     nameToUse != localProfile.name ||
+                                     aboutToUse != localProfile.about ||
                                      localProfile.firstAccessMonth != firstAccessMonth ||
                                      localProfile.firstAccessYear != firstAccessYear
 
                     val profileToSync = if (needsUpdate) {
                         val updateResult = profileRepository.createOrUpdateLocalProfile(
-                            name = localProfile.name,
-                            about = localProfile.about,
+                            name = nameToUse,
+                            about = aboutToUse,
                             avatarUrl = avatarToUse,
                             bannerUrl = bannerToUse
                         )
