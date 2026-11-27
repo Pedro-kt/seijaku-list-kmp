@@ -59,98 +59,75 @@ fun ScheduleCardSkeleton(
         end = Offset(translateAnim, translateAnim)
     )
 
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(responsive.cornerRadius),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = responsive.smallPadding
-        )
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = responsive.mediumPadding),
+        horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(responsive.smallPadding)
+        Box(
+            modifier = Modifier
+                .width(100.dp)
+                .height(140.dp)
+                .clip(RoundedCornerShape(responsive.smallSpacing))
+                .background(brush)
+        )
+
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
         ) {
             Box(
                 modifier = Modifier
-                    .width(responsive.cardWidth / 2)
-                    .height(responsive.minTouchTarget * 2)
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = responsive.cornerRadius,
-                            bottomStart = responsive.cornerRadius,
-                            topEnd = responsive.smallPadding,
-                            bottomEnd = responsive.smallPadding
-                        )
-                    )
+                    .fillMaxWidth(0.85f)
+                    .height(18.dp)
+                    .clip(RoundedCornerShape(responsive.smallPadding))
                     .background(brush)
             )
 
-            Column(
+            Box(
                 modifier = Modifier
-                    .weight(1f)
-                    .height(responsive.minTouchTarget * 2)
-                    .padding(responsive.mediumSpacing),
-                verticalArrangement = Arrangement.SpaceBetween
+                    .fillMaxWidth(0.75f)
+                    .height(18.dp)
+                    .clip(RoundedCornerShape(responsive.smallPadding))
+                    .background(brush)
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(responsive.smallSpacing)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .height(16.dp)
-                            .clip(RoundedCornerShape(responsive.smallPadding))
-                            .background(brush)
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(0.6f)
-                            .height(14.dp)
-                            .clip(RoundedCornerShape(responsive.smallPadding))
-                            .background(brush)
-                    )
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .width(60.dp)
-                                .height(12.dp)
-                                .clip(RoundedCornerShape(responsive.smallPadding))
-                                .background(brush)
-                        )
-
-                        Box(
-                            modifier = Modifier
-                                .size(responsive.mediumSpacing)
-                                .clip(CircleShape)
-                                .background(brush)
-                        )
-
-                        Box(
-                            modifier = Modifier
-                                .width(40.dp)
-                                .height(12.dp)
-                                .clip(RoundedCornerShape(responsive.smallPadding))
-                                .background(brush)
-                        )
-                    }
-                }
+                Box(
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(14.dp)
+                        .clip(RoundedCornerShape(responsive.smallPadding))
+                        .background(brush)
+                )
 
                 Box(
                     modifier = Modifier
-                        .width(100.dp)
-                        .height(12.dp)
+                        .size(4.dp)
+                        .clip(CircleShape)
+                        .background(brush)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(14.dp)
                         .clip(RoundedCornerShape(responsive.smallPadding))
                         .background(brush)
                 )
             }
+
+            Box(
+                modifier = Modifier
+                    .width(120.dp)
+                    .height(14.dp)
+                    .clip(RoundedCornerShape(responsive.smallPadding))
+                    .background(brush)
+            )
         }
     }
 }
