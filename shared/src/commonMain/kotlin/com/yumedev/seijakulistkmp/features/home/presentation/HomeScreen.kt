@@ -175,7 +175,8 @@ fun HomeScreenContent(
                         Box(
                             Modifier
                                 .tabIndicatorOffset(tabPositions[selectedTabIndex])
-                                .fillMaxWidth()
+                                .wrapContentSize(Alignment.Center)
+                                .width(120.dp)
                                 .height(responsive.smallPadding)
                                 .background(
                                     color = MaterialTheme.colorScheme.primary,
