@@ -45,7 +45,7 @@ fun DetailInformation(
                     Surface(
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(responsive.cornerRadius),
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        color = MaterialTheme.colorScheme.surfaceContainerHighest
                     ) {
                         InfoItemView(
                             label = rowItems[0].label,
@@ -58,7 +58,7 @@ fun DetailInformation(
                         Surface(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(responsive.cornerRadius),
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                            color = MaterialTheme.colorScheme.surfaceContainerHighest
                         ) {
                             InfoItemView(
                                 label = rowItems[1].label,

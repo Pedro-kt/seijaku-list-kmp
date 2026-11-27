@@ -220,7 +220,7 @@ private fun StatCard(
     Surface(
         onClick = { /* Stats are not clickable, just visual feedback */ },
         modifier = modifier.scale(scale),
-        color = MaterialTheme.colorScheme.surfaceVariant,
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
         shape = SeijakuTheme.shapes.cardAsymmetric,
         tonalElevation = elevation.dp,
         interactionSource = interactionSource

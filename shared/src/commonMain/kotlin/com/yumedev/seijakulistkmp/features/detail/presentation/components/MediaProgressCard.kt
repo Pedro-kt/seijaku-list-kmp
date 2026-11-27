@@ -214,14 +214,14 @@ fun MediaProgressCard(
 
             Surface(
                 shape = RoundedCornerShape(50),
-                color = MaterialTheme.colorScheme.primaryContainer,
+                color = MaterialTheme.colorScheme.surface,
                 modifier = Modifier.align(Alignment.CenterVertically)
             ) {
                 Text(
                     text = progressText,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(horizontal = responsive.mediumPadding, vertical = responsive.smallPadding)
                 )
             }

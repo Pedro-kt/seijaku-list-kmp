@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,21 +36,23 @@ fun DetailExternalLinks(
 
     val responsive = ResponsiveTheme.values
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = responsive.horizontalPadding),
         verticalArrangement = Arrangement.spacedBy(responsive.mediumPadding)
     ) {
         Text(
             text = stringResource(Res.string.detail_watch_on),
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
+            fontWeight = FontWeight.Bold
         )
 
-        LazyRow(
+        FlowRow(
             horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
-            contentPadding = PaddingValues(horizontal = responsive.horizontalPadding)
+            verticalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            items(links) { link ->
+            links.forEach { link ->
                 ExternalLinkChip(
                     link = link,
                     onClick = { onLinkClick(link.url) }
@@ -66,26 +69,20 @@ private fun ExternalLinkChip(
     modifier: Modifier = Modifier
 ) {
     val responsive = ResponsiveTheme.values
-    val backgroundColor = link.backgroundColor
-    val textColor = link.textColor
 
-    Surface(
-        modifier = modifier
-            .height(responsive.minTouchTarget)
-            .clip(RoundedCornerShape(responsive.minTouchTarget / 2))
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(responsive.minTouchTarget / 2),
-        color = backgroundColor,
-        tonalElevation = 0.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(horizontal = responsive.mediumPadding),
-            horizontalArrangement = Arrangement.spacedBy(responsive.mediumSpacing),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Icon or logo
+    FilterChip(
+        selected = false,
+        onClick = onClick,
+        label = {
+            Text(
+                text = link.siteName,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        leadingIcon = {
             if (!link.iconUrl.isNullOrBlank()) {
                 AsyncImage(
                     model = link.iconUrl,
@@ -97,20 +94,24 @@ private fun ExternalLinkChip(
                 Icon(
                     imageVector = TablerIcons.Outlined.ExternalLink,
                     contentDescription = null,
-                    tint = textColor,
                     modifier = Modifier.size(responsive.smallIconSize)
                 )
             }
-
-            // Site name
-            Text(
-                text = link.siteName,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = textColor
-            )
-        }
-    }
+        },
+        modifier = modifier,
+        shape = RoundedCornerShape(responsive.minTouchTarget / 2),
+        colors = FilterChipDefaults.filterChipColors(
+            containerColor = Color.Transparent,
+            labelColor = MaterialTheme.colorScheme.onSurface,
+            iconColor = MaterialTheme.colorScheme.onSurfaceVariant
+        ),
+        border = FilterChipDefaults.filterChipBorder(
+            enabled = true,
+            selected = false,
+            borderColor = MaterialTheme.colorScheme.outline,
+            selectedBorderColor = MaterialTheme.colorScheme.outline,
+            borderWidth = 1.dp,
+            selectedBorderWidth = 1.dp
+        )
+    )
 }
