@@ -1,14 +1,20 @@
 package com.yumedev.seijakulistkmp.features.detail.presentation.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
@@ -16,27 +22,37 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.animation.animateContentSize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yumedev.seijakulistkmp.core.domain.model.MediaType
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListEntry
 import com.yumedev.seijakulistkmp.features.tracking.domain.model.MediaListStatus
 import com.yumedev.seijakulistkmp.features.tracking.domain.validator.MediaListValidator
+import com.yumedev.seijakulistkmp.ui.theme.ExpressiveMotion
+import com.yumedev.seijakulistkmp.ui.theme.InteractionAnimations
+import com.yumedev.seijakulistkmp.ui.theme.ResponsiveTheme
+import com.yumedev.seijakulistkmp.ui.theme.SeijakuTheme
 import dev.seyfarth.tablericons.TablerIcons
-import dev.seyfarth.tablericons.outlined.CalendarEvent
+import dev.seyfarth.tablericons.outlined.DotsVertical
 import dev.seyfarth.tablericons.outlined.Edit
+import dev.seyfarth.tablericons.outlined.Minus
+import dev.seyfarth.tablericons.outlined.Plus
 import dev.seyfarth.tablericons.outlined.Trash
-import dev.seyfarth.tablericons.filled.Star
 import org.jetbrains.compose.resources.stringResource
 import seijakulistkmp.shared.generated.resources.*
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MediaProgressCard(
     entry: MediaListEntry,
@@ -52,105 +68,286 @@ fun MediaProgressCard(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val responsive = ResponsiveTheme.values
+    var expanded by remember { mutableStateOf(true) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showMenu by remember { mutableStateOf(false) }
+    var showDecrementButton by remember { mutableStateOf(false) }
+    var lastActionTime by remember { mutableStateOf(0L) }
+    var cachedProgress by remember { mutableStateOf<Int?>(null) }
+
+    val canIncrement = MediaListValidator.canIncrementProgress(
+        currentStatus = entry.status,
+        currentProgress = temporaryProgress ?: entry.progress,
+        total = when (mediaType) {
+            MediaType.ANIME -> totalEpisodes
+            MediaType.MANGA -> totalChapters
+        },
+        mediaStatus = mediaStatus
+    )
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text(stringResource(Res.string.list_delete_confirm_title)) },
+            text = { Text(stringResource(Res.string.list_delete_confirm_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        onDeleteClick()
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text(stringResource(Res.string.list_delete_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text(stringResource(Res.string.list_cancel))
+                }
+            }
+        )
+    }
+
+    val displayProgress = temporaryProgress ?: cachedProgress ?: entry.progress
+
+    LaunchedEffect(temporaryProgress) {
+        if (temporaryProgress != null) {
+            cachedProgress = temporaryProgress
+        }
+    }
+
+    LaunchedEffect(entry.progress) {
+        if (temporaryProgress == null) {
+            cachedProgress = entry.progress
+        }
+    }
+
+    val progressText = when (mediaType) {
+        MediaType.ANIME -> totalEpisodes?.let { "$displayProgress/$it" } ?: "$displayProgress"
+        MediaType.MANGA -> totalChapters?.let { "$displayProgress/$it" } ?: "$displayProgress"
+    }
+
+    val canDecrement = temporaryProgress != null && temporaryProgress > 0
+
+    LaunchedEffect(lastActionTime) {
+        if (lastActionTime > 0L) {
+            delay(3000)
+            showDecrementButton = false
+        }
+    }
+
+    AnimatedVisibility(
+        visible = true,
+        enter = slideInVertically(
+            initialOffsetY = { it },
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMedium
+            )
+        ) + fadeIn(animationSpec = tween(durationMillis = 400)),
+        exit = slideOutVertically(
+            targetOffsetY = { it },
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMedium
+            )
+        ) + fadeOut(animationSpec = tween(durationMillis = 300)),
+        modifier = modifier
+    ) {
+        Box {
+            HorizontalFloatingToolbar(
+                expanded = expanded,
+                floatingActionButton = {
+                    FloatingToolbarDefaults.VibrantFloatingActionButton(
+                        onClick = {
+                            if (canIncrement) {
+                                onIncrementProgress()
+                                showDecrementButton = true
+                                lastActionTime = System.currentTimeMillis()
+                            }
+                        },
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ) {
+                        Icon(
+                            imageVector = TablerIcons.Outlined.Plus,
+                            contentDescription = stringResource(Res.string.list_increase)
+                        )
+                    }
+                },
+                modifier = Modifier.wrapContentWidth(),
+                shape = RoundedCornerShape(50),
+                colors = FloatingToolbarDefaults.standardFloatingToolbarColors(
+                    toolbarContainerColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
+                contentPadding = PaddingValues(
+                    horizontal = responsive.mediumPadding,
+                    vertical = responsive.mediumPadding
+                )
+            ) {
+            Crossfade(
+                targetState = showDecrementButton && canDecrement,
+                animationSpec = tween(durationMillis = 400),
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) { showDecrement ->
+                if (showDecrement) {
+                    DecrementChip(
+                        onDecrementClick = {
+                            onDecrementProgress()
+                            showDecrementButton = true
+                            lastActionTime = System.currentTimeMillis()
+                        }
+                    )
+                } else {
+                    StatusChip(
+                        status = entry.status,
+                        mediaType = mediaType
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(responsive.mediumSpacing))
+
+            Surface(
+                shape = RoundedCornerShape(50),
+                color = MaterialTheme.colorScheme.primaryContainer,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
+                Text(
+                    text = progressText,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.padding(horizontal = responsive.mediumPadding, vertical = responsive.smallPadding)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(responsive.mediumSpacing))
+
+            Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                Surface(
+                    onClick = { showMenu = true },
+                    shape = RoundedCornerShape(50),
+                    color = MaterialTheme.colorScheme.surface
+                ) {
+                    Icon(
+                        imageVector = TablerIcons.Outlined.DotsVertical,
+                        contentDescription = stringResource(Res.string.filter_menu),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(responsive.smallPadding)
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.list_edit_title)) },
+                        onClick = {
+                            showMenu = false
+                            onEditClick()
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = TablerIcons.Outlined.Edit,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                stringResource(Res.string.detail_delete_tooltip),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        },
+                        onClick = {
+                            showMenu = false
+                            showDeleteDialog = true
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = TablerIcons.Outlined.Trash,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    )
+                }
+            }
+        }
+
+            /*
+            if (showDecrementButton && canDecrement) {
+                FloatingToolbarDefaults.VibrantFloatingActionButton(
+                    onClick = {
+                        onDecrementProgress()
+                        showDecrementButton = false
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = (-responsive.mediumPadding), y = (-80).dp),
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ) {
+                    Icon(
+                        imageVector = TablerIcons.Outlined.Minus,
+                        contentDescription = stringResource(Res.string.list_decrease)
+                    )
+                }
+            }
+            */
+        }
+    }
+}
+
+@Composable
+private fun DecrementChip(
+    onDecrementClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val responsive = ResponsiveTheme.values
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.98f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        )
+        targetValue = if (isPressed) InteractionAnimations.PRESS_SCALE else 1f,
+        animationSpec = ExpressiveMotion.quickSpring
     )
 
-    val elevation by animateFloatAsState(
-        targetValue = if (isPressed) 4f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioLowBouncy,
-            stiffness = Spring.StiffnessMedium
-        )
+    val backgroundAlpha by animateFloatAsState(
+        targetValue = if (isPressed) 0.2f else 0.12f,
+        animationSpec = ExpressiveMotion.smoothSpring
     )
 
-    Card(
-        onClick = { },
-        modifier = modifier
-            .fillMaxWidth()
-            .scale(scale),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = elevation.dp
-        ),
+    Surface(
+        onClick = onDecrementClick,
+        modifier = modifier.scale(scale),
+        shape = RoundedCornerShape(50),
+        color = MaterialTheme.colorScheme.surface,
         interactionSource = interactionSource
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(responsive.smallSpacing),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                StatusChip(
-                    status = entry.status,
-                    mediaType = mediaType
-                )
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    entry.score?.let { score ->
-                        if (score > 0) {
-                            CompactScoreIndicator(score = score)
-                        }
-                    }
-
-                    val displayProgress = temporaryProgress ?: entry.progress
-                    val progressText = when (mediaType) {
-                        MediaType.ANIME -> totalEpisodes?.let { "$displayProgress/$it" } ?: "$displayProgress"
-                        MediaType.MANGA -> totalChapters?.let { "$displayProgress/$it" } ?: "$displayProgress"
-                    }
-                    Text(
-                        text = progressText,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = if (temporaryProgress != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                    )
-
-                    IconButton(
-                        onClick = onDeleteClick,
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = TablerIcons.Outlined.Trash,
-                            contentDescription = stringResource(Res.string.detail_delete_tooltip),
-                            modifier = Modifier.size(18.dp),
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
-            }
-
-            ActionButtons(
-                mediaType = mediaType,
-                mediaStatus = mediaStatus,
-                status = entry.status,
-                progress = temporaryProgress ?: entry.progress,
-                total = when (mediaType) {
-                    MediaType.ANIME -> totalEpisodes
-                    MediaType.MANGA -> totalChapters
-                },
-                temporaryProgress = temporaryProgress,
-                originalProgress = originalProgress ?: entry.progress,
-                onEditClick = onEditClick,
-                onIncrementProgress = onIncrementProgress,
-                onDecrementProgress = onDecrementProgress
+            Icon(
+                imageVector = TablerIcons.Outlined.Minus,
+                contentDescription = stringResource(Res.string.list_decrease),
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(16.dp)
+            )
+            Text(
+                text = stringResource(Res.string.list_decrease),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.SemiBold
             )
         }
     }
@@ -196,25 +393,19 @@ private fun StatusChip(
     val isPressed by interactionSource.collectIsPressedAsState()
 
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.95f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        )
+        targetValue = if (isPressed) InteractionAnimations.PRESS_SCALE else 1f,
+        animationSpec = ExpressiveMotion.quickSpring
     )
 
     val backgroundAlpha by animateFloatAsState(
         targetValue = if (isPressed) 0.2f else 0.12f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioLowBouncy,
-            stiffness = Spring.StiffnessMedium
-        )
+        animationSpec = ExpressiveMotion.smoothSpring
     )
 
     Surface(
         onClick = { },
         modifier = modifier.scale(scale),
-        shape = CircleShape,
+        shape = RoundedCornerShape(50),
         color = statusColor.copy(alpha = backgroundAlpha),
         interactionSource = interactionSource
     ) {
@@ -228,153 +419,3 @@ private fun StatusChip(
     }
 }
 
-@Composable
-private fun CompactScoreIndicator(
-    score: Float,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = TablerIcons.Filled.Star,
-            contentDescription = null,
-            modifier = Modifier.size(18.dp),
-            tint = Color(0xFFFFA726)
-        )
-        Text(
-            text = String.format("%.1f", score),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-    }
-}
-
-@Composable
-private fun ActionButtons(
-    mediaType: MediaType,
-    mediaStatus: String?,
-    status: MediaListStatus,
-    progress: Int,
-    total: Int?,
-    temporaryProgress: Int?,
-    originalProgress: Int,
-    onEditClick: () -> Unit,
-    onIncrementProgress: () -> Unit,
-    onDecrementProgress: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val canIncrement = MediaListValidator.canIncrementProgress(
-        currentStatus = status,
-        currentProgress = progress,
-        total = total,
-        mediaStatus = mediaStatus
-    )
-
-    val editInteractionSource = remember { MutableInteractionSource() }
-    val isEditPressed by editInteractionSource.collectIsPressedAsState()
-
-    val editScale by animateFloatAsState(
-        targetValue = if (isEditPressed) 0.96f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        )
-    )
-
-    val editIconScale by animateFloatAsState(
-        targetValue = if (isEditPressed) 1.1f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessHigh
-        )
-    )
-
-    val incrementInteractionSource = remember { MutableInteractionSource() }
-    val isIncrementPressed by incrementInteractionSource.collectIsPressedAsState()
-
-    val incrementScale by animateFloatAsState(
-        targetValue = if (isIncrementPressed) 0.96f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        )
-    )
-
-    val incrementElevation by animateFloatAsState(
-        targetValue = if (isIncrementPressed) 6f else 2f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioLowBouncy,
-            stiffness = Spring.StiffnessMedium
-        )
-    )
-
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        IconButton(
-            onClick = onEditClick,
-            modifier = Modifier.scale(editScale)
-        ) {
-            Icon(
-                imageVector = TablerIcons.Outlined.Edit,
-                contentDescription = stringResource(Res.string.list_edit_title),
-                modifier = Modifier.size(22.dp),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
-        }
-
-        AnimatedVisibility(
-            visible = temporaryProgress != null && temporaryProgress > originalProgress,
-            enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-            exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
-        ) {
-            FilledTonalButton(
-                onClick = onDecrementProgress,
-                modifier = Modifier.height(44.dp),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = if (mediaType == MediaType.ANIME) {
-                        stringResource(Res.string.detail_progress_ep_minus_one)
-                    } else {
-                        stringResource(Res.string.detail_progress_cap_minus_one)
-                    },
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-        }
-
-        Button(
-            onClick = onIncrementProgress,
-            enabled = canIncrement,
-            modifier = Modifier
-                .weight(1f)
-                .height(44.dp)
-                .scale(incrementScale),
-            shape = RoundedCornerShape(12.dp),
-            elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = incrementElevation.dp,
-                pressedElevation = 0.dp
-            ),
-            interactionSource = incrementInteractionSource
-        ) {
-            Text(
-                text = "+1 ${
-                    if (mediaType == MediaType.ANIME) {
-                        stringResource(Res.string.episodes_suffix)
-                    } else {
-                        stringResource(Res.string.chapters_short)
-                    }
-                }",
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-    }
-}

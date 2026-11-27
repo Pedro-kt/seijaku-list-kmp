@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -506,28 +507,82 @@ fun DetailScreenContent(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = modifier
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(responsive.xlargePadding)
         ) {
-            DetailHeader(
-                coverImageUrl = mediaDetail.coverImageUrl,
-                typeLabel = mediaDetail.typeLabel,
-                demographic = mediaDetail.demographic,
-                title = mediaDetail.title,
-                titleNative = mediaDetail.titleNative,
-                metadataText = mediaDetail.headerMetadata,
-                formattedScore = mediaDetail.formattedScore,
-                formattedVotes = mediaDetail.formattedVotes,
-                rankingText = mediaDetail.rankingText,
-                popularityText = mediaDetail.popularityText,
-                nextAiringText = mediaDetail.nextAiringText,
-                isInList = mediaDetail.isInList,
-                onAddToListClick = { showAddToListBottomSheet = true }
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(bottom = if (listEntry != null) 100.dp else 0.dp),
+                verticalArrangement = Arrangement.spacedBy(responsive.xlargePadding)
+            ) {
+                DetailHeader(
+                    coverImageUrl = mediaDetail.coverImageUrl,
+                    typeLabel = mediaDetail.typeLabel,
+                    demographic = mediaDetail.demographic,
+                    title = mediaDetail.title,
+                    titleNative = mediaDetail.titleNative,
+                    metadataText = mediaDetail.headerMetadata,
+                    formattedScore = mediaDetail.formattedScore,
+                    formattedVotes = mediaDetail.formattedVotes,
+                    rankingText = mediaDetail.rankingText,
+                    popularityText = mediaDetail.popularityText,
+                    nextAiringText = mediaDetail.nextAiringText,
+                    isInList = mediaDetail.isInList,
+                    onAddToListClick = { showAddToListBottomSheet = true }
+                )
+
+                DetailSynopsis(
+                    synopsis = mediaDetail.description
+                )
+
+                DetailGenres(
+                    genres = mediaDetail.genres
+                )
+
+                DetailInformation(
+                    items = mediaDetail.informationItems
+                )
+
+                mediaDetail.trailer?.let { trailer ->
+                    DetailTrailer(
+                        trailer = trailer,
+                        onTrailerClick = onTrailerClick
+                    )
+                }
+
+                DetailCharacters(
+                    characters = mediaDetail.characters,
+                    onCharacterClick = onCharacterClick
+                )
+
+                if (mediaDetail.type == MediaType.ANIME) {
+                    DetailExternalLinks(
+                        links = mediaDetail.externalLinks,
+                        onLinkClick = onExternalLinkClick
+                    )
+                }
+
+                DetailChaptersList(
+                    type = mediaDetail.type,
+                    chapters = mediaDetail.chaptersList,
+                    episodes = mediaDetail.episodesList,
+                    totalCount = mediaDetail.totalChapters ?: mediaDetail.totalEpisodes,
+                    onSeeAllClick = onSeeAllChaptersClick,
+                    onItemClick = onChapterClick,
+                    onEpisodeFavoriteToggle = onEpisodeFavoriteToggle
+                )
+
+                DetailImagesGrid(
+                    images = mediaDetail.images,
+                    onImageClick = onImageClick
+                )
+
+                Spacer(modifier = Modifier.height(responsive.largePadding))
+            }
 
             listEntry?.let { entry ->
                 MediaProgressCard(
@@ -536,7 +591,7 @@ fun DetailScreenContent(
                         MediaType.ANIME -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.ANIME
                         MediaType.MANGA -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA
                     },
-                    mediaStatus = entry.mediaStatus ?: mediaDetail.status,
+                    mediaStatus = mediaDetail.status,
                     totalEpisodes = mediaDetail.totalEpisodes,
                     totalChapters = mediaDetail.totalChapters,
                     temporaryProgress = temporaryProgress,
@@ -545,81 +600,37 @@ fun DetailScreenContent(
                     onDecrementProgress = onDecrementProgress,
                     onEditClick = { showAddToListBottomSheet = true },
                     onDeleteClick = onDeleteClick,
-                    modifier = Modifier.padding(horizontal = responsive.horizontalPadding)
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = responsive.horizontalPadding)
+                        .padding(bottom = responsive.mediumPadding)
+                        .zIndex(1f)
                 )
             }
-
-            DetailSynopsis(
-                synopsis = mediaDetail.description
-            )
-
-            DetailGenres(
-                genres = mediaDetail.genres
-            )
-
-            DetailInformation(
-                items = mediaDetail.informationItems
-            )
-
-            mediaDetail.trailer?.let { trailer ->
-                DetailTrailer(
-                    trailer = trailer,
-                    onTrailerClick = onTrailerClick
-                )
-            }
-
-            DetailCharacters(
-                characters = mediaDetail.characters,
-                onCharacterClick = onCharacterClick
-            )
-
-            if (mediaDetail.type == MediaType.ANIME) {
-                DetailExternalLinks(
-                    links = mediaDetail.externalLinks,
-                    onLinkClick = onExternalLinkClick
-                )
-            }
-
-            DetailChaptersList(
-                type = mediaDetail.type,
-                chapters = mediaDetail.chaptersList,
-                episodes = mediaDetail.episodesList,
-                totalCount = mediaDetail.totalChapters ?: mediaDetail.totalEpisodes,
-                onSeeAllClick = onSeeAllChaptersClick,
-                onItemClick = onChapterClick,
-                onEpisodeFavoriteToggle = onEpisodeFavoriteToggle
-            )
-
-            DetailImagesGrid(
-                images = mediaDetail.images,
-                onImageClick = onImageClick
-            )
-
-            Spacer(modifier = Modifier.height(responsive.largePadding))
         }
-    }
 
-    if (showAddToListBottomSheet) {
-        AddToListBottomSheet(
-            mediaTitle = mediaDetail.title,
-            mediaType = when (mediaDetail.type) {
-                MediaType.ANIME -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.ANIME
-                MediaType.MANGA -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA
-            },
-            mediaStatus = listEntry?.mediaStatus ?: mediaDetail.status,
-            totalEpisodes = mediaDetail.totalEpisodes,
-            totalChapters = mediaDetail.totalChapters,
-            currentProgress = listEntry?.progress ?: 0,
-            currentScore = listEntry?.score,
-            currentStatus = listEntry?.status,
-            currentNote = listEntry?.notes ?: "",
-            currentStartDate = listEntry?.startDate,
-            currentRewatches = listEntry?.repeatCount ?: 0,
-            currentPriority = listEntry?.priority ?: MediaListPriority.MEDIUM,
-            onDismiss = { showAddToListBottomSheet = false },
-            onSave = { status, progress, score, note, startDate, rewatches, priority ->
-                onSaveToList(status, progress, score, note, startDate, rewatches, priority)
-            }
-        )
+        if (showAddToListBottomSheet) {
+            AddToListBottomSheet(
+                mediaTitle = mediaDetail.title,
+                mediaType = when (mediaDetail.type) {
+                    MediaType.ANIME -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.ANIME
+                    MediaType.MANGA -> com.yumedev.seijakulistkmp.core.domain.model.MediaType.MANGA
+                },
+                mediaStatus = listEntry?.mediaStatus ?: mediaDetail.status,
+                totalEpisodes = mediaDetail.totalEpisodes,
+                totalChapters = mediaDetail.totalChapters,
+                currentProgress = listEntry?.progress ?: 0,
+                currentScore = listEntry?.score,
+                currentStatus = listEntry?.status,
+                currentNote = listEntry?.notes ?: "",
+                currentStartDate = listEntry?.startDate,
+                currentRewatches = listEntry?.repeatCount ?: 0,
+                currentPriority = listEntry?.priority ?: MediaListPriority.MEDIUM,
+                onDismiss = { showAddToListBottomSheet = false },
+                onSave = { status, progress, score, note, startDate, rewatches, priority ->
+                    onSaveToList(status, progress, score, note, startDate, rewatches, priority)
+                }
+            )
+        }
     }
 }
